@@ -1,1 +1,1 @@
-CREATE SCHEMA `cyclos` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
+CREATE SCHEMA `cyclos3` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
