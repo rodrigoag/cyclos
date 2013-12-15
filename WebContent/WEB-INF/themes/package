@@ -1,0 +1,9 @@
+theme=$1
+extracted=$theme.extracted
+
+if [ ! -e $extracted ]; then
+	unzip $theme -d $extracted
+else
+	cd $extracted
+	zip -r ../$theme .
+fi
