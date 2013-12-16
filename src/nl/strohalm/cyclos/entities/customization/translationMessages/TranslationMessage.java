@@ -19,6 +19,8 @@
  */
 package nl.strohalm.cyclos.entities.customization.translationMessages;
 
+import java.util.Locale;
+
 import nl.strohalm.cyclos.entities.Entity;
 
 /**
@@ -29,6 +31,15 @@ public class TranslationMessage extends Entity {
     private static final long serialVersionUID = -5301317219230694326L;
     private String            key;
     private String            value;
+    private String			  locale;
+    
+    public static String localeKey(Locale locale, String key) {
+    	return localeKey(locale.toString(), key);
+    }
+    
+    public static String localeKey(String locale, String key) {
+    	return String.format("%s:%s", locale, key);
+    }
 
     public String getKey() {
         return key;
@@ -46,8 +57,16 @@ public class TranslationMessage extends Entity {
         this.value = value;
     }
 
-    @Override
+    public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+
+	@Override
     public String toString() {
-        return getId() + " - " + key;
+        return getId() + " - " + key + " - " + locale;
     }
 }

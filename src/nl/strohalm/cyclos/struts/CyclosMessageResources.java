@@ -28,6 +28,7 @@ import java.util.concurrent.Callable;
 
 import javax.servlet.ServletContext;
 
+import nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessage;
 import nl.strohalm.cyclos.services.customization.TranslationChangeListener;
 import nl.strohalm.cyclos.services.customization.TranslationMessageService;
 import nl.strohalm.cyclos.utils.MessageResourcesLoadedListener;
@@ -61,10 +62,13 @@ public class CyclosMessageResources extends MessageResources implements ServletC
 
     @Override
     public String getMessage(final Locale locale, final String key) {
-        String message = getProperties().getProperty(key);
+    	final String localeKey = TranslationMessage.localeKey(locale, key);
+    	
+        String message = getProperties().getProperty(localeKey);
         if (message == null) {
-            message = "???" + key + "???";
+            message = "???" + localeKey + "???";
         }
+        
         return message;
     }
 
@@ -76,7 +80,8 @@ public class CyclosMessageResources extends MessageResources implements ServletC
         translationMessageService.addTranslationChangeListener(new TranslationChangeListener() {
             @Override
             public void onTranslationsChanged(final Properties properties) {
-                reload(properties);
+            	//FIXME: Identify which Locale changed it
+                //reload(properties);
             }
         });
 
@@ -111,19 +116,32 @@ public class CyclosMessageResources extends MessageResources implements ServletC
         properties = LoggedUser.runAsSystem(new Callable<Properties>() {
             @Override
             public Properties call() throws Exception {
+            	final Properties combinedProperties = new Properties();
+            	
                 // First, read the English properties, to ensure defaults
-                final Properties properties = translationMessageService.readFile(Locale.US);
+                final Properties fileProperties = translationMessageService.readFile(Locale.US);
+                
+                merge(combinedProperties, fileProperties);
+                
                 // Then load all properties from DB
                 final Properties dbProperties = newProperties == null ? translationMessageService.exportAsProperties() : newProperties;
-                for (final Map.Entry<Object, Object> entry : dbProperties.entrySet()) {
+                
+                merge(combinedProperties, dbProperties);
+                
+                return combinedProperties;
+            }
+
+			private void merge(final Properties combinedProperties, final Properties newProperties) {
+				
+				for (final Map.Entry<Object, Object> entry : newProperties.entrySet()) {
                     final String key = (String) entry.getKey();
                     final String value = (String) entry.getValue();
+                    
                     if (StringUtils.isNotEmpty(value)) {
-                        properties.setProperty(key, value);
+                    	combinedProperties.setProperty(key, value);
                     }
                 }
-                return properties;
-            }
+			}
         });
 
         // Clear the Struts cache

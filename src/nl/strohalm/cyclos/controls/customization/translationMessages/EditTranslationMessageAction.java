@@ -26,7 +26,9 @@ import nl.strohalm.cyclos.controls.ActionContext;
 import nl.strohalm.cyclos.controls.BaseFormAction;
 import nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessage;
 import nl.strohalm.cyclos.entities.exceptions.DaoException;
+import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.services.customization.TranslationMessageService;
+import nl.strohalm.cyclos.utils.RequestHelper;
 import nl.strohalm.cyclos.utils.binding.BeanBinder;
 import nl.strohalm.cyclos.utils.binding.DataBinder;
 import nl.strohalm.cyclos.utils.binding.PropertyBinder;
@@ -49,6 +51,7 @@ public class EditTranslationMessageAction extends BaseFormAction {
             binder.registerBinder("id", PropertyBinder.instance(Long.class, "id", IdConverter.instance()));
             binder.registerBinder("key", PropertyBinder.instance(String.class, "key"));
             binder.registerBinder("value", PropertyBinder.instance(String.class, "value", HtmlConverter.instance(false)));
+            binder.registerBinder("locale", PropertyBinder.instance(String.class, "locale"));
             dataBinder = binder;
         }
         return dataBinder;
@@ -84,6 +87,8 @@ public class EditTranslationMessageAction extends BaseFormAction {
             request.setAttribute("message", translationMessage);
         }
         request.setAttribute("isInsert", isInsert);
+        
+        RequestHelper.storeEnum(context.getRequest(), LocalSettings.Language.class, "languages");
     }
 
     @Override

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -134,11 +135,21 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
     public Properties readFile(final Locale locale) {
         final String language = LocaleConverter.instance().toString(locale);
         final String propertiesName = "ApplicationResources_" + language + ".properties";
+        
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + propertiesName);
         final Properties properties = new Properties();
+        final Properties fileProperties = new Properties();
         try {
             final Reader reader = new InputStreamReader(in, "UTF-8");
-            properties.load(reader);
+            fileProperties.load(reader);
+            
+            Enumeration<?> keys = fileProperties.propertyNames();
+			while (keys.hasMoreElements()) {
+				String key = (String) keys.nextElement();
+				
+				properties.put(TranslationMessage.localeKey(locale, key), fileProperties.getProperty(key));
+			}
+            
         } catch (final Exception e) {
             // Ignore
         } finally {
@@ -215,10 +226,12 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
         final Validator validator = new Validator();
         validator.property("key").required().maxLength(100);
         validator.property("value").maxLength(4000);
+        validator.property("locale").required().maxLength(10);
         return validator;
     }
 
     private void importNewAndModifiedProperties(final Properties properties, final boolean emptyOnly) {
+    	//FIXME: Incorporate Locale when importing
         // Process existing messages. This is done with Object[], otherwise hibernate will load each message with a separate select
         final Iterator<Object[]> existing = translationMessageDao.listData();
         try {

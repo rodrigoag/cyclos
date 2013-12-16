@@ -56,6 +56,7 @@ public class ExportTranslationMessagesAction extends BaseAction {
     protected ActionForward executeAction(final ActionContext context) throws Exception {
 
         final LocalSettings localSettings = settingsService.getLocalSettings();
+        //FIXME: Fetch language from a UI selector (default to settings)
         final String language = localSettings.getLanguage().getValue();
         final HttpServletResponse response = context.getResponse();
 

@@ -1,6 +1,8 @@
 <!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
 <struts-config>
 	<form-beans>
+	    
+	    <form-bean name="localeForm" type="nl.strohalm.cyclos.controls.access.LocaleForm" />
         <form-bean name="loginForm" type="nl.strohalm.cyclos.controls.access.LoginForm" />
         <form-bean name="changePasswordForm" type="nl.strohalm.cyclos.controls.access.ChangePasswordForm" />
         <form-bean name="resetAndSendPasswordForm" type="nl.strohalm.cyclos.controls.access.ResetAndSendPasswordForm" />
@@ -24,6 +26,14 @@
 	</global-forwards>
 	
 	<action-mappings type="org.apache.struts.config.SecureActionConfig">
+
+	    <action 
+	        path="/locale" 
+	        name="localeForm"
+	        scope="session"
+	        type="org.apache.struts.actions.LocaleAction">
+	    	<forward name="success" redirect="true" path="/" />
+		</action>
 
 		<action 
 			path="/login" 

@@ -7,10 +7,13 @@
 
 	<class dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessage" table="translation_messages">
 		<id name="id" type="long">
-		    <column name="id" sql-type="integer"/>
+		    <column name="id" sql-type="integer" />
 			<generator class="native"/>
 		</id>
-		<property name="key" update="false" unique="true" column="msg_key" type="string" length="100" not-null="true"/>
+		<properties name="uniqueKey" unique="true">
+			<property name="key" column="msg_key" update="false" type="string" length="100" not-null="true"/>
+			<property name="locale" update="false" type="string" length="10" />
+		</properties>
 		<property name="value" column="value" type="text"/>
 	</class>
 

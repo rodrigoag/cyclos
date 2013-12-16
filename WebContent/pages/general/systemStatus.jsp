@@ -1,3 +1,4 @@
+<%@page import="java.util.Enumeration"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags/struts-bean" prefix="bean" %>
 <%@ taglib uri="http://devel.cyclos.org/tlibs/cyclos-core" prefix="cyclos" %>
@@ -81,4 +82,27 @@
 			</table>
         </td>
    </tr>
+   <% if (request.getParameter("debug") != null) { %>
+   <tr> 
+        <td class="tdContentTableForms" colspan="2">
+        	<h3>Session Attributes</h3>
+        	
+   	        <table class="defaultTable">
+   	        	<% 
+   	        	Enumeration attributes = session.getAttributeNames();
+   	        	while (attributes.hasMoreElements())
+   	        	{
+   	        		String attribute = (String) attributes.nextElement();
+   	        	%>
+                <tr>
+                   	<td width="35%" class="headerLabel" nowrap="nowrap"><%=attribute%></td>
+               	    <td class="headerField" colspan="2"><%=session.getAttribute(attribute)%></td>
+                </tr>
+				<%
+				}
+				%>
+            </table>
+        </td>
+   </tr>
+   <% } %>
 </table>

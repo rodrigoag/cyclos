@@ -28,7 +28,9 @@ import nl.strohalm.cyclos.controls.ActionContext;
 import nl.strohalm.cyclos.controls.BaseQueryAction;
 import nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessage;
 import nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessageQuery;
+import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.services.customization.TranslationMessageService;
+import nl.strohalm.cyclos.utils.RequestHelper;
 import nl.strohalm.cyclos.utils.binding.BeanBinder;
 import nl.strohalm.cyclos.utils.binding.DataBinder;
 import nl.strohalm.cyclos.utils.binding.DataBinderHelper;
@@ -49,6 +51,7 @@ public class SearchTranslationMessagesAction extends BaseQueryAction {
             final BeanBinder<TranslationMessageQuery> binder = BeanBinder.instance(TranslationMessageQuery.class);
             binder.registerBinder("key", PropertyBinder.instance(String.class, "key"));
             binder.registerBinder("value", PropertyBinder.instance(String.class, "value"));
+            binder.registerBinder("locale", PropertyBinder.instance(String.class, "locale"));
             binder.registerBinder("showOnlyEmpty", PropertyBinder.instance(Boolean.TYPE, "showOnlyEmpty"));
             binder.registerBinder("pageParameters", DataBinderHelper.pageBinder());
             dataBinder = binder;
@@ -65,6 +68,7 @@ public class SearchTranslationMessagesAction extends BaseQueryAction {
     protected void executeQuery(final ActionContext context, final QueryParameters queryParameters) {
         final HttpServletRequest request = context.getRequest();
         final TranslationMessageQuery query = (TranslationMessageQuery) queryParameters;
+        
         final List<TranslationMessage> translationMessages = translationMessageService.search(query);
         request.setAttribute("messages", translationMessages);
     }
@@ -72,6 +76,9 @@ public class SearchTranslationMessagesAction extends BaseQueryAction {
     @Override
     protected QueryParameters prepareForm(final ActionContext context) {
         final SearchTranslationMessagesForm form = context.getForm();
+        
+        RequestHelper.storeEnum(context.getRequest(), LocalSettings.Language.class, "languages");
+        
         return getDataBinder().readFromString(form.getQuery());
     }
 

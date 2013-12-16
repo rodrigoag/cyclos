@@ -22,6 +22,17 @@
 		<td colspan="2" align="left" class="tdContentTableForms">
 			<table class="defaultTable">
 				<tr>
+                    <td class="label" width="25%"><bean:message key="settings.local.language"/></td>
+                    <td>
+                    	<html:select property="query(locale)">
+                    		<html:option value=""><bean:message key="global.search.all"/></html:option>
+	                   		<c:forEach var="lang" items="${languages}">
+	                    		<html:option value="${lang.locale}"><bean:message key="settings.local.language.${lang}"/></html:option>
+	                   		</c:forEach>
+                    	</html:select>
+                    </td>
+	            </tr>
+				<tr>
 					<td class="label" width="25%"><bean:message key="translationMessage.key"/></td>
 					<td colspan="2"><html:text property="query(key)" maxlength="50" styleClass="large"/></td>
 				</tr>
@@ -60,6 +71,7 @@
                 	<td class="tdHeaderContents" width="20px">&nbsp;</td>
                 	<td class="tdHeaderContents" width="40%"><bean:message key="translationMessage.key"/></td>
                 	<td class="tdHeaderContents"><bean:message key="translationMessage.message"/></td>
+                	<td class="tdHeaderContents"><bean:message key="translationMessage.locale"/></td>
                     <td class="tdHeaderContents" width="5%">&nbsp;</td>
                 </tr>
                 <c:forEach var="message" items="${messages}">
@@ -67,6 +79,7 @@
 	                	<td align="center"><input type="checkbox" class="checkbox" name="messageIds" value="${message.id}"></td>
 	                	<td><cyclos:escapeHTML>${message.key}</cyclos:escapeHTML></td>
 	                	<td><cyclos:escapeHTML>${message.value}</cyclos:escapeHTML></td>
+	                	<td><cyclos:escapeHTML>${message.locale}</cyclos:escapeHTML></td>
 	                    <td align="center" nowrap="nowrap">
 	                    	<c:choose><c:when test="${cyclos:granted(AdminSystemPermission.TRANSLATION_MANAGE)}">
 		                    	<img class="edit messageDetails" src="<c:url value="/pages/images/edit.gif"/>" messageId="${message.id}" border="0">

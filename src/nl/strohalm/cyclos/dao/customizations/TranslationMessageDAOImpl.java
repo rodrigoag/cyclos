@@ -57,19 +57,21 @@ public class TranslationMessageDAOImpl extends BaseDAOImpl<TranslationMessage> i
 
     public Properties listAsProperties() {
         final Properties properties = new SortedProperties();
-        final Iterator<Object[]> iterator = iterate("select m.key, m.value from " + getEntityType().getName() + " m", null);
+        final Iterator<Object[]> iterator = iterate("select m.key, m.value, m.locale from " + getEntityType().getName() + " m", null);
         while (iterator.hasNext()) {
             final Object[] row = iterator.next();
             final String key = StringUtils.trimToEmpty((String) row[0]);
             final String value = StringUtils.trimToEmpty((String) row[1]);
-            properties.setProperty(key, value);
+            final String locale = StringUtils.trimToEmpty((String) row[2]);
+            
+            properties.setProperty(TranslationMessage.localeKey(locale, key), value);
         }
         DataIteratorHelper.close(iterator);
         return properties;
     }
 
     public Iterator<Object[]> listData() throws DaoException {
-        return iterate("select m.id, m.key, m.value from " + getEntityType().getName() + " m", null);
+        return iterate("select m.id, m.key, m.value, m.locale from " + getEntityType().getName() + " m", null);
     }
 
     public TranslationMessage load(final String key) {
@@ -86,6 +88,11 @@ public class TranslationMessageDAOImpl extends BaseDAOImpl<TranslationMessage> i
         final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "m");
         HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "m.key", query.getKey());
         HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "m.value", query.getValue());
+        
+        if (query.getLocale() != null) {
+        	HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "m.locale", query.getLocale().toString());
+        }
+        
         if (query.isShowOnlyEmpty()) {
             hql.append(" and (m.value is null or length(m.value) = 0)");
         }

@@ -27,6 +27,16 @@
     <tr>
         <td colspan="2" align="left" class="tdContentTableForms">
             <table class="defaultTable">
+				<tr>
+                    <td class="label" width="25%"><bean:message key="settings.local.language"/></td>
+                    <td>
+                    	<html:select property="message(locale)" disabled="true" styleClass="InputBoxDisabled">
+	                   		<c:forEach var="lang" items="${languages}">
+	                    		<html:option value="${lang.locale}"><bean:message key="settings.local.language.${lang}"/></html:option>
+	                   		</c:forEach>
+                    	</html:select>
+                    </td>
+	            </tr>
                 <tr>
                     <td class="label" width="25%"><bean:message key="translationMessage.key"/></td>
                     <td>

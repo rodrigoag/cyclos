@@ -27,10 +27,15 @@ import nl.strohalm.cyclos.utils.query.QueryParameters;
  */
 public class TranslationMessageQuery extends QueryParameters {
     private static final long serialVersionUID = 2119053409471708889L;
+    private String			  locale;
     private String            key;
     private String            value;
     private boolean           showOnlyEmpty;
 
+    public String getLocale() {
+    	return locale;
+    }
+    
     public String getKey() {
         return key;
     }
@@ -43,6 +48,10 @@ public class TranslationMessageQuery extends QueryParameters {
         return showOnlyEmpty;
     }
 
+    public void setLocale(String locale) {
+    	this.locale = locale;
+    }
+    
     public void setKey(final String key) {
         this.key = key;
     }
