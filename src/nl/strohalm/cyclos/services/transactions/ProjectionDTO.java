@@ -38,7 +38,7 @@ public class ProjectionDTO extends DataObject {
     private Calendar          firstExpirationDate;
     private int               paymentCount;
     private TransferType      transferType;
-    private TimePeriod        recurrence       = TimePeriod.ONE_MONTH;
+    private TimePeriod        recurrence       = TimePeriod.Of.ONE_MONTH.period();
 
     public BigDecimal getAmount() {
         return amount;

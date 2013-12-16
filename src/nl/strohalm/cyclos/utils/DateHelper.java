@@ -127,7 +127,7 @@ public class DateHelper {
      * Returns a date at 23:59:59 of the given day
      */
     public static Calendar getDayEnd(final Calendar date) {
-        return TimePeriod.ONE_DAY.currentPeriod(date).getEnd();
+        return TimePeriod.Of.ONE_DAY.period().currentPeriod(date).getEnd();
     }
 
     /**

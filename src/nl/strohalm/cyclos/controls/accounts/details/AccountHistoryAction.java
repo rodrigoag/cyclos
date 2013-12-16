@@ -200,6 +200,7 @@ public class AccountHistoryAction extends BaseQueryAction {
         binder.registerBinder("owner", PropertyBinder.instance(AccountOwner.class, "owner", AccountOwnerConverter.instance()));
         binder.registerBinder("status", PropertyBinder.instance(Transfer.Status.class, "status"));
         binder.registerBinder("type", PropertyBinder.instance(AccountType.class, "type", ReferenceConverter.instance(AccountType.class)));
+        binder.registerBinder("periodFilter", PropertyBinder.instance(TimePeriod.Of.class, "periodFilter"));
         binder.registerBinder("period", DataBinderHelper.rawPeriodBinder(localSettings, "period"));
         binder.registerBinder("paymentFilter", PropertyBinder.instance(PaymentFilter.class, "paymentFilter", ReferenceConverter.instance(PaymentFilter.class)));
         binder.registerBinder("description", PropertyBinder.instance(String.class, "description"));
@@ -328,11 +329,18 @@ public class AccountHistoryAction extends BaseQueryAction {
         if (firstTime) {
             if (type instanceof SystemAccountType) {
                 // Ensure the initial period filter will start from the 1st day of the previous month, to avoid potentially huge DB scans
-                final Period lastMonthPeriod = TimePeriod.ONE_MONTH.previousPeriod(Calendar.getInstance());
+                final Period lastMonthPeriod = TimePeriod.Of.ONE_MONTH.period().previousPeriod(Calendar.getInstance());
                 query.setPeriod(Period.begginingAt(lastMonthPeriod.getBegin()));
                 final String formattedDate = localSettings.getDateConverter().toString(lastMonthPeriod.getBegin());
                 PropertyHelper.set(form.getQuery("period"), "begin", formattedDate);
             }
+        }
+        
+        request.setAttribute("timePeriods", EnumSet.of(TimePeriod.Of.ONE_MONTH, TimePeriod.Of.TWO_MONTHS, TimePeriod.Of.THREE_MONTHS));
+        
+        if (query.getPeriodFilter() != null)
+        {
+        	query.setPeriod(query.getPeriodFilter().period().periodEndingAt(Calendar.getInstance()));
         }
 
         // Fetch the owner if is a member

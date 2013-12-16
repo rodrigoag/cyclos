@@ -31,6 +31,7 @@ import nl.strohalm.cyclos.entities.groups.MemberGroup;
 import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.utils.Period;
+import nl.strohalm.cyclos.utils.TimePeriod;
 import nl.strohalm.cyclos.utils.query.QueryParameters;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -55,6 +56,7 @@ public class TransferQuery extends QueryParameters {
     private Collection<PaymentFilter>           paymentFilters;
     private TransferType                        transferType;
     private TransferType                        excludeTransferType;
+    private TimePeriod.Of                       periodFilter;
     private Period                              period;
     private AccountType                         type;
     private AccountType                         fromAccountType;
@@ -136,6 +138,10 @@ public class TransferQuery extends QueryParameters {
     public Period getPeriod() {
         return period;
     }
+
+    public TimePeriod.Of getPeriodFilter() {
+		return periodFilter;
+	}
 
     public Boolean getRequiresAuthorization() {
         return requiresAuthorization;
@@ -245,7 +251,11 @@ public class TransferQuery extends QueryParameters {
         this.period = period;
     }
 
-    public void setRequiresAuthorization(final Boolean requiresAuthorization) {
+	public void setPeriodFilter(TimePeriod.Of periodFilter) {
+		this.periodFilter = periodFilter;
+	}
+
+	public void setRequiresAuthorization(final Boolean requiresAuthorization) {
         this.requiresAuthorization = requiresAuthorization;
     }
 

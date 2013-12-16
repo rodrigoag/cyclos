@@ -160,9 +160,15 @@
 						<%-- When there is no payment status, show on the same row the mode button and the filter --%>
 						<tr>
 		   					<td align="left" width="30%"><input id="modeButton" type="button" class="button" value="<bean:message key="global.search.ADVANCED"/>"></td>
-		   					<!-- 
-		   					TODO: Include pre-defined periods drop down here, ie: Past 30, 60 or 90 days. Defaults advanced filter's begin/end params.
-		   					 -->
+		   					<td align="right">
+								<span class="label"><bean:message key="accountHistory.period"/></span>
+								<html:select styleId="periodSelect" property="query(periodFilter)">
+									<html:option value=""><bean:message key="global.search.all"/></html:option>
+									<c:forEach var="filter" items="${timePeriods}">
+										<html:option value="${filter}"><bean:message key="period.${filter}"/></html:option>
+									</c:forEach>
+								</html:select>
+							</td>
 							<td align="right">
 								<span class="label"><bean:message key="accountHistory.filter"/></span>
 								<html:select styleId="filterSelect" property="query(paymentFilter)">

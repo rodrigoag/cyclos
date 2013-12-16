@@ -78,5 +78,11 @@ Behaviour.register({
 		select.onchange = function() {
 			this.form.submit();
 		}
+	},
+	
+	'#periodSelect': function(select) {
+		select.onchange = function() {
+			this.form.submit();
+		}
 	}
 });

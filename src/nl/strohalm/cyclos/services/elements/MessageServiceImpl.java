@@ -634,7 +634,7 @@ public class MessageServiceImpl implements MessageServiceLocal, DisposableBean, 
                     if (left > 0) {
                         TimePeriod additionalChargedPeriod = smsContext.getAdditionalChargedPeriod(charged);
                         if (additionalChargedPeriod == null) {
-                            additionalChargedPeriod = TimePeriod.ONE_MONTH;
+                            additionalChargedPeriod = TimePeriod.Of.ONE_MONTH.period();
                         }
                         expiration = additionalChargedPeriod.add(Calendar.getInstance());
                     }

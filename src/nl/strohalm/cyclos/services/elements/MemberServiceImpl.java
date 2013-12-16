@@ -783,7 +783,7 @@ public class MemberServiceImpl implements MemberServiceLocal {
         // Try to load the sms status. If none found, a new one will be returned
         member = fetchService.fetch(member, Element.Relationships.GROUP);
         final Calendar today = Calendar.getInstance();
-        final Period currentMonth = TimePeriod.ONE_MONTH.currentPeriod(today);
+        final Period currentMonth = TimePeriod.Of.ONE_MONTH.period().currentPeriod(today);
         MemberSmsStatus status;
         try {
             // Try loading the member status

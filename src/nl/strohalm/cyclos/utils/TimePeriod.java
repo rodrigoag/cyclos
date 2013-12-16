@@ -69,16 +69,27 @@ public class TimePeriod implements Serializable, Cloneable {
         }
     }
 
-    /**
-     * A time period of 1 month
-     */
-    public static final TimePeriod ONE_MONTH        = new TimePeriod(1, Field.MONTHS);
-
-    /**
-     * A time period of 1 day
-     */
-    public static final TimePeriod ONE_DAY          = new TimePeriod(1, Field.DAYS);
-
+    public static enum Of
+    {
+	    ONE_MONTH 		( new TimePeriod(1, Field.MONTHS) ),
+	    TWO_MONTHS 		( new TimePeriod(2, Field.MONTHS) ),
+	    THREE_MONTHS    ( new TimePeriod(3, Field.MONTHS ) ),
+	    ONE_DAY			( new TimePeriod(1, Field.DAYS) ),
+	    ;
+	    
+	    private final TimePeriod period;
+	    
+	    private Of( TimePeriod period )
+	    {
+	    	this.period = period;
+	    }
+	    
+	    public TimePeriod period()
+	    {
+	    	return period;
+	    }
+    }
+    
     private static final long      serialVersionUID = 859616150477032565L;
 
     private int                    number;
