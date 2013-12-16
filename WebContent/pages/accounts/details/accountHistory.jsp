@@ -160,6 +160,9 @@
 						<%-- When there is no payment status, show on the same row the mode button and the filter --%>
 						<tr>
 		   					<td align="left" width="30%"><input id="modeButton" type="button" class="button" value="<bean:message key="global.search.ADVANCED"/>"></td>
+		   					<!-- 
+		   					TODO: Include pre-defined periods drop down here, ie: Past 30, 60 or 90 days. Defaults advanced filter's begin/end params.
+		   					 -->
 							<td align="right">
 								<span class="label"><bean:message key="accountHistory.filter"/></span>
 								<html:select styleId="filterSelect" property="query(paymentFilter)">
@@ -216,9 +219,11 @@
 		<tr>
 			<td colspan="2" align="left" class="bordered tdContentTableLists" style="border-top:none">
 				<cyclos:layout columns="4" className="defaultTable">
+					
 					<cyclos:cell width="20%" className="headerLabel"><bean:message key="account.balance"/></cyclos:cell>
 					<cyclos:cell width="30%" className="headerField"><cyclos:format number="${status.balance}" unitsPattern="${unitsPattern}" /></cyclos:cell>
-					<c:if test="${status.creditLimit > 0 or status.reservedAmount > 0}">
+					
+					<c:if test="${status.availableBalance != status.balance}">
 						<cyclos:cell width="20%" className="headerLabel"><bean:message key="account.availableBalance"/></cyclos:cell>
 						<cyclos:cell width="30%" className="headerField"><cyclos:format number="${status.availableBalance}" unitsPattern="${unitsPattern}" /></cyclos:cell>
 					</c:if>
@@ -234,6 +239,15 @@
 						<cyclos:cell width="20%" className="headerLabel"><bean:message key="account.upperCreditLimit"/></cyclos:cell>
 						<cyclos:cell width="30%" className="headerField"><cyclos:format number="${status.upperCreditLimit}" unitsPattern="${unitsPattern}" /></cyclos:cell>
 					</c:if>
+					<c:if test="${lowUnits > 0 and lowUnits != null}">
+						<cyclos:cell width="20%" className="headerLabel"><bean:message key="account.lowUnits"/></cyclos:cell>
+						<cyclos:cell width="30%" className="headerField"><cyclos:format number="${lowUnits}" unitsPattern="${unitsPattern}" /></cyclos:cell>
+					</c:if>
+					<c:if test="${openInvoiceAmount > 0 and openInvoiceAmount != null}">
+						<cyclos:cell width="20%" className="headerLabel"><bean:message key="account.openInvoiceAmount"/></cyclos:cell>
+						<cyclos:cell width="30%" className="headerField"><cyclos:format number="${openInvoiceAmount}" unitsPattern="${unitsPattern}" /></cyclos:cell>
+					</c:if>
+					
 				</cyclos:layout>
 			</td>
 		</tr>

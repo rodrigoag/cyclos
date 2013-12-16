@@ -60,6 +60,9 @@ import nl.strohalm.cyclos.entities.accounts.SystemAccount;
 import nl.strohalm.cyclos.entities.accounts.SystemAccountOwner;
 import nl.strohalm.cyclos.entities.accounts.SystemAccountType;
 import nl.strohalm.cyclos.entities.accounts.TransferAuthorizationAmountReservation;
+import nl.strohalm.cyclos.entities.accounts.transactions.Invoice.Status;
+import nl.strohalm.cyclos.entities.accounts.transactions.InvoiceQuery.Direction;
+import nl.strohalm.cyclos.entities.accounts.transactions.InvoiceSummaryDTO;
 import nl.strohalm.cyclos.entities.accounts.transactions.PaymentFilter;
 import nl.strohalm.cyclos.entities.accounts.transactions.ScheduledPayment;
 import nl.strohalm.cyclos.entities.accounts.transactions.Transfer;
@@ -88,6 +91,7 @@ import nl.strohalm.cyclos.services.fetch.FetchServiceLocal;
 import nl.strohalm.cyclos.services.groups.GroupServiceLocal;
 import nl.strohalm.cyclos.services.permissions.PermissionServiceLocal;
 import nl.strohalm.cyclos.services.settings.SettingsServiceLocal;
+import nl.strohalm.cyclos.services.transactions.InvoiceServiceLocal;
 import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
 import nl.strohalm.cyclos.utils.CacheCleaner;
 import nl.strohalm.cyclos.utils.CombinedIterator;
@@ -210,6 +214,7 @@ public class AccountServiceImpl implements AccountServiceLocal {
     private AccountTypeServiceLocal accountTypeService;
     private RateServiceLocal        rateService;
     private GroupServiceLocal       groupService;
+    private InvoiceServiceLocal     invoiceService;
     private ElementServiceLocal     elementService;
     private PermissionServiceLocal  permissionService;
     private AccountFeeServiceLocal  accountFeeService;
@@ -774,6 +779,10 @@ public class AccountServiceImpl implements AccountServiceLocal {
     public void setGroupServiceLocal(final GroupServiceLocal groupService) {
         this.groupService = groupService;
     }
+    
+    public void setInvoiceServiceLocal(final InvoiceServiceLocal invoiceService) {
+    	this.invoiceService = invoiceService;
+    }
 
     public void setPermissionServiceLocal(final PermissionServiceLocal permissionService) {
         this.permissionService = permissionService;
@@ -918,6 +927,22 @@ public class AccountServiceImpl implements AccountServiceLocal {
         BigDecimal reservationDiff = amountReservationDao.reservationDiff(account, period);
         status.setReservedAmount(closedBalance == null ? reservationDiff : closedBalance.getReserved().add(reservationDiff));
 
+        // Get the Low units alert limit
+        if ( account.getOwner() instanceof Member )
+        {
+	        MemberGroupAccountSettings groupAccountSettings = groupService.loadAccountSettings(((Member) account.getOwner()).getGroup().getId(), account.getType().getId());
+	        status.setLowUnits(groupAccountSettings.getLowUnits());
+        }
+        
+        // Get the Open Invoices total
+        InvoiceSummaryDTO invoiceParams = new InvoiceSummaryDTO();
+        invoiceParams.setOwner(account.getOwner());
+        invoiceParams.setDirection(Direction.INCOMING);
+        invoiceParams.setStatus(Status.OPEN);
+        
+        TransactionSummaryVO openInvoices = invoiceService.getSummary(invoiceParams);
+        status.setOpenInvoiceAmount(openInvoices.getAmount());
+        
         if (onlyIfThereAreDiffs && balanceDiff.equals(BigDecimal.ZERO) && reservationDiff.equals(BigDecimal.ZERO)) {
             // If should return only if there are diffs, and there were none, return null
             return null;

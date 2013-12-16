@@ -68,6 +68,7 @@ import nl.strohalm.cyclos.services.customization.PaymentCustomFieldService;
 import nl.strohalm.cyclos.services.elements.ElementService;
 import nl.strohalm.cyclos.services.groups.GroupFilterService;
 import nl.strohalm.cyclos.services.permissions.PermissionService;
+import nl.strohalm.cyclos.services.transactions.InvoiceService;
 import nl.strohalm.cyclos.services.transactions.PaymentService;
 import nl.strohalm.cyclos.services.transfertypes.PaymentFilterService;
 import nl.strohalm.cyclos.utils.CustomFieldHelper;
@@ -216,6 +217,8 @@ public class AccountHistoryAction extends BaseQueryAction {
     protected AccountService            accountService;
     protected PaymentFilterService      paymentFilterService;
     protected PaymentCustomFieldService paymentCustomFieldService;
+    protected InvoiceService 			invoiceService;
+
 
     private AccountTypeService          accountTypeService;
     private PaymentService              paymentService;
@@ -271,6 +274,11 @@ public class AccountHistoryAction extends BaseQueryAction {
     @Inject
     public void setPaymentService(final PaymentService paymentService) {
         this.paymentService = paymentService;
+    }
+    
+    @Inject
+    public void setInvoiceService(final InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
     }
 
     @Override
@@ -392,6 +400,20 @@ public class AccountHistoryAction extends BaseQueryAction {
         // Don't show if zero
         if (creditLimit != null && creditLimit.abs().compareTo(min) == 1) {
             request.setAttribute("creditLimit", creditLimit.negate());
+        }
+        
+        // Get the Low units alert limit
+        final BigDecimal low = status.getLowUnits();
+        // Don't show if zero
+        if (low != null) {
+            request.setAttribute("lowUnits", low);
+        }
+        
+        // Get the Open Invoices total
+        final BigDecimal openInvoiceAmount = status.getOpenInvoiceAmount();
+        // Don't show if zero
+        if (openInvoiceAmount != null) {
+            request.setAttribute("openInvoiceAmount", openInvoiceAmount);
         }
 
         // Retrieve the payment filters

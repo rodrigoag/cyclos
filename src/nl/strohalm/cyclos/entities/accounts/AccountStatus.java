@@ -43,6 +43,8 @@ public class AccountStatus extends DataObject implements Rated {
     private BigDecimal        reservedAmount   = BigDecimal.ZERO;
     private BigDecimal        creditLimit      = BigDecimal.ZERO;
     private BigDecimal        upperCreditLimit = BigDecimal.ZERO;
+    private BigDecimal        lowUnits 		   = BigDecimal.ZERO;
+    private BigDecimal        openInvoiceAmount= BigDecimal.ZERO;
     private RatesResultDTO    rates;
     private Calendar          date;
 
@@ -58,7 +60,20 @@ public class AccountStatus extends DataObject implements Rated {
     }
 
     public BigDecimal getAvailableBalance() {
-        return creditLimit == null ? null : balance.subtract(reservedAmount).add(creditLimit.abs());
+		BigDecimal availableBalance = 
+				creditLimit == null ? null : 
+				balance
+					.subtract(reservedAmount)
+					.subtract(lowUnits)
+					.subtract(openInvoiceAmount)
+					.add(creditLimit.abs());
+		
+		if (lowUnits.doubleValue() > 0 && creditLimit.doubleValue() == 0 && availableBalance.doubleValue() < 0)
+		{
+			availableBalance = new BigDecimal(0);
+		}
+		
+		return availableBalance;
     }
 
     public BigDecimal getAvailableBalanceWithoutCreditLimit() {
@@ -165,5 +180,21 @@ public class AccountStatus extends DataObject implements Rated {
     public void setUpperCreditLimit(final BigDecimal upperCreditLimit) {
         this.upperCreditLimit = upperCreditLimit;
     }
+
+	public BigDecimal getLowUnits() {
+		return lowUnits;
+	}
+
+	public void setLowUnits(BigDecimal lowUnits) {
+		this.lowUnits = lowUnits;
+	}
+
+	public BigDecimal getOpenInvoiceAmount() {
+		return openInvoiceAmount;
+	}
+
+	public void setOpenInvoiceAmount(BigDecimal openInvoiceAmount) {
+		this.openInvoiceAmount = openInvoiceAmount;
+	}
 
 }
