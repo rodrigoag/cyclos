@@ -42,12 +42,13 @@
               <div class="span12 clearfix">
                 <div class="header-phone">Call Toll-Free: <span>1-800-559-65-80</span></div>
                 <div class="header-search clearfix">
+	                <div class="header-banking">Online Banking <span>Access:</span></div>
                 	<ul>
-                    	<li><a href="#">Login</a><span>|</span></li>
-                        <li><a href="#">Sign up</a></li>
+                    	<li><a href="banking.html">Login</a><span>|</span></li>
+                        <li><a href="banking.html#publicCreateMember">Sign up</a></li>
                     </ul>
-                	<form id="search-form" action="search.php" method="GET" accept-charset="utf-8" class="navbar-form" >
-                        <input type="text" name="s" onBlur="if(this.value=='') this.value=''" onFocus="if(this.value =='' ) this.value=''" value=" "  >
+                	<form id="search-form" action="search.jsp" method="GET" accept-charset="utf-8" class="navbar-form" >
+                        <input type="text" name="s" onBlur="if(this.value=='') this.value=''" onFocus="if(this.value =='' ) this.value=''" value=""  >
                         <a href="#" onClick="document.getElementById('search-form').submit()" class="btn-small">search</a>
                     </form>
                 </div>

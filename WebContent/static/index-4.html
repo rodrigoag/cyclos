@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>404</title>
+    <title>Contacts</title>
     <meta charset="utf-8">
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
@@ -19,6 +19,7 @@
          
         <script type="text/javascript" src="js/jquery.equalheights.js"></script>
         <script type="text/javascript" src="js/jquery.ui.totop.js"></script>
+        <script type="text/javascript" src="js/forms.js"></script>
         <script>
 			$(window).load(function(){
 			  $().UItoTop({ easingType: 'easeOutQuart' });
@@ -43,12 +44,13 @@
               <div class="span12 clearfix">
                 <div class="header-phone">Call Toll-Free: <span>1-800-559-65-80</span></div>
                 <div class="header-search clearfix">
+	                <div class="header-banking">Online Banking <span>Access:</span></div>
                 	<ul>
-                    	<li><a href="#">Login</a><span>|</span></li>
-                        <li><a href="#">Sign up</a></li>
+                    	<li><a href="banking.html">Login</a><span>|</span></li>
+                        <li><a href="banking.html#publicCreateMember">Sign up</a></li>
                     </ul>
-                	<form id="search-form" action="search.php" method="GET" accept-charset="utf-8" class="navbar-form" >
-                        <input type="text" name="s" onBlur="if(this.value=='') this.value=''" onFocus="if(this.value =='' ) this.value=''" value=""  >
+                	<form id="search-form" action="search.jsp" method="GET" accept-charset="utf-8" class="navbar-form" >
+                        <input type="text" name="s" onBlur="if(this.value=='') this.value=''" onFocus="if(this.value =='' ) this.value=''" value=" "  >
                         <a href="#" onClick="document.getElementById('search-form').submit()" class="btn-small">search</a>
                     </form>
                 </div>
@@ -60,7 +62,7 @@
           <div class="container">
             <div class="row">
               <div class="span12 clearfix">
-                <h1 class="brand"><a href="index.html"><img src="img/logo.png" alt="callpoint"></a></h1> 
+                <h1 class="brand"><a href="index.html"><img src="img/logo.png" alt="acacia bank"></a></h1> 
                 <div class="navbar navbar_ clearfix">
                   <div class="navbar-inner">                                                 
                     <div class="nav-collapse nav-collapse_ collapse">
@@ -81,7 +83,7 @@
                           </ul>
                         </li>
                         <li><a href="index-3.html">Blog</a></li>
-                        <li><a href="index-4.html">Contacts</a></li>
+                        <li class="active"><a href="index-4.html">Contacts</a></li>
                       </ul>
                     </div>
                   </div>
@@ -94,23 +96,69 @@
     <!--==============================content=================================-->
     <div id="content">
       <div class="container">
-        <div class="row block-404">
-          <div class="span4">   
-              <img src="img/404.png" alt="">
-          </div>
-          <div class="span8 text-404">
-              <h3>Sorry! Page Not Found</h3>
-              <p>The page you are looking for might have been removed, had 
-its name changed, or is temporarily unavailable.</p>
-              <p class="bot-0">Please try using our search box below to look for information on the website</p>
-              <form id="search-form2" action="search.php" method="GET" accept-charset="utf-8" class="form-404 clearfix" >
-                  <input type="text" name="s" onBlur="if(this.value=='') this.value=''" onFocus="if(this.value =='' ) this.value=''" value=""  >
-                  <a href="#" class="btn-small" onClick="document.getElementById('search-form2').submit()">search</a>
-              </form>
+        <div class="row">
+          <div class="span12">
+        	<h3>contact us</h3>
+          	<div class="map">
+              <figure class="img-polaroid"><iframe src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Brooklyn,+New+York,+NY,+United+States&amp;aq=0&amp;sll=37.0625,-95.677068&amp;sspn=61.282355,146.513672&amp;ie=UTF8&amp;hq=&amp;hnear=Brooklyn,+Kings,+New+York&amp;ll=40.649974,-73.950005&amp;spn=0.01628,0.025663&amp;z=14&amp;iwloc=A&amp;output=embed"></iframe></figure>
+            </div>
           </div>  
         </div>
       </div>
-  </div>     
+  </div> 
+  <div id="content2">
+    <div class="container">
+    	<div class="row">
+        	<div class="span4">
+            	<h3>Address</h3>
+                <address class="address">
+                  <p><strong class="text-info">The Company Name Inc.<br>
+9863 - 9867 Mill Road, Cambridge, MG09 99HT. </strong></p>
+                  <span>Freephone:</span>+1 800 559 6580<br>
+                  <span>Telephone:</span>+1 800 603 6035<br>
+                  <span>FAX: </span>+1 800 889 9898<br>
+                  E-mail: <a href="#">mail@demolink.org</a><br>
+                  Skype: <a href="#">@skypename</a>
+                </address>
+            </div>
+            <div class="span8">
+            	<h3>Contact Information</h3>
+                <form id="contact-form" class="contact-form">
+                  <div class="success"> Contact form submitted! <strong>We will be in touch soon.</strong> </div>
+                  <fieldset>
+                    <div class="coll-1">
+                      <div class="txt-form">Name<span>*</span></div>
+                      <label class="name">
+                        <input type="text" value="* Your full name here:"><br>
+                        <span class="error">*This is not a valid name.</span> <span class="empty">*This field is required.</span> </label>
+                    </div>
+                    <div class="coll-2">
+                      <div class="txt-form">E-mail<span>*</span></div>
+                      <label class="email">
+                        <input type="email" value="* Enter your e-mail:"><br>
+                        <span class="error">*This is not a valid email address.</span> <span class="empty">*This field is required.</span> </label>
+                    </div>
+                    <div class="coll-3">
+                      <div class="txt-form">Telephone</div>
+                      <label class="phone notRequired">
+                        <input type="tel" value="Your telephone here:"><br>
+                        <span class="error">*This is not a valid phone number.</span> <span class="empty">*This field is required.</span> </label>
+                    </div>
+                    <div class="clear"></div>
+                    <div>
+                      <div class="txt-form">Comment<span>*</span></div>
+                      <label class="message">
+                        <textarea>* Your comments and questions:</textarea><br>
+                        <span class="error">*The message is too short.</span> <span class="empty">*This field is required.</span> </label>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="buttons-wrapper"><a class="btn-large" data-type="submit">submit</a> <span>*Required Fields</span></div>
+                  </fieldset>
+                </form>
+            </div>    
+        </div> 
+     </div>
+   </div>            
 <!--==============================footer=================================-->
   <footer>
       <div class="container">

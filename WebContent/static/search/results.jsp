@@ -1,4 +1,4 @@
-<?php
+<%/*?php
 
 if(!isset($_GET['s'])) {
 	die('You must define a search term!');
@@ -51,7 +51,7 @@ foreach($files as $file){
 	}
 	$file_count++;
 }
-?>
+*/%>
 <!DOCTYPE HTML>
 <html lang="en-US" class="iframe">
 <head>
@@ -75,24 +75,24 @@ foreach($files as $file){
 
 	<div id="search-results">
 		<ol class="search_list">
-	<?php
+	<%/*?php
 		$match_count = 0;
 		for ($i=0; $i < count($final_result); $i++){
 			if (!empty($final_result[$i]['search_result'][0]) || $final_result[$i]['search_result'][0] !== ''){
 				$match_count++;
-	?>
+	*/%>
 			<li>
-				<h3 class="search_title"><a target="_top" href="<?php echo $final_result[$i]['file_name'][0]; ?>" class="search_link"> <?php echo $final_result[$i]['page_title'][0]; ?> </a></h3>
-				...<?php echo $final_result[$i]['search_result'][0]; ?>...
-				<span class="match">Terms matched: <?php echo count($final_result[$i]['search_result']); ?> - URL: <?php echo $final_result[$i]['file_name'][0]; ?></span>
+				<h3 class="search_title"><a target="_top" href="<%/*?php echo $final_result[$i]['file_name'][0]; */%>" class="search_link"> <%/*?php echo $final_result[$i]['page_title'][0]; */%> </a></h3>
+				...<%/*?php echo $final_result[$i]['search_result'][0]; */%>...
+				<span class="match">Terms matched: <%/*?php echo count($final_result[$i]['search_result']); */%> - URL: <%/*?php echo $final_result[$i]['file_name'][0]; */%></span>
 			</li>
-	<?php
+	<%/*?php
 			}
 		}
 		if ($match_count == 0) {
 			echo '<h3>No results found for <span class="search">'.$search_term.'</span></h3>';
 		}
-	?>
+	*/%>
 		</ol>
 	</div>
 
@@ -100,7 +100,7 @@ foreach($files as $file){
 </html>
 
 
-<?php
+<%/*?php
 //lists all the files in the directory given (and sub-directories if it is enabled)
 function list_files($dir){
 	global $recursive, $search_in;
@@ -146,4 +146,4 @@ function strpos_recursive($haystack, $needle, $offset = 0, &$results = array()) 
 		return $results;
     }
 }
-?>
+*/%>

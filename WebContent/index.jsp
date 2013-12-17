@@ -12,9 +12,9 @@
 
 <head>
 	<c:if test="${not empty pageContext.request.queryString}">
-		<c:set var="queryString" value="?${pageContext.request.queryString}" />
+		<c:set var="queryString" value="${pageContext.request.queryString}" />
 	</c:if>
-	<meta http-equiv="refresh" content="0;URL=${pageContext.request.contextPath}/do/${queryString}">
+	<meta http-equiv="refresh" content="0;URL=${pageContext.request.contextPath}/static/${queryString == null ? 'index.html' : 'banking.html'}#${queryString}">
 	<title>${localSettings.applicationName}</title>
 	<cyclos:customizedFilePath type="style" name="style.css" var="styleUrl" groupId="${empty loggedUserId ? cookie.groupId.value : ''}" groupFilterId="${empty loggedUserId ? cookie.groupFilterId.value : ''}" />
 	<link rel="stylesheet" href="<c:url value="${styleUrl}" />">
@@ -23,7 +23,7 @@
 
 <body>
 	<div style="width:98%;text-align:center;position:absolute;top:20%;">
-		<cyclos:customImage type="system" name="systemLogo" /><br/>
+		<cyclos:customImage type="system" name="logo" /><br/>
 		<br/>
 		<span class="loadingSystem">
 			<bean:message key="global.loadingSystem"/>
