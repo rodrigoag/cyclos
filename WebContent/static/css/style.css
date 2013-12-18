@@ -418,7 +418,7 @@ header h1.brand {
   z-index: 99;
   display: inline-block;
   float: left;
-  x-margin: 24px 0 20px 0;
+  margin: 24px 0 20px 0;
   padding: 0px;
   overflow: hidden;
   font-size: 0;
@@ -429,7 +429,7 @@ header h1.brand a {
   text-decoration: none;
 }
 header h1.brand a img {
-  width: 100%;
+  width: 400px;
 }
 /* navbar */
 .select-menu {
