@@ -269,7 +269,7 @@ br.small {
 }
 
 .defaultTableContent {
-	border:					1px solid #006500;
+	border:					1px solid #5ca57b;
 	border-radius:			4px 4px 4px 4px;
 	-moz-border-radius:		4px 4px 4px 4px;
 	-webkit-border-radius:	4px 4px 4px 4px;
@@ -306,7 +306,7 @@ pre {
 
 
 .tdHeaderTable {
-	background-color:		#006500;
+	background-color:		#5ca57b;
 	border-bottom: 			1px solid white;
 	border-radius:			3px 0px 0px 0px;
 	-moz-border-radius:		3px 0px 0px 0px;
@@ -322,7 +322,7 @@ pre {
 }
 
 .tdHelpIcon {
-	background-color:		#006500;
+	background-color:		#5ca57b;
 	border-bottom:			1px solid white;
 	border-radius:			0px 3px 0px 0px;
 	-moz-border-radius:		0px 3px 0px 0px;
@@ -477,7 +477,7 @@ pre {
 /* move to top the same margin as .menu uses on to, so the first item won't be shifted */
 .menuContainer {
 	width:					210px;
-	border:					1px solid #006500;
+	border:					1px solid #5ca57b;
 	border-radius:			4px 4px 4px 4px;
 	-moz-border-radius:		4px 4px 4px 4px;
 	-webkit-border-radius:	4px 4px 4px 4px;
@@ -491,7 +491,7 @@ pre {
 
 .menu, .menuHover {
 	width:				210px !important;
-	background-color:	#006500;
+	background-color:	#5ca57b;
 	border-bottom: 		1px solid white;
 	margin: 			0px;
 	padding:  			0px;
@@ -543,7 +543,7 @@ pre {
 .subMenuBullet {
 	height:				3px;
 	width:				3px;
-	background-color:	#006500;
+	background-color:	#5ca57b;
 	margin:				9px 1px 3px 11px;
 	font-size:          1px;
 	display:			inline-block;
@@ -551,7 +551,7 @@ pre {
 }
 
 .menuHover .menuText, .firstMenuHover .menuText, .lastMenuHover .menuText {
-	background-color:	#00B300;
+	background-color:	#C8CE07;
 }
 
 .subMenuHover .subMenuText {

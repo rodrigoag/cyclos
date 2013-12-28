@@ -40,7 +40,7 @@ var JST_DEFAULT_DATE_MASK_AM_PM_PAD_FUNCTION = function(value) {
         case 'P': return 'PM';
     }
     return value;
-} 
+};
 //The default decimal separator for decimal separator for the JST_MASK_DECIMAL 
 //Note that this does not affect the NumberMask instances
 var JST_FIELD_DECIMAL_SEPARATOR = new Literal(typeof(JST_DEFAULT_DECIMAL_SEPARATOR) == "undefined" ? "," : JST_DEFAULT_DECIMAL_SEPARATOR);
@@ -359,12 +359,12 @@ function InputMask(fields, control, keyPressFunction, keyDownFunction, keyUpFunc
             }
         }
         return true;
-    }
+    };
     
     //Method to force a mask update
     this.update = function () {
         applyMask(this, true);
-    }
+    };
     
     //Returns an array with objects containing values, start position and end positions
     this.getCurrentFields = function(value) {
@@ -472,7 +472,7 @@ function InputMask(fields, control, keyPressFunction, keyDownFunction, keyUpFunc
             }
         }
         return descriptors;
-    }
+    };
     
     //Returns the field index under the caret
     this.getFieldIndexUnderCaret = function() {
@@ -493,7 +493,7 @@ function InputMask(fields, control, keyPressFunction, keyDownFunction, keyUpFunc
                     return i;
                 }
                 //Find the field value
-                var upTo = field.upTo(value, lastPosition)
+                var upTo = field.upTo(value, lastPosition);
                 if (upTo < 0) {
                     return i; //lastInputIndex == null || lastWasLiteral ? i : lastInputIndex;
                 }
@@ -509,7 +509,7 @@ function InputMask(fields, control, keyPressFunction, keyDownFunction, keyUpFunc
                 }
                 var fieldValue = value.substring(lastPosition, upTo + 1);
                 var acceptsMoreText = field.acceptsMoreText(fieldValue);
-                var positionToCheck = acceptsMoreText ? caret - 1 : caret
+                var positionToCheck = acceptsMoreText ? caret - 1 : caret;
                 if (caret >= lastPosition && positionToCheck <= upTo) {
                     return i;
                 }
@@ -525,7 +525,7 @@ function InputMask(fields, control, keyPressFunction, keyDownFunction, keyUpFunc
             lastWasLiteral = field.literal;
         }
         return this.fields.length - 1;
-    }
+    };
     
     //Method to determine if the mask is only for filtering which chars can be typed
     this.isOnlyFilter = function () {
@@ -537,7 +537,7 @@ function InputMask(fields, control, keyPressFunction, keyDownFunction, keyUpFunc
         }
         var field = this.fields[0];
         return field.input && field.min <= 1 && field.max <= 0;
-    }
+    };
     
     //Returns if this mask changes the text case
     this.transformsCase = function() {
@@ -551,7 +551,7 @@ function InputMask(fields, control, keyPressFunction, keyDownFunction, keyUpFunc
             }
         }
         return false;
-    }
+    };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -777,7 +777,7 @@ function NumberMask(parser, control, maxIntegerDigits, allowNegative, keyPressFu
     //Method to determine if the mask is all complete
     this.isComplete = function() {
         return this.control.value != "";
-    }
+    };
     
     //Returns the control value as a number
     this.getAsNumber = function() {
@@ -786,7 +786,7 @@ function NumberMask(parser, control, maxIntegerDigits, allowNegative, keyPressFu
             number = null;
         }
         return number;
-    }
+    };
 
     //Sets the control value as a number
     this.setAsNumber = function(number) {
@@ -796,12 +796,12 @@ function NumberMask(parser, control, maxIntegerDigits, allowNegative, keyPressFu
         }
         this.control.value = value;
         this.update();
-    }
+    };
     
     //Method to force a mask update
     this.update = function() {
         applyNumberMask(this, true, false);
-    }
+    };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -942,7 +942,7 @@ function DateMask(parser, control, validate, validationMessage, keyPressFunction
     //Returns the control value as a date
     this.getAsDate = function() {
         return this.parser.parse(this.control.value);
-    }
+    };
 
     //Sets the control value as a date
     this.setAsDate = function(date) {
@@ -952,7 +952,7 @@ function DateMask(parser, control, validate, validationMessage, keyPressFunction
         }
         this.control.value = value;
         this.update();
-    }
+    };
 }
 
 
@@ -1113,7 +1113,7 @@ function SizeLimit(control, maxLength, output, outputText, updateFunction, keyUp
     // Method used to update the limit    
     this.update = function() {
         checkSizeLimit(this.control, true);
-    }
+    };
 
     //Initially check the size limit
     this.update();
@@ -1121,7 +1121,7 @@ function SizeLimit(control, maxLength, output, outputText, updateFunction, keyUp
 
 //Function to determine if a given object is a valid control to mask
 function validateControlToMask(control) {
-    control = getObject(control)
+    control = getObject(control);
     if (control == null) {
         return false;
     } else if (!(control.type) || (!inArray(control.type, ["text", "textarea", "password"]))) {
@@ -1188,7 +1188,7 @@ function applyMask(mask, isBlur) {
             }
             //Pad the last field on blur 
             if (isBlur && !isEmpty(descriptor.value) && i == fields.length - 1 && field.input) {
-                padValue = true
+                padValue = true;
             }
             //Check if the value should be padded
             if (padValue) {
@@ -1280,12 +1280,12 @@ function applyNumberMask(numberMask, isBlur, isBackSpace) {
     if (value == "") {
         value = parser.format(0);
     }
-    value = replaceAll(value, parser.groupSeparator, '')
-    value = replaceAll(value, parser.currencySymbol, '')
-    value = replaceAll(value, '-', '')
-    value = replaceAll(value, '(', '')
-    value = replaceAll(value, ')', '')
-    value = replaceAll(value, ' ', '')
+    value = replaceAll(value, parser.groupSeparator, '');
+    value = replaceAll(value, parser.currencySymbol, '');
+    value = replaceAll(value, '-', '');
+    value = replaceAll(value, '(', '');
+    value = replaceAll(value, ')', '');
+    value = replaceAll(value, ' ', '');
     var pos = value.indexOf(parser.decimalSeparator);
     var hasDecimal = (pos >= 0);
     var caretAdjust = 0;
@@ -1447,7 +1447,7 @@ function MaskField() {
     //Returns the index up to where the texts matches this input
     this.upTo = function(text, fromIndex) {
         return -1;
-    }
+    };
 }
 
 /*
@@ -1462,12 +1462,12 @@ function Literal(text) {
     //Return if the character is in the text
     this.isAccepted = function(chr) {
         return onlySpecified(chr, this.text);
-    }
+    };
     
     //Returns the index up to where the texts matches this input
     this.upTo = function(text, fromIndex) {
         return text.indexOf(this.text, fromIndex);
-    }
+    };
 }
 
 /*
@@ -1516,23 +1516,23 @@ function Input(accepted, min, max, padFunction, optional) {
             }
         }
         return toIndex;
-    }
+    };
 
     //Tests whether this field accepts more than the given text     
     this.acceptsMoreText = function(text) {
         if (this.max < 0) return true; 
         return (text || "").length < this.max;
-    }
+    };
     
     //Tests whether the text is accepted
     this.isAccepted = function(text) {
         return ((this.accepted == null) || onlySpecified(text, this.accepted)) && ((text.length <= this.max) || (this.max < 0));
-    }
+    };
 
     //Tests whether the text length is ok
     this.checkLength = function(text) {
         return (text.length >= this.min) && ((this.max < 0) || (text.length <= this.max));
-    }
+    };
     
     //Tests whether the text is complete
     this.isComplete = function(text) {
@@ -1541,7 +1541,7 @@ function Input(accepted, min, max, padFunction, optional) {
             return this.optional;
         }
         return text.length >= this.min;
-    }
+    };
 
     //Apply the case transformations when necessary
     this.transformValue = function(text) {
@@ -1555,7 +1555,7 @@ function Input(accepted, min, max, padFunction, optional) {
         } else {
             return text;
         }
-    }
+    };
     
     //Pads the text
     this.pad = function(text) {
@@ -1585,7 +1585,7 @@ function Input(accepted, min, max, padFunction, optional) {
         } else {
             return text;
         }
-    }
+    };
 }
 
 /*
@@ -1626,7 +1626,7 @@ function FieldBuilder() {
      */
     this.literal = function(text) {
         return new Literal(text);
-    }
+    };
 
     /* 
      * Build an input field with the given accepted chars. 
@@ -1634,7 +1634,7 @@ function FieldBuilder() {
      */
     this.input = function(accepted, min, max, padFunction, optional) {
         return new Input(accepted, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an uppercase input field with the given accepted chars. 
@@ -1642,7 +1642,7 @@ function FieldBuilder() {
      */
     this.upper = function(accepted, min, max, padFunction, optional) {
         return new Upper(accepted, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an lowercase field with the given accepted chars. 
@@ -1650,7 +1650,7 @@ function FieldBuilder() {
      */
     this.lower = function(accepted, min, max, padFunction, optional) {
         return new Lower(accepted, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an capitalized input field with the given accepted chars. 
@@ -1658,7 +1658,7 @@ function FieldBuilder() {
      */
     this.capitalize = function(accepted, min, max, padFunction, optional) {
         return new Capitalize(accepted, min, max, padFunction, optional);
-    }
+    };
     
     /* 
      * Build an input field accepting any chars.
@@ -1666,7 +1666,7 @@ function FieldBuilder() {
      */
     this.inputAll = function(min, max, padFunction, optional) {
         return this.input(null, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an uppercase input field accepting any chars.
@@ -1674,7 +1674,7 @@ function FieldBuilder() {
      */
     this.upperAll = function(min, max, padFunction, optional) {
         return this.upper(null, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an lowercase field accepting any chars.
@@ -1682,7 +1682,7 @@ function FieldBuilder() {
      */
     this.lowerAll = function(min, max, padFunction, optional) {
         return this.lower(null, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an capitalized input field accepting any chars.
@@ -1690,7 +1690,7 @@ function FieldBuilder() {
      */
     this.capitalizeAll = function(min, max, padFunction, optional) {
         return this.capitalize(null, min, max, padFunction, optional);
-    }
+    };
     
     /* 
      * Build an input field accepting only numbers.
@@ -1698,7 +1698,7 @@ function FieldBuilder() {
      */
     this.inputNumbers = function(min, max, padFunction, optional) {
         return this.input(JST_CHARS_NUMBERS, min, max, padFunction, optional);
-    }
+    };
     
     /* 
      * Build an input field accepting only letters.
@@ -1706,7 +1706,7 @@ function FieldBuilder() {
      */
     this.inputLetters = function(min, max, padFunction, optional) {
         return this.input(JST_CHARS_LETTERS, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an uppercase input field accepting only letters.
@@ -1714,7 +1714,7 @@ function FieldBuilder() {
      */
     this.upperLetters = function(min, max, padFunction, optional) {
         return this.upper(JST_CHARS_LETTERS, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an lowercase input field accepting only letters.
@@ -1722,7 +1722,7 @@ function FieldBuilder() {
      */
     this.lowerLetters = function(min, max, padFunction, optional) {
         return this.lower(JST_CHARS_LETTERS, min, max, padFunction, optional);
-    }
+    };
 
     /* 
      * Build an capitalized input field accepting only letters.
@@ -1730,7 +1730,7 @@ function FieldBuilder() {
      */
     this.capitalizeLetters = function(min, max, padFunction, optional) {
         return this.capitalize(JST_CHARS_LETTERS, min, max, padFunction, optional);
-    }
+    };
 }
 //Create a FieldBuilder instance
 var fieldBuilder = new FieldBuilder();
@@ -1779,7 +1779,7 @@ function MaskBuilder() {
                 default:
                     return fieldBuilder.literal(text);
             }
-        }
+        };
         //Let's parse the string
         for (var i = 0; i < string.length; i++) {
             var c = string.charAt(i);
@@ -1830,7 +1830,7 @@ function MaskBuilder() {
                 start = i;
                 lastType = type;
             } else {
-                lastType = type
+                lastType = type;
             }
         }
         //Use the last field
@@ -1839,7 +1839,7 @@ function MaskBuilder() {
             fields[fields.length] = switchField(lastType, text);
         }
         return fields;
-    }
+    };
     
     /* 
      * Build a mask that accepts the given characters
@@ -1847,7 +1847,7 @@ function MaskBuilder() {
      */
     this.accept = function(accepted, max) {
         return [fieldBuilder.input(accepted, max)];
-    }
+    };
 
     /* 
      * Build a mask that accepts any characters
@@ -1855,7 +1855,7 @@ function MaskBuilder() {
      */
     this.any = function(max) {
         return [fieldBuilder.any(max)];
-    }
+    };
 
     /* 
      * Build a numeric mask
@@ -1863,7 +1863,7 @@ function MaskBuilder() {
      */
     this.numbers = function(max) {
         return [fieldBuilder.inputNumbers(max)];
-    }
+    };
     
     /* 
      * Build a decimal input mask
@@ -1872,7 +1872,7 @@ function MaskBuilder() {
         var decimalField = fieldBuilder.inputNumbers();
         decimalField.optional = true;
         return [fieldBuilder.inputNumbers(), JST_FIELD_DECIMAL_SEPARATOR, decimalField];
-    }
+    };
     
     /* 
      * Build a mask that only accepts letters
@@ -1880,7 +1880,7 @@ function MaskBuilder() {
      */
     this.letters = function(max) {
         return [fieldBuilder.inputLetters(max)];
-    }
+    };
     
     /* 
      * Build a mask that only accepts uppercase letters
@@ -1888,7 +1888,7 @@ function MaskBuilder() {
      */
     this.upperLetters = function(max) {
         return [fieldBuilder.upperLetters(max)];
-    }
+    };
     
     /* 
      * Build a mask that only accepts lowercase letters
@@ -1896,7 +1896,7 @@ function MaskBuilder() {
      */
     this.lowerLetters = function(max) {
         return [fieldBuilder.lowerLetters(max)];
-    }
+    };
     
     /* 
      * Build a mask that only accepts capitalized letters
@@ -1904,7 +1904,7 @@ function MaskBuilder() {
      */
     this.capitalizeLetters = function(max) {
         return [fieldBuilder.capitalizeLetters(max)];
-    }
+    };
 }
 //Create a MaskBuilder instance
 var maskBuilder = new MaskBuilder();
