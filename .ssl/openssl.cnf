@@ -1,0 +1,41 @@
+[ req ]
+default_bits		= 2048
+default_keyfile 	= acaciainternacional.com.key
+default_out			= acaciainternacional.com.csr
+distinguished_name	= req_distinguished_name
+req_extensions 		= v3_req
+
+[ req_distinguished_name ]
+countryName				= Country Name (2 letter code)
+countryName_default		= HK
+countryName_min			= 2
+countryName_max			= 2
+
+stateOrProvinceName			= State or Province Name (full name)
+stateOrProvinceName_default	= Hong Kong
+
+localityName			= Locality Name (eg, city)
+localityName_default	= Hong Kong
+
+0.organizationName			= Organization Name (eg, company)
+0.organizationName_default	= Acaciabanc Company Limited
+
+# we can do this but it is not needed normally :-)
+#1.organizationName			= Second Organization Name (eg, company)
+#1.organizationName_default	= World Wide Web Pty Ltd
+
+organizationalUnitName			= Organizational Unit Name (eg, section)
+organizationalUnitName_default	= IT
+
+commonName				= Common Name (eg, YOUR name)
+commonName_default		= *.acaciainternacional.com
+commonName_max			= 64
+
+emailAddress			= Email Address
+emailAddress_default	= ti@acaciainternacional.com
+emailAddress_max		= 40
+
+# SET-ex3			= SET extension number 3
+
+[ v3_req ]
+subjectAltName=DNS:www.acaciabank.com.pa,DNS:www.acaciabank.com.br,DNS:www.acaciabank.com.hk
