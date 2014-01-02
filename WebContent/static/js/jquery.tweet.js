@@ -66,10 +66,10 @@
     }
 
     $.fn.extend({
-      linkUser: replacer(/(^|[\W])@(\w+)/gi, "$1@<a href=\"http://"+s.twitter_url+"/$2\">$2</a>"),
+      linkUser: replacer(/(^|[\W])@(\w+)/gi, "$1@<a href=\"https://"+s.twitter_url+"/$2\">$2</a>"),
       // Support various latin1 (\u00**) and arabic (\u06**) alphanumeric chars
       linkHash: replacer(/(?:^| )[\#]+([\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0600-\u06ff]+)/gi,
-                         ' <a href="http://'+s.twitter_search_url+'/search?q=&tag=$1&lang=all'+((s.username && s.username.length == 1 && !s.list) ? '&from='+s.username.join("%2BOR%2B") : '')+'">#$1</a>'),
+                         ' <a href="https://'+s.twitter_search_url+'/search?q=&tag=$1&lang=all'+((s.username && s.username.length == 1 && !s.list) ? '&from='+s.username.join("%2BOR%2B") : '')+'">#$1</a>'),
       capAwesome: replacer(/\b(awesome)\b/gi, '<span class="awesome">$1</span>'),
       capEpic: replacer(/\b(epic)\b/gi, '<span class="epic">$1</span>'),
       makeHeart: replacer(/(&lt;)+[3]/gi, "<tt class='heart'>&#x2665;</tt>")
@@ -77,7 +77,7 @@
 
     function linkURLs(text, entities) {
       return text.replace(url_regexp, function(match) {
-        var url = (/^[a-z]+:/i).test(match) ? match : "http://"+match;
+        var url = (/^[a-z]+:/i).test(match) ? match : "https://"+match;
         var text = match;
         for(var i = 0; i < entities.length; ++i) {
           var entity = entities[i];
@@ -176,7 +176,7 @@
       o.tweet_time = parse_date(item.created_at);
       o.join_text = s.join_text == "auto" ? build_auto_join_text(item.text) : s.join_text;
       o.tweet_id = item.id_str;
-      o.twitter_base = "http://"+s.twitter_url+"/";
+      o.twitter_base = "https://"+s.twitter_url+"/";
       o.user_url = o.twitter_base+o.screen_name;
       o.tweet_url = o.user_url+"/status/"+o.tweet_id;
       o.reply_url = o.twitter_base+"intent/tweet?in_reply_to="+o.tweet_id;

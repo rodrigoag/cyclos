@@ -2,7 +2,7 @@ Behaviour.register({
 	'#changePasswordForm': function(form) {
 		form.onsubmit = function() {
 			return requestValidation(form);
-		}
+		};
 	}
 });
 

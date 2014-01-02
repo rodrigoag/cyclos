@@ -17,7 +17,7 @@
 <c:if test="${not empty quickAccess}">
 	<jsp:include flush="true" page="quickAccess.jsp"/>
 </c:if>
-
+<!-- 
 <table class="defaultTableContent" cellspacing="0" cellpadding="0">
     <tr>
         <td class="tdHeaderTable"><bean:message key="home.member.news.title"/></td>
@@ -29,6 +29,7 @@
         </td>
    </tr>
 </table>
+ -->
 
 <c:if test="${cyclos:granted(BasicPermission.BASIC_INVITE_MEMBER)}">
 	<jsp:include flush="true" page="invitePerson.jsp"/>
