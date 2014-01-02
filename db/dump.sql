@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 02, 2014 at 09:13 AM
+-- Generation Time: Jan 02, 2014 at 10:39 AM
 -- Server version: 5.5.32
 -- PHP Version: 5.4.13
 
@@ -19,6 +19,208 @@ SET time_zone = "+00:00";
 --
 -- Database: `cyclos3`
 --
+DROP DATABASE `cyclos3`;
+CREATE DATABASE `cyclos3` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `cyclos3`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_fee_amounts`
+--
+
+CREATE TABLE IF NOT EXISTS `account_fee_amounts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `available_balance` decimal(18,6) NOT NULL,
+  `amount` decimal(15,6) NOT NULL,
+  `account_fee_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `account_id` (`account_id`,`date`),
+  KEY `FK8A011450DA75B281` (`account_fee_id`),
+  KEY `FK8A0114508AD473C0` (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_fee_logs`
+--
+
+CREATE TABLE IF NOT EXISTS `account_fee_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_fee_id` int(11) NOT NULL,
+  `date` datetime NOT NULL,
+  `recharging_failed` bit(1) NOT NULL,
+  `recharge_attempt` int(11) NOT NULL DEFAULT '0',
+  `failed_members` int(11) NOT NULL,
+  `total_members` int(11) DEFAULT NULL,
+  `finish_date` datetime DEFAULT NULL,
+  `amount` decimal(15,6) NOT NULL,
+  `free_base` decimal(15,6) DEFAULT NULL,
+  `begin_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `account_fee_id` (`account_fee_id`,`date`),
+  KEY `FK252A009ADA75B281` (`account_fee_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `account_fee_logs`
+--
+
+INSERT INTO `account_fee_logs` (`id`, `account_fee_id`, `date`, `recharging_failed`, `recharge_attempt`, `failed_members`, `total_members`, `finish_date`, `amount`, `free_base`, `begin_date`, `end_date`) VALUES
+(1, 3, '2013-12-16 00:29:10', b'0', 0, 0, 1, '2013-12-16 00:29:10', 5.000000, NULL, NULL, NULL),
+(2, 3, '2013-12-16 00:51:58', b'0', 0, 0, 1, '2013-12-16 00:51:58', 5.000000, NULL, NULL, NULL),
+(3, 4, '2013-12-16 01:23:40', b'0', 0, 0, 1, '2013-12-16 01:23:40', 1.000000, NULL, NULL, NULL),
+(4, 3, '2013-12-23 05:27:11', b'0', 0, 0, 1, '2013-12-23 05:28:03', 5.000000, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_fees`
+--
+
+CREATE TABLE IF NOT EXISTS `account_fees` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `charge_mode` varchar(2) NOT NULL,
+  `run_mode` varchar(1) NOT NULL,
+  `payment_direction` varchar(1) NOT NULL,
+  `enabled` bit(1) NOT NULL,
+  `amount` decimal(15,6) NOT NULL,
+  `account_type_id` int(11) NOT NULL,
+  `invoice_mode` varchar(1) DEFAULT NULL,
+  `description` longtext,
+  `enabled_since` datetime DEFAULT NULL,
+  `day` tinyint(4) DEFAULT NULL,
+  `hour` tinyint(4) DEFAULT NULL,
+  `free_base` decimal(15,6) DEFAULT NULL,
+  `transfer_type_id` int(11) NOT NULL,
+  `recurrence_number` int(11) DEFAULT NULL,
+  `recurrence_field` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK4107687FC2D40D5B` (`account_type_id`),
+  KEY `FK4107687FA4766B0A` (`transfer_type_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `account_fees`
+--
+
+INSERT INTO `account_fees` (`id`, `name`, `charge_mode`, `run_mode`, `payment_direction`, `enabled`, `amount`, `account_type_id`, `invoice_mode`, `description`, `enabled_since`, `day`, `hour`, `free_base`, `transfer_type_id`, `recurrence_number`, `recurrence_field`) VALUES
+(1, 'Contribution', 'FA', 'S', 'S', b'0', 5.000000, 5, 'C', 'Periodical units contribution', NULL, 1, 3, NULL, 27, 1, 2),
+(2, 'Liquidity tax', 'VP', 'S', 'S', b'0', 1.000000, 5, 'N', 'Liquidity tax', NULL, 1, 1, NULL, 28, 1, 2),
+(3, 'Registration', 'FA', 'M', 'S', b'1', 24.700000, 5, 'C', NULL, '2013-12-15 04:11:07', NULL, NULL, NULL, 18, NULL, NULL),
+(4, 'Adhoc', 'FA', 'M', 'S', b'1', 1.000000, 5, 'C', NULL, '2013-12-16 01:23:20', NULL, NULL, NULL, 27, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_limit_logs`
+--
+
+CREATE TABLE IF NOT EXISTS `account_limit_logs` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `account_id` int(11) NOT NULL,
+  `date` datetime NOT NULL,
+  `by_id` int(11) DEFAULT NULL,
+  `credit_limit` decimal(15,6) DEFAULT NULL,
+  `upper_credit_limit` decimal(15,6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ix_acctlimlog_account_date` (`account_id`,`date`),
+  KEY `FKEA45ED05123F9A53` (`by_id`),
+  KEY `FKEA45ED053317FFBA` (`account_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `account_limit_logs`
+--
+
+INSERT INTO `account_limit_logs` (`id`, `account_id`, `date`, `by_id`, `credit_limit`, `upper_credit_limit`) VALUES
+(1, 2, '2013-12-15 00:42:49', 1, 0.000000, NULL),
+(2, 4, '2013-12-15 00:51:23', 1, 0.000000, NULL),
+(3, 2, '2013-12-15 01:03:18', 1, 0.000000, NULL),
+(4, 2, '2013-12-15 01:03:54', 1, 0.000000, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_locks`
+--
+
+CREATE TABLE IF NOT EXISTS `account_locks` (
+  `id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `account_locks`
+--
+
+INSERT INTO `account_locks` (`id`) VALUES
+(1),
+(2),
+(3),
+(4),
+(5),
+(6),
+(7),
+(8),
+(9),
+(10),
+(11);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_rates`
+--
+
+CREATE TABLE IF NOT EXISTS `account_rates` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `emission_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
+  `i_rate` decimal(15,6) DEFAULT NULL,
+  `rate_balance_correction` decimal(21,6) DEFAULT NULL,
+  `account_id` int(11) NOT NULL,
+  `transfer_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ix_accntrts_transfer` (`transfer_id`),
+  KEY `ix_accntrts_account_date` (`account_id`),
+  KEY `FKE08D27012F78F3B3` (`transfer_id`),
+  KEY `FKE08D27013317FFBA` (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_types`
+--
+
+CREATE TABLE IF NOT EXISTS `account_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subclass` varchar(1) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `currency_id` int(11) NOT NULL,
+  `description` longtext,
+  `system_account_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKE0B42FE7C0E7F6FA` (`currency_id`),
+  KEY `FKE0B42FE7906BCA9B` (`system_account_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `account_types`
+--
+
+INSERT INTO `account_types` (`id`, `subclass`, `name`, `currency_id`, `description`, `system_account_id`) VALUES
+(1, 'S', 'Debit/Loan account', 1, 'The system unlimited account', 1),
+(2, 'S', 'Acacia International Master account', 1, 'A community specific account', 2),
+(3, 'S', 'Voucher account', 1, 'The account used to manage voucher payments', 3),
+(4, 'S', 'One Thor account', 1, 'An organization specific account', 4),
+(5, 'M', 'International Member account', 1, 'Each member has one account of this type', NULL);
 
 -- --------------------------------------------------------
 
@@ -26,7 +228,6 @@ SET time_zone = "+00:00";
 -- Table structure for table `accounts`
 --
 
-DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE IF NOT EXISTS `accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -65,208 +266,88 @@ INSERT INTO `accounts` (`id`, `subclass`, `creation_date`, `last_closing_date`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `account_fees`
+-- Table structure for table `ad_categories`
 --
 
-DROP TABLE IF EXISTS `account_fees`;
-CREATE TABLE IF NOT EXISTS `account_fees` (
+CREATE TABLE IF NOT EXISTS `ad_categories` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_index` smallint(6) NOT NULL DEFAULT '0',
   `name` varchar(100) NOT NULL,
-  `charge_mode` varchar(2) NOT NULL,
-  `run_mode` varchar(1) NOT NULL,
-  `payment_direction` varchar(1) NOT NULL,
-  `enabled` bit(1) NOT NULL,
-  `amount` decimal(15,6) NOT NULL,
-  `account_type_id` int(11) NOT NULL,
-  `invoice_mode` varchar(1) DEFAULT NULL,
-  `description` longtext,
-  `enabled_since` datetime DEFAULT NULL,
-  `day` tinyint(4) DEFAULT NULL,
-  `hour` tinyint(4) DEFAULT NULL,
-  `free_base` decimal(15,6) DEFAULT NULL,
-  `transfer_type_id` int(11) NOT NULL,
-  `recurrence_number` int(11) DEFAULT NULL,
-  `recurrence_field` int(11) DEFAULT NULL,
+  `active` bit(1) NOT NULL,
+  `parent_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK4107687FC2D40D5B` (`account_type_id`),
-  KEY `FK4107687FA4766B0A` (`transfer_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+  KEY `FKEF2FABB85D31AC77` (`parent_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Dumping data for table `account_fees`
+-- Dumping data for table `ad_categories`
 --
 
-INSERT INTO `account_fees` (`id`, `name`, `charge_mode`, `run_mode`, `payment_direction`, `enabled`, `amount`, `account_type_id`, `invoice_mode`, `description`, `enabled_since`, `day`, `hour`, `free_base`, `transfer_type_id`, `recurrence_number`, `recurrence_field`) VALUES
-(1, 'Contribution', 'FA', 'S', 'S', b'0', 5.000000, 5, 'C', 'Periodical units contribution', NULL, 1, 3, NULL, 27, 1, 2),
-(2, 'Liquidity tax', 'VP', 'S', 'S', b'0', 1.000000, 5, 'N', 'Liquidity tax', NULL, 1, 1, NULL, 28, 1, 2),
-(3, 'Registration', 'FA', 'M', 'S', b'1', 24.700000, 5, 'C', NULL, '2013-12-15 04:11:07', NULL, NULL, NULL, 18, NULL, NULL),
-(4, 'Adhoc', 'FA', 'M', 'S', b'1', 1.000000, 5, 'C', NULL, '2013-12-16 01:23:20', NULL, NULL, NULL, 27, NULL, NULL);
+INSERT INTO `ad_categories` (`id`, `order_index`, `name`, `active`, `parent_id`) VALUES
+(1, 0, 'Example ad category', b'1', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `account_fee_amounts`
+-- Table structure for table `ad_imports`
 --
 
-DROP TABLE IF EXISTS `account_fee_amounts`;
-CREATE TABLE IF NOT EXISTS `account_fee_amounts` (
+CREATE TABLE IF NOT EXISTS `ad_imports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `account_id` int(11) NOT NULL,
-  `date` date NOT NULL,
-  `available_balance` decimal(18,6) NOT NULL,
-  `amount` decimal(15,6) NOT NULL,
-  `account_fee_id` int(11) NOT NULL,
+  `by_id` int(11) NOT NULL,
+  `date` datetime NOT NULL,
+  `currency_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `account_id` (`account_id`,`date`),
-  KEY `FK8A011450DA75B281` (`account_fee_id`),
-  KEY `FK8A0114508AD473C0` (`account_id`)
+  KEY `FK79EBE152C0E7F6FA` (`currency_id`),
+  KEY `FK79EBE152123F9A53` (`by_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `account_fee_logs`
+-- Table structure for table `ad_interests`
 --
 
-DROP TABLE IF EXISTS `account_fee_logs`;
-CREATE TABLE IF NOT EXISTS `account_fee_logs` (
+CREATE TABLE IF NOT EXISTS `ad_interests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `account_fee_id` int(11) NOT NULL,
-  `date` datetime NOT NULL,
-  `recharging_failed` bit(1) NOT NULL,
-  `recharge_attempt` int(11) NOT NULL DEFAULT '0',
-  `failed_members` int(11) NOT NULL,
-  `total_members` int(11) DEFAULT NULL,
-  `finish_date` datetime DEFAULT NULL,
-  `amount` decimal(15,6) NOT NULL,
-  `free_base` decimal(15,6) DEFAULT NULL,
-  `begin_date` datetime DEFAULT NULL,
-  `end_date` datetime DEFAULT NULL,
+  `owner_id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `trade_type` varchar(1) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `member_id` int(11) DEFAULT NULL,
+  `group_filter_id` int(11) DEFAULT NULL,
+  `initial_price` decimal(15,6) DEFAULT NULL,
+  `final_price` decimal(15,6) DEFAULT NULL,
+  `currency_id` int(11) DEFAULT NULL,
+  `keywords` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `account_fee_id` (`account_fee_id`,`date`),
-  KEY `FK252A009ADA75B281` (`account_fee_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
-
---
--- Dumping data for table `account_fee_logs`
---
-
-INSERT INTO `account_fee_logs` (`id`, `account_fee_id`, `date`, `recharging_failed`, `recharge_attempt`, `failed_members`, `total_members`, `finish_date`, `amount`, `free_base`, `begin_date`, `end_date`) VALUES
-(1, 3, '2013-12-16 00:29:10', b'0', 0, 0, 1, '2013-12-16 00:29:10', 5.000000, NULL, NULL, NULL),
-(2, 3, '2013-12-16 00:51:58', b'0', 0, 0, 1, '2013-12-16 00:51:58', 5.000000, NULL, NULL, NULL),
-(3, 4, '2013-12-16 01:23:40', b'0', 0, 0, 1, '2013-12-16 01:23:40', 1.000000, NULL, NULL, NULL),
-(4, 3, '2013-12-23 05:27:11', b'0', 0, 0, 1, '2013-12-23 05:28:03', 5.000000, NULL, NULL, NULL);
+  KEY `FKD8DBB56DC0E7F6FA` (`currency_id`),
+  KEY `FKD8DBB56D9D46A867` (`group_filter_id`),
+  KEY `FKD8DBB56DEAE0AB57` (`member_id`),
+  KEY `FKD8DBB56D3D73A7A3` (`category_id`),
+  KEY `FKD8DBB56DFE01A09E` (`owner_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `account_limit_logs`
+-- Table structure for table `admin_group_authorization_level`
 --
 
-DROP TABLE IF EXISTS `account_limit_logs`;
-CREATE TABLE IF NOT EXISTS `account_limit_logs` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `account_id` int(11) NOT NULL,
-  `date` datetime NOT NULL,
-  `by_id` int(11) DEFAULT NULL,
-  `credit_limit` decimal(15,6) DEFAULT NULL,
-  `upper_credit_limit` decimal(15,6) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ix_acctlimlog_account_date` (`account_id`,`date`),
-  KEY `FKEA45ED05123F9A53` (`by_id`),
-  KEY `FKEA45ED053317FFBA` (`account_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
-
---
--- Dumping data for table `account_limit_logs`
---
-
-INSERT INTO `account_limit_logs` (`id`, `account_id`, `date`, `by_id`, `credit_limit`, `upper_credit_limit`) VALUES
-(1, 2, '2013-12-15 00:42:49', 1, 0.000000, NULL),
-(2, 4, '2013-12-15 00:51:23', 1, 0.000000, NULL),
-(3, 2, '2013-12-15 01:03:18', 1, 0.000000, NULL),
-(4, 2, '2013-12-15 01:03:54', 1, 0.000000, NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `account_locks`
---
-
-DROP TABLE IF EXISTS `account_locks`;
-CREATE TABLE IF NOT EXISTS `account_locks` (
-  `id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
+CREATE TABLE IF NOT EXISTS `admin_group_authorization_level` (
+  `authorization_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  KEY `FKBB2E758E3794D57D` (`group_id`),
+  KEY `FKBB2E758EFB6913C5` (`authorization_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `account_locks`
+-- Dumping data for table `admin_group_authorization_level`
 --
 
-INSERT INTO `account_locks` (`id`) VALUES
-(1),
-(2),
-(3),
-(4),
-(5),
-(6),
-(7),
-(8),
-(9),
-(10),
-(11);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `account_rates`
---
-
-DROP TABLE IF EXISTS `account_rates`;
-CREATE TABLE IF NOT EXISTS `account_rates` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `emission_date` datetime DEFAULT NULL,
-  `expiration_date` datetime DEFAULT NULL,
-  `i_rate` decimal(15,6) DEFAULT NULL,
-  `rate_balance_correction` decimal(21,6) DEFAULT NULL,
-  `account_id` int(11) NOT NULL,
-  `transfer_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ix_accntrts_transfer` (`transfer_id`),
-  KEY `ix_accntrts_account_date` (`account_id`),
-  KEY `FKE08D27012F78F3B3` (`transfer_id`),
-  KEY `FKE08D27013317FFBA` (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `account_types`
---
-
-DROP TABLE IF EXISTS `account_types`;
-CREATE TABLE IF NOT EXISTS `account_types` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subclass` varchar(1) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `currency_id` int(11) NOT NULL,
-  `description` longtext,
-  `system_account_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKE0B42FE7C0E7F6FA` (`currency_id`),
-  KEY `FKE0B42FE7906BCA9B` (`system_account_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
-
---
--- Dumping data for table `account_types`
---
-
-INSERT INTO `account_types` (`id`, `subclass`, `name`, `currency_id`, `description`, `system_account_id`) VALUES
-(1, 'S', 'Debit/Loan account', 1, 'The system unlimited account', 1),
-(2, 'S', 'Acacia International Master account', 1, 'A community specific account', 2),
-(3, 'S', 'Voucher account', 1, 'The account used to manage voucher payments', 3),
-(4, 'S', 'One Thor account', 1, 'An organization specific account', 4),
-(5, 'M', 'International Member account', 1, 'Each member has one account of this type', NULL);
+INSERT INTO `admin_group_authorization_level` (`authorization_id`, `group_id`) VALUES
+(1, 2),
+(1, 1);
 
 -- --------------------------------------------------------
 
@@ -274,7 +355,6 @@ INSERT INTO `account_types` (`id`, `subclass`, `name`, `currency_id`, `descripti
 -- Table structure for table `admin_groups_admin_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_admin_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_admin_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -295,7 +375,6 @@ INSERT INTO `admin_groups_admin_record_types` (`group_id`, `member_record_type_i
 -- Table structure for table `admin_groups_create_admin_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_create_admin_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_create_admin_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -316,7 +395,6 @@ INSERT INTO `admin_groups_create_admin_record_types` (`group_id`, `member_record
 -- Table structure for table `admin_groups_create_member_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_create_member_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_create_member_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -338,7 +416,6 @@ INSERT INTO `admin_groups_create_member_record_types` (`group_id`, `member_recor
 -- Table structure for table `admin_groups_custom_fields`
 --
 
-DROP TABLE IF EXISTS `admin_groups_custom_fields`;
 CREATE TABLE IF NOT EXISTS `admin_groups_custom_fields` (
   `custom_field_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -352,7 +429,6 @@ CREATE TABLE IF NOT EXISTS `admin_groups_custom_fields` (
 -- Table structure for table `admin_groups_delete_admin_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_delete_admin_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_delete_admin_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -366,7 +442,6 @@ CREATE TABLE IF NOT EXISTS `admin_groups_delete_admin_record_types` (
 -- Table structure for table `admin_groups_delete_member_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_delete_member_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_delete_member_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -380,7 +455,6 @@ CREATE TABLE IF NOT EXISTS `admin_groups_delete_member_record_types` (
 -- Table structure for table `admin_groups_member_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_member_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_member_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -402,7 +476,6 @@ INSERT INTO `admin_groups_member_record_types` (`group_id`, `member_record_type_
 -- Table structure for table `admin_groups_modify_admin_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_modify_admin_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_modify_admin_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -416,7 +489,6 @@ CREATE TABLE IF NOT EXISTS `admin_groups_modify_admin_record_types` (
 -- Table structure for table `admin_groups_modify_member_record_types`
 --
 
-DROP TABLE IF EXISTS `admin_groups_modify_member_record_types`;
 CREATE TABLE IF NOT EXISTS `admin_groups_modify_member_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -427,32 +499,9 @@ CREATE TABLE IF NOT EXISTS `admin_groups_modify_member_record_types` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admin_group_authorization_level`
---
-
-DROP TABLE IF EXISTS `admin_group_authorization_level`;
-CREATE TABLE IF NOT EXISTS `admin_group_authorization_level` (
-  `authorization_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  KEY `FKBB2E758E3794D57D` (`group_id`),
-  KEY `FKBB2E758EFB6913C5` (`authorization_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `admin_group_authorization_level`
---
-
-INSERT INTO `admin_group_authorization_level` (`authorization_id`, `group_id`) VALUES
-(1, 2),
-(1, 1);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `admin_manages_member_groups`
 --
 
-DROP TABLE IF EXISTS `admin_manages_member_groups`;
 CREATE TABLE IF NOT EXISTS `admin_manages_member_groups` (
   `manager_group_id` int(11) NOT NULL,
   `managed_group_id` int(11) NOT NULL,
@@ -486,7 +535,6 @@ INSERT INTO `admin_manages_member_groups` (`manager_group_id`, `managed_group_id
 -- Table structure for table `admin_notification_preferences`
 --
 
-DROP TABLE IF EXISTS `admin_notification_preferences`;
 CREATE TABLE IF NOT EXISTS `admin_notification_preferences` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `admin_id` int(11) DEFAULT NULL,
@@ -502,7 +550,6 @@ CREATE TABLE IF NOT EXISTS `admin_notification_preferences` (
 -- Table structure for table `admin_preferences_guarantee_types`
 --
 
-DROP TABLE IF EXISTS `admin_preferences_guarantee_types`;
 CREATE TABLE IF NOT EXISTS `admin_preferences_guarantee_types` (
   `preference_id` int(11) NOT NULL,
   `guarantee_type_id` int(11) NOT NULL,
@@ -517,7 +564,6 @@ CREATE TABLE IF NOT EXISTS `admin_preferences_guarantee_types` (
 -- Table structure for table `admin_preferences_member_alerts`
 --
 
-DROP TABLE IF EXISTS `admin_preferences_member_alerts`;
 CREATE TABLE IF NOT EXISTS `admin_preferences_member_alerts` (
   `preference_id` int(11) NOT NULL,
   `type` varchar(70) NOT NULL,
@@ -531,7 +577,6 @@ CREATE TABLE IF NOT EXISTS `admin_preferences_member_alerts` (
 -- Table structure for table `admin_preferences_message_categories`
 --
 
-DROP TABLE IF EXISTS `admin_preferences_message_categories`;
 CREATE TABLE IF NOT EXISTS `admin_preferences_message_categories` (
   `preference_id` int(11) NOT NULL,
   `message_category_id` int(11) NOT NULL,
@@ -546,7 +591,6 @@ CREATE TABLE IF NOT EXISTS `admin_preferences_message_categories` (
 -- Table structure for table `admin_preferences_new_members`
 --
 
-DROP TABLE IF EXISTS `admin_preferences_new_members`;
 CREATE TABLE IF NOT EXISTS `admin_preferences_new_members` (
   `preference_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -561,7 +605,6 @@ CREATE TABLE IF NOT EXISTS `admin_preferences_new_members` (
 -- Table structure for table `admin_preferences_new_pending_payments`
 --
 
-DROP TABLE IF EXISTS `admin_preferences_new_pending_payments`;
 CREATE TABLE IF NOT EXISTS `admin_preferences_new_pending_payments` (
   `preference_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -576,7 +619,6 @@ CREATE TABLE IF NOT EXISTS `admin_preferences_new_pending_payments` (
 -- Table structure for table `admin_preferences_system_alerts`
 --
 
-DROP TABLE IF EXISTS `admin_preferences_system_alerts`;
 CREATE TABLE IF NOT EXISTS `admin_preferences_system_alerts` (
   `preference_id` int(11) NOT NULL,
   `type` varchar(70) NOT NULL,
@@ -590,7 +632,6 @@ CREATE TABLE IF NOT EXISTS `admin_preferences_system_alerts` (
 -- Table structure for table `admin_preferences_transfer_types`
 --
 
-DROP TABLE IF EXISTS `admin_preferences_transfer_types`;
 CREATE TABLE IF NOT EXISTS `admin_preferences_transfer_types` (
   `preference_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -605,7 +646,6 @@ CREATE TABLE IF NOT EXISTS `admin_preferences_transfer_types` (
 -- Table structure for table `admin_view_account_information`
 --
 
-DROP TABLE IF EXISTS `admin_view_account_information`;
 CREATE TABLE IF NOT EXISTS `admin_view_account_information` (
   `group_id` int(11) NOT NULL,
   `account_type_id` int(11) NOT NULL,
@@ -633,7 +673,6 @@ INSERT INTO `admin_view_account_information` (`group_id`, `account_type_id`) VAL
 -- Table structure for table `admin_view_connected_users_of`
 --
 
-DROP TABLE IF EXISTS `admin_view_connected_users_of`;
 CREATE TABLE IF NOT EXISTS `admin_view_connected_users_of` (
   `viewer_group_id` int(11) NOT NULL,
   `viewed_group_id` int(11) NOT NULL,
@@ -657,7 +696,6 @@ INSERT INTO `admin_view_connected_users_of` (`viewer_group_id`, `viewed_group_id
 -- Table structure for table `ads`
 --
 
-DROP TABLE IF EXISTS `ads`;
 CREATE TABLE IF NOT EXISTS `ads` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category_id` int(11) DEFAULT NULL,
@@ -684,78 +722,9 @@ CREATE TABLE IF NOT EXISTS `ads` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ad_categories`
---
-
-DROP TABLE IF EXISTS `ad_categories`;
-CREATE TABLE IF NOT EXISTS `ad_categories` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `order_index` smallint(6) NOT NULL DEFAULT '0',
-  `name` varchar(100) NOT NULL,
-  `active` bit(1) NOT NULL,
-  `parent_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKEF2FABB85D31AC77` (`parent_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `ad_categories`
---
-
-INSERT INTO `ad_categories` (`id`, `order_index`, `name`, `active`, `parent_id`) VALUES
-(1, 0, 'Example ad category', b'1', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ad_imports`
---
-
-DROP TABLE IF EXISTS `ad_imports`;
-CREATE TABLE IF NOT EXISTS `ad_imports` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `by_id` int(11) NOT NULL,
-  `date` datetime NOT NULL,
-  `currency_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK79EBE152C0E7F6FA` (`currency_id`),
-  KEY `FK79EBE152123F9A53` (`by_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ad_interests`
---
-
-DROP TABLE IF EXISTS `ad_interests`;
-CREATE TABLE IF NOT EXISTS `ad_interests` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `owner_id` int(11) NOT NULL,
-  `title` varchar(100) NOT NULL,
-  `trade_type` varchar(1) NOT NULL,
-  `category_id` int(11) DEFAULT NULL,
-  `member_id` int(11) DEFAULT NULL,
-  `group_filter_id` int(11) DEFAULT NULL,
-  `initial_price` decimal(15,6) DEFAULT NULL,
-  `final_price` decimal(15,6) DEFAULT NULL,
-  `currency_id` int(11) DEFAULT NULL,
-  `keywords` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKD8DBB56DC0E7F6FA` (`currency_id`),
-  KEY `FKD8DBB56D9D46A867` (`group_filter_id`),
-  KEY `FKD8DBB56DEAE0AB57` (`member_id`),
-  KEY `FKD8DBB56D3D73A7A3` (`category_id`),
-  KEY `FKD8DBB56DFE01A09E` (`owner_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `alerts`
 --
 
-DROP TABLE IF EXISTS `alerts`;
 CREATE TABLE IF NOT EXISTS `alerts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -1034,7 +1003,6 @@ INSERT INTO `alerts` (`id`, `subclass`, `removed`, `msg_key`, `arg0`, `arg1`, `a
 -- Table structure for table `amount_reservations`
 --
 
-DROP TABLE IF EXISTS `amount_reservations`;
 CREATE TABLE IF NOT EXISTS `amount_reservations` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -1065,7 +1033,6 @@ INSERT INTO `amount_reservations` (`id`, `subclass`, `account_id`, `date`, `amou
 -- Table structure for table `application`
 --
 
-DROP TABLE IF EXISTS `application`;
 CREATE TABLE IF NOT EXISTS `application` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` varchar(10) DEFAULT NULL,
@@ -1089,7 +1056,6 @@ INSERT INTO `application` (`id`, `version`, `online`, `account_status_enabled_si
 -- Table structure for table `authorization_levels`
 --
 
-DROP TABLE IF EXISTS `authorization_levels`;
 CREATE TABLE IF NOT EXISTS `authorization_levels` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `level` int(11) NOT NULL,
@@ -1113,7 +1079,6 @@ INSERT INTO `authorization_levels` (`id`, `level`, `amount`, `authorizer`, `type
 -- Table structure for table `binary_files`
 --
 
-DROP TABLE IF EXISTS `binary_files`;
 CREATE TABLE IF NOT EXISTS `binary_files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -1127,27 +1092,150 @@ CREATE TABLE IF NOT EXISTS `binary_files` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `brokerings`
+-- Table structure for table `broker_commission_contracts`
 --
 
-DROP TABLE IF EXISTS `brokerings`;
-CREATE TABLE IF NOT EXISTS `brokerings` (
+CREATE TABLE IF NOT EXISTS `broker_commission_contracts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `broker_id` int(11) NOT NULL,
-  `brokered_id` int(11) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime DEFAULT NULL,
+  `brokering_id` int(11) DEFAULT NULL,
+  `broker_commission_id` int(11) DEFAULT NULL,
+  `amount_value` decimal(15,6) NOT NULL,
+  `amount_type` char(1) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` varchar(1) NOT NULL,
+  `cancelled_by_id` int(11) DEFAULT NULL,
+  `status_before_suspension` varchar(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK6445482A4B8741B8` (`broker_id`),
-  KEY `FK6445482ABF06B6F9` (`brokered_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+  KEY `FK1AEDD3F3F7069BBE` (`broker_commission_id`),
+  KEY `FK1AEDD3F397ECA054` (`cancelled_by_id`),
+  KEY `FK1AEDD3F3F096D933` (`brokering_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `brokerings`
+-- Table structure for table `broker_conversion_simulation_transfer_types`
 --
 
-INSERT INTO `brokerings` (`id`, `broker_id`, `brokered_id`, `start_date`, `end_date`) VALUES
-(1, 3, 2, '2013-12-15 03:15:37', NULL);
+CREATE TABLE IF NOT EXISTS `broker_conversion_simulation_transfer_types` (
+  `group_id` int(11) NOT NULL,
+  `transfer_type_id` int(11) NOT NULL,
+  KEY `FKA32CA71AA4766B0A` (`transfer_type_id`),
+  KEY `FKA32CA71A85B3A90F` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `broker_groups_create_member_record_types`
+--
+
+CREATE TABLE IF NOT EXISTS `broker_groups_create_member_record_types` (
+  `group_id` int(11) NOT NULL,
+  `member_record_type_id` int(11) NOT NULL,
+  KEY `FKA9B20B32E46288C5` (`member_record_type_id`),
+  KEY `FKA9B20B3285B3A90F` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `broker_groups_create_member_record_types`
+--
+
+INSERT INTO `broker_groups_create_member_record_types` (`group_id`, `member_record_type_id`) VALUES
+(9, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `broker_groups_delete_member_record_types`
+--
+
+CREATE TABLE IF NOT EXISTS `broker_groups_delete_member_record_types` (
+  `group_id` int(11) NOT NULL,
+  `member_record_type_id` int(11) NOT NULL,
+  KEY `FK1E8C261E46288C5` (`member_record_type_id`),
+  KEY `FK1E8C26185B3A90F` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `broker_groups_documents`
+--
+
+CREATE TABLE IF NOT EXISTS `broker_groups_documents` (
+  `group_id` int(11) NOT NULL,
+  `document_id` int(11) NOT NULL,
+  KEY `FK81E65B3D6DB8FB3` (`document_id`),
+  KEY `FK81E65B385B3A90F` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `broker_groups_member_record_types`
+--
+
+CREATE TABLE IF NOT EXISTS `broker_groups_member_record_types` (
+  `group_id` int(11) NOT NULL,
+  `member_record_type_id` int(11) NOT NULL,
+  KEY `FK19FC25CBE46288C5` (`member_record_type_id`),
+  KEY `FK19FC25CB85B3A90F` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `broker_groups_member_record_types`
+--
+
+INSERT INTO `broker_groups_member_record_types` (`group_id`, `member_record_type_id`) VALUES
+(9, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `broker_groups_modify_member_record_types`
+--
+
+CREATE TABLE IF NOT EXISTS `broker_groups_modify_member_record_types` (
+  `group_id` int(11) NOT NULL,
+  `member_record_type_id` int(11) NOT NULL,
+  KEY `FK25CC97F0E46288C5` (`member_record_type_id`),
+  KEY `FK25CC97F085B3A90F` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `broker_groups_possible_initial_groups`
+--
+
+CREATE TABLE IF NOT EXISTS `broker_groups_possible_initial_groups` (
+  `possible_initial_group_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  KEY `FK3DAD1F7885B3A90F` (`group_id`),
+  KEY `FK3DAD1F782703D697` (`possible_initial_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `broker_groups_possible_initial_groups`
+--
+
+INSERT INTO `broker_groups_possible_initial_groups` (`possible_initial_group_id`, `group_id`) VALUES
+(5, 9);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `broker_groups_transaction_fees`
+--
+
+CREATE TABLE IF NOT EXISTS `broker_groups_transaction_fees` (
+  `transaction_fee_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  KEY `FK8E3E931385B3A90F` (`group_id`),
+  KEY `FK8E3E9313CA99FDAA` (`transaction_fee_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1155,7 +1243,6 @@ INSERT INTO `brokerings` (`id`, `broker_id`, `brokered_id`, `start_date`, `end_d
 -- Table structure for table `brokering_commission_status`
 --
 
-DROP TABLE IF EXISTS `brokering_commission_status`;
 CREATE TABLE IF NOT EXISTS `brokering_commission_status` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `brokering_id` int(11) DEFAULT NULL,
@@ -1185,159 +1272,26 @@ INSERT INTO `brokering_commission_status` (`id`, `brokering_id`, `broker_commiss
 -- --------------------------------------------------------
 
 --
--- Table structure for table `broker_commission_contracts`
+-- Table structure for table `brokerings`
 --
 
-DROP TABLE IF EXISTS `broker_commission_contracts`;
-CREATE TABLE IF NOT EXISTS `broker_commission_contracts` (
+CREATE TABLE IF NOT EXISTS `brokerings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `brokering_id` int(11) DEFAULT NULL,
-  `broker_commission_id` int(11) DEFAULT NULL,
-  `amount_value` decimal(15,6) NOT NULL,
-  `amount_type` char(1) NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date DEFAULT NULL,
-  `status` varchar(1) NOT NULL,
-  `cancelled_by_id` int(11) DEFAULT NULL,
-  `status_before_suspension` varchar(1) DEFAULT NULL,
+  `broker_id` int(11) NOT NULL,
+  `brokered_id` int(11) NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK1AEDD3F3F7069BBE` (`broker_commission_id`),
-  KEY `FK1AEDD3F397ECA054` (`cancelled_by_id`),
-  KEY `FK1AEDD3F3F096D933` (`brokering_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+  KEY `FK6445482A4B8741B8` (`broker_id`),
+  KEY `FK6445482ABF06B6F9` (`brokered_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Table structure for table `broker_conversion_simulation_transfer_types`
+-- Dumping data for table `brokerings`
 --
 
-DROP TABLE IF EXISTS `broker_conversion_simulation_transfer_types`;
-CREATE TABLE IF NOT EXISTS `broker_conversion_simulation_transfer_types` (
-  `group_id` int(11) NOT NULL,
-  `transfer_type_id` int(11) NOT NULL,
-  KEY `FKA32CA71AA4766B0A` (`transfer_type_id`),
-  KEY `FKA32CA71A85B3A90F` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `broker_groups_create_member_record_types`
---
-
-DROP TABLE IF EXISTS `broker_groups_create_member_record_types`;
-CREATE TABLE IF NOT EXISTS `broker_groups_create_member_record_types` (
-  `group_id` int(11) NOT NULL,
-  `member_record_type_id` int(11) NOT NULL,
-  KEY `FKA9B20B32E46288C5` (`member_record_type_id`),
-  KEY `FKA9B20B3285B3A90F` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `broker_groups_create_member_record_types`
---
-
-INSERT INTO `broker_groups_create_member_record_types` (`group_id`, `member_record_type_id`) VALUES
-(9, 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `broker_groups_delete_member_record_types`
---
-
-DROP TABLE IF EXISTS `broker_groups_delete_member_record_types`;
-CREATE TABLE IF NOT EXISTS `broker_groups_delete_member_record_types` (
-  `group_id` int(11) NOT NULL,
-  `member_record_type_id` int(11) NOT NULL,
-  KEY `FK1E8C261E46288C5` (`member_record_type_id`),
-  KEY `FK1E8C26185B3A90F` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `broker_groups_documents`
---
-
-DROP TABLE IF EXISTS `broker_groups_documents`;
-CREATE TABLE IF NOT EXISTS `broker_groups_documents` (
-  `group_id` int(11) NOT NULL,
-  `document_id` int(11) NOT NULL,
-  KEY `FK81E65B3D6DB8FB3` (`document_id`),
-  KEY `FK81E65B385B3A90F` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `broker_groups_member_record_types`
---
-
-DROP TABLE IF EXISTS `broker_groups_member_record_types`;
-CREATE TABLE IF NOT EXISTS `broker_groups_member_record_types` (
-  `group_id` int(11) NOT NULL,
-  `member_record_type_id` int(11) NOT NULL,
-  KEY `FK19FC25CBE46288C5` (`member_record_type_id`),
-  KEY `FK19FC25CB85B3A90F` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `broker_groups_member_record_types`
---
-
-INSERT INTO `broker_groups_member_record_types` (`group_id`, `member_record_type_id`) VALUES
-(9, 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `broker_groups_modify_member_record_types`
---
-
-DROP TABLE IF EXISTS `broker_groups_modify_member_record_types`;
-CREATE TABLE IF NOT EXISTS `broker_groups_modify_member_record_types` (
-  `group_id` int(11) NOT NULL,
-  `member_record_type_id` int(11) NOT NULL,
-  KEY `FK25CC97F0E46288C5` (`member_record_type_id`),
-  KEY `FK25CC97F085B3A90F` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `broker_groups_possible_initial_groups`
---
-
-DROP TABLE IF EXISTS `broker_groups_possible_initial_groups`;
-CREATE TABLE IF NOT EXISTS `broker_groups_possible_initial_groups` (
-  `possible_initial_group_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  KEY `FK3DAD1F7885B3A90F` (`group_id`),
-  KEY `FK3DAD1F782703D697` (`possible_initial_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `broker_groups_possible_initial_groups`
---
-
-INSERT INTO `broker_groups_possible_initial_groups` (`possible_initial_group_id`, `group_id`) VALUES
-(5, 9);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `broker_groups_transaction_fees`
---
-
-DROP TABLE IF EXISTS `broker_groups_transaction_fees`;
-CREATE TABLE IF NOT EXISTS `broker_groups_transaction_fees` (
-  `transaction_fee_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  KEY `FK8E3E931385B3A90F` (`group_id`),
-  KEY `FK8E3E9313CA99FDAA` (`transaction_fee_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `brokerings` (`id`, `broker_id`, `brokered_id`, `start_date`, `end_date`) VALUES
+(1, 3, 2, '2013-12-15 03:15:37', NULL);
 
 -- --------------------------------------------------------
 
@@ -1345,7 +1299,6 @@ CREATE TABLE IF NOT EXISTS `broker_groups_transaction_fees` (
 -- Table structure for table `can_view_message_categories`
 --
 
-DROP TABLE IF EXISTS `can_view_message_categories`;
 CREATE TABLE IF NOT EXISTS `can_view_message_categories` (
   `group_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
@@ -1371,34 +1324,9 @@ INSERT INTO `can_view_message_categories` (`group_id`, `category_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cards`
---
-
-DROP TABLE IF EXISTS `cards`;
-CREATE TABLE IF NOT EXISTS `cards` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `card_type_id` int(11) NOT NULL,
-  `card_number` decimal(19,0) DEFAULT NULL,
-  `card_security_code` varchar(64) DEFAULT NULL,
-  `creation_date` datetime DEFAULT NULL,
-  `activation_date` datetime DEFAULT NULL,
-  `expiration_date` date DEFAULT NULL,
-  `card_security_code_blocked_until` datetime DEFAULT NULL,
-  `owner_id` int(11) NOT NULL,
-  `status` varchar(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `card_number` (`card_number`),
-  KEY `FK5A0E763FE01A09E` (`owner_id`),
-  KEY `FK5A0E7638595CD86` (`card_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `card_logs`
 --
 
-DROP TABLE IF EXISTS `card_logs`;
 CREATE TABLE IF NOT EXISTS `card_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime DEFAULT NULL,
@@ -1416,7 +1344,6 @@ CREATE TABLE IF NOT EXISTS `card_logs` (
 -- Table structure for table `card_types`
 --
 
-DROP TABLE IF EXISTS `card_types`;
 CREATE TABLE IF NOT EXISTS `card_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -1437,10 +1364,49 @@ CREATE TABLE IF NOT EXISTS `card_types` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cards`
+--
+
+CREATE TABLE IF NOT EXISTS `cards` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `card_type_id` int(11) NOT NULL,
+  `card_number` decimal(19,0) DEFAULT NULL,
+  `card_security_code` varchar(64) DEFAULT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `activation_date` datetime DEFAULT NULL,
+  `expiration_date` date DEFAULT NULL,
+  `card_security_code_blocked_until` datetime DEFAULT NULL,
+  `owner_id` int(11) NOT NULL,
+  `status` varchar(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `card_number` (`card_number`),
+  KEY `FK5A0E763FE01A09E` (`owner_id`),
+  KEY `FK5A0E7638595CD86` (`card_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `certification_logs`
+--
+
+CREATE TABLE IF NOT EXISTS `certification_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` datetime NOT NULL,
+  `status` varchar(2) NOT NULL,
+  `certification_id` int(11) NOT NULL,
+  `by_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK75720E142B1214C2` (`by_id`),
+  KEY `FK75720E14205CEC57` (`certification_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `certifications`
 --
 
-DROP TABLE IF EXISTS `certifications`;
 CREATE TABLE IF NOT EXISTS `certifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `amount` decimal(15,6) NOT NULL,
@@ -1459,28 +1425,9 @@ CREATE TABLE IF NOT EXISTS `certifications` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `certification_logs`
---
-
-DROP TABLE IF EXISTS `certification_logs`;
-CREATE TABLE IF NOT EXISTS `certification_logs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` datetime NOT NULL,
-  `status` varchar(2) NOT NULL,
-  `certification_id` int(11) NOT NULL,
-  `by_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK75720E142B1214C2` (`by_id`),
-  KEY `FK75720E14205CEC57` (`certification_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `channels`
 --
 
-DROP TABLE IF EXISTS `channels`;
 CREATE TABLE IF NOT EXISTS `channels` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `internal_name` varchar(50) NOT NULL,
@@ -1510,7 +1457,6 @@ INSERT INTO `channels` (`id`, `internal_name`, `display_name`, `credentials`, `p
 -- Table structure for table `channels_principals`
 --
 
-DROP TABLE IF EXISTS `channels_principals`;
 CREATE TABLE IF NOT EXISTS `channels_principals` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `channel_id` int(11) NOT NULL,
@@ -1528,7 +1474,6 @@ CREATE TABLE IF NOT EXISTS `channels_principals` (
 -- Table structure for table `closed_account_balances`
 --
 
-DROP TABLE IF EXISTS `closed_account_balances`;
 CREATE TABLE IF NOT EXISTS `closed_account_balances` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL,
@@ -1561,7 +1506,6 @@ INSERT INTO `closed_account_balances` (`id`, `account_id`, `date`, `balance`, `r
 -- Table structure for table `contacts`
 --
 
-DROP TABLE IF EXISTS `contacts`;
 CREATE TABLE IF NOT EXISTS `contacts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `owner_id` int(11) NOT NULL,
@@ -1579,7 +1523,6 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 -- Table structure for table `currencies`
 --
 
-DROP TABLE IF EXISTS `currencies`;
 CREATE TABLE IF NOT EXISTS `currencies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -1607,102 +1550,9 @@ INSERT INTO `currencies` (`id`, `name`, `symbol`, `pattern`, `description`, `a_r
 -- --------------------------------------------------------
 
 --
--- Table structure for table `custom_fields`
---
-
-DROP TABLE IF EXISTS `custom_fields`;
-CREATE TABLE IF NOT EXISTS `custom_fields` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subclass` varchar(10) NOT NULL,
-  `internal_name` varchar(50) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `order_number` smallint(6) NOT NULL,
-  `type` varchar(10) NOT NULL,
-  `control` varchar(10) NOT NULL,
-  `size` varchar(1) DEFAULT NULL,
-  `val_required` bit(1) NOT NULL,
-  `val_unique` bit(1) NOT NULL,
-  `val_min_length` smallint(6) DEFAULT NULL,
-  `val_max_length` smallint(6) DEFAULT NULL,
-  `val_class` varchar(256) DEFAULT NULL,
-  `all_selected_label` varchar(100) DEFAULT NULL,
-  `pattern` varchar(100) DEFAULT NULL,
-  `description` longtext,
-  `parent_id` int(11) DEFAULT NULL,
-  `member_visibility_access` varchar(1) DEFAULT NULL,
-  `member_update_access` varchar(1) DEFAULT NULL,
-  `member_search_access` varchar(1) DEFAULT NULL,
-  `member_loan_search_access` varchar(1) DEFAULT NULL,
-  `member_ad_search_access` varchar(1) DEFAULT NULL,
-  `member_can_hide` bit(1) NOT NULL DEFAULT b'0',
-  `member_show_in_print` bit(1) NOT NULL DEFAULT b'0',
-  `member_indexing` varchar(1) DEFAULT NULL,
-  `member_id` int(11) DEFAULT NULL,
-  `operator_visibility` varchar(1) DEFAULT NULL,
-  `ad_show_in_search` bit(1) NOT NULL DEFAULT b'0',
-  `ad_indexed` bit(1) NOT NULL DEFAULT b'0',
-  `ad_visibility` varchar(1) DEFAULT NULL,
-  `transfer_type_id` int(11) DEFAULT NULL,
-  `payment_enabled` bit(1) NOT NULL DEFAULT b'1',
-  `payment_search_access` varchar(1) DEFAULT NULL,
-  `payment_list_access` varchar(1) DEFAULT NULL,
-  `loan_group_show_in_search` bit(1) NOT NULL DEFAULT b'0',
-  `member_record_type_id` int(11) DEFAULT NULL,
-  `record_show_in_search` bit(1) NOT NULL DEFAULT b'0',
-  `record_show_in_list` bit(1) NOT NULL DEFAULT b'0',
-  `record_broker_access` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK2EE15F47E46288C5` (`member_record_type_id`),
-  KEY `FK2EE15F47EAE0AB57` (`member_id`),
-  KEY `FK2EE15F47A4766B0A` (`transfer_type_id`),
-  KEY `FK2EE15F478988CA47` (`parent_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=39 ;
-
---
--- Dumping data for table `custom_fields`
---
-
-INSERT INTO `custom_fields` (`id`, `subclass`, `internal_name`, `name`, `order_number`, `type`, `control`, `size`, `val_required`, `val_unique`, `val_min_length`, `val_max_length`, `val_class`, `all_selected_label`, `pattern`, `description`, `parent_id`, `member_visibility_access`, `member_update_access`, `member_search_access`, `member_loan_search_access`, `member_ad_search_access`, `member_can_hide`, `member_show_in_print`, `member_indexing`, `member_id`, `operator_visibility`, `ad_show_in_search`, `ad_indexed`, `ad_visibility`, `transfer_type_id`, `payment_enabled`, `payment_search_access`, `payment_list_access`, `loan_group_show_in_search`, `member_record_type_id`, `record_show_in_search`, `record_show_in_list`, `record_broker_access`) VALUES
-(1, 'member', 'birthday', 'Data de Nascimento', 5, 'date', 'text', 'S', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(2, 'member', 'gender', 'Sexo', 1, 'enum', 'radio', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(3, 'member', 'address', 'Endereço (Rua/Av/etc)', 9, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'0', b'1', 'A', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(4, 'member', 'postalCode', 'CEP', 13, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(7, 'member', 'phone', 'Telefone Fixo', 14, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(8, 'member', 'mobilePhone', 'Telefone Celular', 15, 'string', 'text', 'L', b'0', b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(9, 'member', 'fax', 'Fax', 16, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(11, 'pmt', 'identifier', 'Identifier', 0, 'string', 'text', 'S', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', b'0', NULL, NULL, NULL, b'0', b'0', NULL, 22, b'1', 'F', 'N', b'0', NULL, b'0', b'0', NULL),
-(12, 'record', 'comments', 'Comments', 0, 'string', 'textarea', 'F', b'1', b'0', NULL, NULL, NULL, NULL, NULL, 'Remark comments', NULL, NULL, NULL, NULL, NULL, NULL, b'0', b'0', NULL, NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', 1, b'0', b'1', 'E'),
-(14, 'member', 'account_type', 'Tipo de Conta', 17, 'enum', 'radio', 'D', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'0', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(15, 'member', 'country', 'País', 6, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, 'Select One', NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(16, 'member', 'state', 'Estado', 7, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, 'Select One', NULL, NULL, 15, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(17, 'member', 'city', 'Cidade', 8, 'string', 'text', 'L', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'0', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(18, 'member', 'address1', 'Complemento', 10, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(19, 'member', 'address2', 'Bairro', 11, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(20, 'member', 'address3', 'Address3', 12, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(23, 'member', 'personal_id', 'Identificação Pessoal (CPF)', 4, 'string', 'text', 'L', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(24, 'member', 'company_tax_id', 'CNPJ', 20, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(25, 'member', 'company_name', 'Razão Social', 21, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(26, 'member', 'company_address_1', 'Endereço Comercial', 22, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(27, 'member', 'company_address_2', 'Complemento (Empresa)', 23, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(28, 'member', 'company_address_3', 'Bairro (Empresa)', 24, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(29, 'member', 'company_country', 'País (Empresa)', 25, 'enum', 'select', 'D', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(30, 'member', 'company_state', 'Estado (Empresa)', 26, 'enum', 'select', 'D', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, 29, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(31, 'member', 'mother_name', 'Nome da Mãe', 2, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(32, 'member', 'father_name', 'Nome do Pai', 3, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(33, 'member', 'company_city', 'Cidade (Empresa)', 27, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(34, 'member', 'company_postal_code', 'CEP (Empresa)', 28, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(35, 'member', 'company_phone', 'Telefone Comercial', 29, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(36, 'member', 'company_fax', 'Fax Comercial', 30, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(37, 'member', 'partner', 'Partner', 18, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
-(38, 'member', 'branch', 'Branch', 19, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, 37, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `custom_field_possible_values`
 --
 
-DROP TABLE IF EXISTS `custom_field_possible_values`;
 CREATE TABLE IF NOT EXISTS `custom_field_possible_values` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `field_id` int(11) DEFAULT NULL,
@@ -1790,7 +1640,6 @@ INSERT INTO `custom_field_possible_values` (`id`, `field_id`, `parent_id`, `valu
 -- Table structure for table `custom_field_values`
 --
 
-DROP TABLE IF EXISTS `custom_field_values`;
 CREATE TABLE IF NOT EXISTS `custom_field_values` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(10) NOT NULL,
@@ -1832,7 +1681,7 @@ CREATE TABLE IF NOT EXISTS `custom_field_values` (
   KEY `FK8AE18A1554774F2E` (`loan_group_id`),
   KEY `FK8AE18A15A71C13E9` (`imported_ad_id`),
   KEY `FK8AE18A1581B2B280` (`imported_member_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=294 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=381 ;
 
 --
 -- Dumping data for table `custom_field_values`
@@ -2116,7 +1965,185 @@ INSERT INTO `custom_field_values` (`id`, `subclass`, `field_id`, `string_value`,
 (290, 'member', 33, NULL, NULL, NULL, 13, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (291, 'member', 34, NULL, NULL, NULL, 13, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (292, 'member', 35, NULL, NULL, NULL, 13, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(293, 'member', 36, NULL, NULL, NULL, 13, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(293, 'member', 36, NULL, NULL, NULL, 13, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(294, 'member', 2, NULL, 1, NULL, 14, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(295, 'member', 31, 'maria jorgelina luiza dos santos fortunato', NULL, NULL, 14, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(296, 'member', 32, 'francisco fortunato filho', NULL, NULL, 14, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(297, 'member', 23, '00105688169', NULL, NULL, 14, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(298, 'member', 1, '19/05/1985', NULL, NULL, 14, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(299, 'member', 15, NULL, 6, NULL, 14, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(300, 'member', 16, NULL, 17, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(301, 'member', 17, 'cuiabá', NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(302, 'member', 3, 'são francisco', NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(303, 'member', 18, 'casa', NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(304, 'member', 19, 'jd campus elizius', NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(305, 'member', 4, '78065015', NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(306, 'member', 7, '556536345059', NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(307, 'member', 8, '556581154785', NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(308, 'member', 9, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(309, 'member', 14, NULL, 4, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(310, 'member', 37, NULL, 62, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(311, 'member', 38, NULL, 63, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(312, 'member', 24, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(313, 'member', 25, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(314, 'member', 26, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(315, 'member', 27, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(316, 'member', 28, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(317, 'member', 29, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(318, 'member', 30, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(319, 'member', 33, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(320, 'member', 34, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(321, 'member', 35, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(322, 'member', 36, NULL, NULL, NULL, 14, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(323, 'member', 2, NULL, 1, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(324, 'member', 31, 'silva', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(325, 'member', 32, 'herderson jeovany da silva', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(326, 'member', 23, '02777708746', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(327, 'member', 1, '14/08/1976', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(328, 'member', 15, NULL, 6, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(329, 'member', 16, NULL, 19, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(330, 'member', 17, 'Serra', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(331, 'member', 3, 'Rua das maritaca', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(332, 'member', 18, 'casa', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(333, 'member', 19, 'porto canoa', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(334, 'member', 4, '29168-350', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(335, 'member', 7, '2733185545', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(336, 'member', 8, '2733185545', NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(337, 'member', 9, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(338, 'member', 14, NULL, 4, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(339, 'member', 37, NULL, 62, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(340, 'member', 38, NULL, 63, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(341, 'member', 24, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(342, 'member', 25, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(343, 'member', 26, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(344, 'member', 27, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(345, 'member', 28, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(346, 'member', 29, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(347, 'member', 30, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(348, 'member', 33, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(349, 'member', 34, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(350, 'member', 35, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(351, 'member', 36, NULL, NULL, NULL, 15, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(352, 'member', 2, NULL, 1, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(353, 'member', 31, 'silva', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(354, 'member', 32, 'herderson jeovany da silva', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(355, 'member', 23, '02777708746', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(356, 'member', 1, '14/08/1976', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(357, 'member', 15, NULL, 6, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(358, 'member', 16, NULL, 19, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(359, 'member', 17, 'Serra', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(360, 'member', 3, 'Rua das maritaca', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(361, 'member', 18, 'casa', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(362, 'member', 19, 'porto canoa', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(363, 'member', 4, '29168-350', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(364, 'member', 7, '2733185545', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(365, 'member', 8, '279 99963969', NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(366, 'member', 9, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(367, 'member', 14, NULL, 4, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(368, 'member', 37, NULL, 62, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(369, 'member', 38, NULL, 63, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(370, 'member', 24, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(371, 'member', 25, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(372, 'member', 26, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(373, 'member', 27, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(374, 'member', 28, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(375, 'member', 29, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(376, 'member', 30, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(377, 'member', 33, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(378, 'member', 34, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(379, 'member', 35, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(380, 'member', 36, NULL, NULL, NULL, 16, NULL, NULL, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `custom_fields`
+--
+
+CREATE TABLE IF NOT EXISTS `custom_fields` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subclass` varchar(10) NOT NULL,
+  `internal_name` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `order_number` smallint(6) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `control` varchar(10) NOT NULL,
+  `size` varchar(1) DEFAULT NULL,
+  `val_required` bit(1) NOT NULL,
+  `val_unique` bit(1) NOT NULL,
+  `val_min_length` smallint(6) DEFAULT NULL,
+  `val_max_length` smallint(6) DEFAULT NULL,
+  `val_class` varchar(256) DEFAULT NULL,
+  `all_selected_label` varchar(100) DEFAULT NULL,
+  `pattern` varchar(100) DEFAULT NULL,
+  `description` longtext,
+  `parent_id` int(11) DEFAULT NULL,
+  `member_visibility_access` varchar(1) DEFAULT NULL,
+  `member_update_access` varchar(1) DEFAULT NULL,
+  `member_search_access` varchar(1) DEFAULT NULL,
+  `member_loan_search_access` varchar(1) DEFAULT NULL,
+  `member_ad_search_access` varchar(1) DEFAULT NULL,
+  `member_can_hide` bit(1) NOT NULL DEFAULT b'0',
+  `member_show_in_print` bit(1) NOT NULL DEFAULT b'0',
+  `member_indexing` varchar(1) DEFAULT NULL,
+  `member_id` int(11) DEFAULT NULL,
+  `operator_visibility` varchar(1) DEFAULT NULL,
+  `ad_show_in_search` bit(1) NOT NULL DEFAULT b'0',
+  `ad_indexed` bit(1) NOT NULL DEFAULT b'0',
+  `ad_visibility` varchar(1) DEFAULT NULL,
+  `transfer_type_id` int(11) DEFAULT NULL,
+  `payment_enabled` bit(1) NOT NULL DEFAULT b'1',
+  `payment_search_access` varchar(1) DEFAULT NULL,
+  `payment_list_access` varchar(1) DEFAULT NULL,
+  `loan_group_show_in_search` bit(1) NOT NULL DEFAULT b'0',
+  `member_record_type_id` int(11) DEFAULT NULL,
+  `record_show_in_search` bit(1) NOT NULL DEFAULT b'0',
+  `record_show_in_list` bit(1) NOT NULL DEFAULT b'0',
+  `record_broker_access` varchar(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK2EE15F47E46288C5` (`member_record_type_id`),
+  KEY `FK2EE15F47EAE0AB57` (`member_id`),
+  KEY `FK2EE15F47A4766B0A` (`transfer_type_id`),
+  KEY `FK2EE15F478988CA47` (`parent_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=39 ;
+
+--
+-- Dumping data for table `custom_fields`
+--
+
+INSERT INTO `custom_fields` (`id`, `subclass`, `internal_name`, `name`, `order_number`, `type`, `control`, `size`, `val_required`, `val_unique`, `val_min_length`, `val_max_length`, `val_class`, `all_selected_label`, `pattern`, `description`, `parent_id`, `member_visibility_access`, `member_update_access`, `member_search_access`, `member_loan_search_access`, `member_ad_search_access`, `member_can_hide`, `member_show_in_print`, `member_indexing`, `member_id`, `operator_visibility`, `ad_show_in_search`, `ad_indexed`, `ad_visibility`, `transfer_type_id`, `payment_enabled`, `payment_search_access`, `payment_list_access`, `loan_group_show_in_search`, `member_record_type_id`, `record_show_in_search`, `record_show_in_list`, `record_broker_access`) VALUES
+(1, 'member', 'birthday', 'Data de Nascimento', 5, 'date', 'text', 'S', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(2, 'member', 'gender', 'Sexo', 1, 'enum', 'radio', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(3, 'member', 'address', 'Endereço (Rua/Av/etc)', 9, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'0', b'1', 'A', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(4, 'member', 'postalCode', 'CEP', 13, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(7, 'member', 'phone', 'Telefone Fixo', 14, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(8, 'member', 'mobilePhone', 'Telefone Celular', 15, 'string', 'text', 'L', b'0', b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(9, 'member', 'fax', 'Fax', 16, 'string', 'text', 'L', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'O', 'M', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(11, 'pmt', 'identifier', 'Identifier', 0, 'string', 'text', 'S', b'0', b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', b'0', NULL, NULL, NULL, b'0', b'0', NULL, 22, b'1', 'F', 'N', b'0', NULL, b'0', b'0', NULL),
+(12, 'record', 'comments', 'Comments', 0, 'string', 'textarea', 'F', b'1', b'0', NULL, NULL, NULL, NULL, NULL, 'Remark comments', NULL, NULL, NULL, NULL, NULL, NULL, b'0', b'0', NULL, NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', 1, b'0', b'1', 'E'),
+(14, 'member', 'account_type', 'Tipo de Conta', 17, 'enum', 'radio', 'D', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'0', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(15, 'member', 'country', 'País', 6, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, 'Select One', NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(16, 'member', 'state', 'Estado', 7, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, 'Select One', NULL, NULL, 15, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(17, 'member', 'city', 'Cidade', 8, 'string', 'text', 'L', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'0', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(18, 'member', 'address1', 'Complemento', 10, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(19, 'member', 'address2', 'Bairro', 11, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(20, 'member', 'address3', 'Address3', 12, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(23, 'member', 'personal_id', 'Identificação Pessoal (CPF)', 4, 'string', 'text', 'L', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(24, 'member', 'company_tax_id', 'CNPJ', 20, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(25, 'member', 'company_name', 'Razão Social', 21, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(26, 'member', 'company_address_1', 'Endereço Comercial', 22, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(27, 'member', 'company_address_2', 'Complemento (Empresa)', 23, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(28, 'member', 'company_address_3', 'Bairro (Empresa)', 24, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(29, 'member', 'company_country', 'País (Empresa)', 25, 'enum', 'select', 'D', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(30, 'member', 'company_state', 'Estado (Empresa)', 26, 'enum', 'select', 'D', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, 29, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(31, 'member', 'mother_name', 'Nome da Mãe', 2, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(32, 'member', 'father_name', 'Nome do Pai', 3, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(33, 'member', 'company_city', 'Cidade (Empresa)', 27, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(34, 'member', 'company_postal_code', 'CEP (Empresa)', 28, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(35, 'member', 'company_phone', 'Telefone Comercial', 29, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(36, 'member', 'company_fax', 'Fax Comercial', 30, 'string', 'text', 'L', b'0', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'1', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(37, 'member', 'partner', 'Partner', 18, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, NULL, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL),
+(38, 'member', 'branch', 'Branch', 19, 'enum', 'select', 'D', b'1', b'0', 0, 0, NULL, NULL, NULL, NULL, 37, 'R', 'R', 'N', 'N', 'N', b'0', b'1', 'N', NULL, NULL, b'0', b'0', NULL, NULL, b'1', NULL, NULL, b'0', NULL, b'0', b'0', NULL);
 
 -- --------------------------------------------------------
 
@@ -2124,7 +2151,6 @@ INSERT INTO `custom_field_values` (`id`, `subclass`, `field_id`, `string_value`,
 -- Table structure for table `default_broker_commissions`
 --
 
-DROP TABLE IF EXISTS `default_broker_commissions`;
 CREATE TABLE IF NOT EXISTS `default_broker_commissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `broker_id` int(11) DEFAULT NULL,
@@ -2146,7 +2172,6 @@ CREATE TABLE IF NOT EXISTS `default_broker_commissions` (
 -- Table structure for table `documents`
 --
 
-DROP TABLE IF EXISTS `documents`;
 CREATE TABLE IF NOT EXISTS `documents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -2170,7 +2195,6 @@ CREATE TABLE IF NOT EXISTS `documents` (
 -- Table structure for table `error_log_entries`
 --
 
-DROP TABLE IF EXISTS `error_log_entries`;
 CREATE TABLE IF NOT EXISTS `error_log_entries` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -2198,7 +2222,6 @@ INSERT INTO `error_log_entries` (`id`, `date`, `path`, `removed`, `logged_user_i
 -- Table structure for table `error_log_entry_parameters`
 --
 
-DROP TABLE IF EXISTS `error_log_entry_parameters`;
 CREATE TABLE IF NOT EXISTS `error_log_entry_parameters` (
   `error_log_entry_id` int(11) NOT NULL,
   `value` longtext,
@@ -2231,7 +2254,6 @@ INSERT INTO `error_log_entry_parameters` (`error_log_entry_id`, `value`, `name`)
 -- Table structure for table `external_accounts`
 --
 
-DROP TABLE IF EXISTS `external_accounts`;
 CREATE TABLE IF NOT EXISTS `external_accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -2248,10 +2270,45 @@ CREATE TABLE IF NOT EXISTS `external_accounts` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `external_transfer_imports`
+--
+
+CREATE TABLE IF NOT EXISTS `external_transfer_imports` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` datetime NOT NULL,
+  `by_id` int(11) NOT NULL,
+  `account_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK60B0F30E123F9A53` (`by_id`),
+  KEY `FK60B0F30EEAEDFACC` (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `external_transfer_types`
+--
+
+CREATE TABLE IF NOT EXISTS `external_transfer_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_id` int(11) NOT NULL,
+  `code` varchar(20) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `action` varchar(1) NOT NULL,
+  `transfer_type_id` int(11) DEFAULT NULL,
+  `description` longtext,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `account_id` (`account_id`,`code`),
+  KEY `FK20F3219A4766B0A` (`transfer_type_id`),
+  KEY `FK20F3219EAEDFACC` (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `external_transfers`
 --
 
-DROP TABLE IF EXISTS `external_transfers`;
 CREATE TABLE IF NOT EXISTS `external_transfers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `status` varchar(1) NOT NULL,
@@ -2274,48 +2331,9 @@ CREATE TABLE IF NOT EXISTS `external_transfers` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `external_transfer_imports`
---
-
-DROP TABLE IF EXISTS `external_transfer_imports`;
-CREATE TABLE IF NOT EXISTS `external_transfer_imports` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` datetime NOT NULL,
-  `by_id` int(11) NOT NULL,
-  `account_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK60B0F30E123F9A53` (`by_id`),
-  KEY `FK60B0F30EEAEDFACC` (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `external_transfer_types`
---
-
-DROP TABLE IF EXISTS `external_transfer_types`;
-CREATE TABLE IF NOT EXISTS `external_transfer_types` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `account_id` int(11) NOT NULL,
-  `code` varchar(20) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `action` varchar(1) NOT NULL,
-  `transfer_type_id` int(11) DEFAULT NULL,
-  `description` longtext,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `account_id` (`account_id`,`code`),
-  KEY `FK20F3219A4766B0A` (`transfer_type_id`),
-  KEY `FK20F3219EAEDFACC` (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `field_mappings`
 --
 
-DROP TABLE IF EXISTS `field_mappings`;
 CREATE TABLE IF NOT EXISTS `field_mappings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_index` int(11) NOT NULL,
@@ -2332,10 +2350,32 @@ CREATE TABLE IF NOT EXISTS `field_mappings` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `file_mappings`
+--
+
+CREATE TABLE IF NOT EXISTS `file_mappings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subclass` varchar(3) NOT NULL,
+  `account_id` int(11) NOT NULL,
+  `date_format` varchar(20) DEFAULT NULL,
+  `number_format` varchar(1) DEFAULT NULL,
+  `decimal_places` int(11) DEFAULT NULL,
+  `decimal_separator` char(1) DEFAULT NULL,
+  `negative_amount_value` varchar(50) DEFAULT NULL,
+  `classname` varchar(255) DEFAULT NULL,
+  `string_quote` char(1) DEFAULT NULL,
+  `column_separator` char(1) DEFAULT NULL,
+  `header_lines` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK7282A8C8EAEDFACC` (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `files`
 --
 
-DROP TABLE IF EXISTS `files`;
 CREATE TABLE IF NOT EXISTS `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -2370,26 +2410,237 @@ INSERT INTO `files` (`id`, `subclass`, `name`, `last_modified`, `contents`, `typ
 -- --------------------------------------------------------
 
 --
--- Table structure for table `file_mappings`
+-- Table structure for table `group_broker_account_information_permissions`
 --
 
-DROP TABLE IF EXISTS `file_mappings`;
-CREATE TABLE IF NOT EXISTS `file_mappings` (
+CREATE TABLE IF NOT EXISTS `group_broker_account_information_permissions` (
+  `owner_group_id` int(11) NOT NULL,
+  `account_type_id` int(11) NOT NULL,
+  KEY `FKE9668F39461D0C55` (`account_type_id`),
+  KEY `FKE9668F392E6F411B` (`owner_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_buy_with_payment_obligations_from`
+--
+
+CREATE TABLE IF NOT EXISTS `group_buy_with_payment_obligations_from` (
+  `owner_group_id` int(11) NOT NULL,
+  `related_group_id` int(11) NOT NULL,
+  KEY `FKD0447BADF0E43C82` (`related_group_id`),
+  KEY `FKD0447BAD5D14BEFA` (`owner_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_filters`
+--
+
+CREATE TABLE IF NOT EXISTS `group_filters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subclass` varchar(3) NOT NULL,
-  `account_id` int(11) NOT NULL,
-  `date_format` varchar(20) DEFAULT NULL,
-  `number_format` varchar(1) DEFAULT NULL,
-  `decimal_places` int(11) DEFAULT NULL,
-  `decimal_separator` char(1) DEFAULT NULL,
-  `negative_amount_value` varchar(50) DEFAULT NULL,
-  `classname` varchar(255) DEFAULT NULL,
-  `string_quote` char(1) DEFAULT NULL,
-  `column_separator` char(1) DEFAULT NULL,
-  `header_lines` int(11) DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `login_page_name` varchar(20) DEFAULT NULL,
+  `root_url` varchar(100) DEFAULT NULL,
+  `container_url` varchar(100) DEFAULT NULL,
+  `description` longtext,
+  `show_in_profile` bit(1) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK7282A8C8EAEDFACC` (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `ix_login_page_name` (`login_page_name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `group_filters`
+--
+
+INSERT INTO `group_filters` (`id`, `name`, `login_page_name`, `root_url`, `container_url`, `description`, `show_in_profile`) VALUES
+(1, 'Branches', 'branches', NULL, NULL, NULL, b'0');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_filters_groups`
+--
+
+CREATE TABLE IF NOT EXISTS `group_filters_groups` (
+  `group_id` int(11) NOT NULL,
+  `group_filter_id` int(11) NOT NULL,
+  KEY `FKDB149C589D46A867` (`group_filter_id`),
+  KEY `FKDB149C58B45926EE` (`group_id`),
+  KEY `FKDB149C5825A5B3E8` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `group_filters_groups`
+--
+
+INSERT INTO `group_filters_groups` (`group_id`, `group_filter_id`) VALUES
+(9, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_filters_viewable_by`
+--
+
+CREATE TABLE IF NOT EXISTS `group_filters_viewable_by` (
+  `group_id` int(11) NOT NULL,
+  `group_filter_id` int(11) NOT NULL,
+  KEY `FKB32047139D46A867` (`group_filter_id`),
+  KEY `FKB3204713B45926EE` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_guarantee_types`
+--
+
+CREATE TABLE IF NOT EXISTS `group_guarantee_types` (
+  `group_id` int(11) NOT NULL,
+  `guarantee_type_id` int(11) NOT NULL,
+  KEY `FK7D9DE2429383E848` (`guarantee_type_id`),
+  KEY `FK7D9DE24225A5B3E8` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_history_logs`
+--
+
+CREATE TABLE IF NOT EXISTS `group_history_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `element_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKC08E903A47C8C3FD` (`element_id`),
+  KEY `FKC08E903A25A5B3E8` (`group_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=27 ;
+
+--
+-- Dumping data for table `group_history_logs`
+--
+
+INSERT INTO `group_history_logs` (`id`, `element_id`, `group_id`, `start_date`, `end_date`) VALUES
+(1, 2, 6, '2013-12-15 00:36:12', '2013-12-15 00:37:32'),
+(2, 2, 5, '2013-12-15 00:37:32', NULL),
+(3, 3, 6, '2013-12-15 03:08:55', '2013-12-15 03:11:01'),
+(4, 3, 9, '2013-12-15 03:11:01', NULL),
+(5, 4, 12, '2013-12-15 03:35:56', NULL),
+(6, 5, 6, '2013-12-27 12:02:29', '2013-12-27 12:12:35'),
+(7, 5, 5, '2013-12-27 12:12:35', NULL),
+(8, 6, 6, '2013-12-27 12:16:36', '2013-12-27 16:35:31'),
+(9, 7, 6, '2013-12-27 12:26:50', '2013-12-27 12:28:08'),
+(10, 7, 8, '2013-12-27 12:28:08', NULL),
+(11, 8, 6, '2013-12-27 14:46:08', '2013-12-27 16:34:07'),
+(12, 8, 5, '2013-12-27 16:34:07', NULL),
+(13, 6, 5, '2013-12-27 16:35:31', '2013-12-29 06:11:56'),
+(14, 9, 6, '2013-12-27 19:42:38', '2013-12-27 19:48:21'),
+(15, 9, 5, '2013-12-27 19:48:21', NULL),
+(16, 6, 6, '2013-12-29 06:11:56', '2013-12-29 06:12:43'),
+(17, 6, 5, '2013-12-29 06:12:43', '2013-12-29 13:22:34'),
+(18, 6, 6, '2013-12-29 13:22:34', '2013-12-29 13:22:43'),
+(19, 6, 5, '2013-12-29 13:22:43', NULL),
+(20, 10, 6, '2013-12-31 02:30:00', NULL),
+(21, 11, 6, '2013-12-31 19:29:09', NULL),
+(22, 12, 6, '2014-01-01 06:34:17', NULL),
+(23, 13, 6, '2014-01-01 18:38:36', NULL),
+(24, 14, 6, '2014-01-02 09:22:57', NULL),
+(25, 15, 6, '2014-01-02 10:23:49', NULL),
+(26, 16, 6, '2014-01-02 10:33:51', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_issue_certification_to`
+--
+
+CREATE TABLE IF NOT EXISTS `group_issue_certification_to` (
+  `owner_group_id` int(11) NOT NULL,
+  `related_group_id` int(11) NOT NULL,
+  KEY `FK32219C86F0E43C82` (`related_group_id`),
+  KEY `FK32219C865D14BEFA` (`owner_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_operator_account_information_permissions`
+--
+
+CREATE TABLE IF NOT EXISTS `group_operator_account_information_permissions` (
+  `owner_group_id` int(11) NOT NULL,
+  `account_type_id` int(11) NOT NULL,
+  KEY `FKE831E404461D0C55` (`account_type_id`),
+  KEY `FKE831E404CB78BB0` (`owner_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `group_operator_account_information_permissions`
+--
+
+INSERT INTO `group_operator_account_information_permissions` (`owner_group_id`, `account_type_id`) VALUES
+(12, 5);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_view_account_information_permissions`
+--
+
+CREATE TABLE IF NOT EXISTS `group_view_account_information_permissions` (
+  `owner_group_id` int(11) NOT NULL,
+  `account_type_id` int(11) NOT NULL,
+  KEY `FK25619205461D0C55` (`account_type_id`),
+  KEY `FK256192055D14BEFA` (`owner_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_view_ads_permissions`
+--
+
+CREATE TABLE IF NOT EXISTS `group_view_ads_permissions` (
+  `owner_group_id` int(11) NOT NULL,
+  `related_group_id` int(11) NOT NULL,
+  KEY `FKBBD1639BF0E43C82` (`related_group_id`),
+  KEY `FKBBD1639B5D14BEFA` (`owner_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `group_view_ads_permissions`
+--
+
+INSERT INTO `group_view_ads_permissions` (`owner_group_id`, `related_group_id`) VALUES
+(9, 5),
+(9, 9);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_view_profile_permissions`
+--
+
+CREATE TABLE IF NOT EXISTS `group_view_profile_permissions` (
+  `owner_group_id` int(11) NOT NULL,
+  `related_group_id` int(11) NOT NULL,
+  KEY `FK58BF4414F0E43C82` (`related_group_id`),
+  KEY `FK58BF44145D14BEFA` (`owner_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `group_view_profile_permissions`
+--
+
+INSERT INTO `group_view_profile_permissions` (`owner_group_id`, `related_group_id`) VALUES
+(9, 5),
+(9, 9);
 
 -- --------------------------------------------------------
 
@@ -2397,7 +2648,6 @@ CREATE TABLE IF NOT EXISTS `file_mappings` (
 -- Table structure for table `groups`
 --
 
-DROP TABLE IF EXISTS `groups`;
 CREATE TABLE IF NOT EXISTS `groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -2498,7 +2748,6 @@ INSERT INTO `groups` (`id`, `subclass`, `status`, `name`, `description`, `max_pa
 -- Table structure for table `groups_account_fees`
 --
 
-DROP TABLE IF EXISTS `groups_account_fees`;
 CREATE TABLE IF NOT EXISTS `groups_account_fees` (
   `group_id` int(11) NOT NULL,
   `account_fee_id` int(11) NOT NULL,
@@ -2524,7 +2773,6 @@ INSERT INTO `groups_account_fees` (`group_id`, `account_fee_id`) VALUES
 -- Table structure for table `groups_channels`
 --
 
-DROP TABLE IF EXISTS `groups_channels`;
 CREATE TABLE IF NOT EXISTS `groups_channels` (
   `channel_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -2551,7 +2799,6 @@ INSERT INTO `groups_channels` (`channel_id`, `group_id`) VALUES
 -- Table structure for table `groups_chargeback_transfer_types`
 --
 
-DROP TABLE IF EXISTS `groups_chargeback_transfer_types`;
 CREATE TABLE IF NOT EXISTS `groups_chargeback_transfer_types` (
   `group_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -2565,7 +2812,6 @@ CREATE TABLE IF NOT EXISTS `groups_chargeback_transfer_types` (
 -- Table structure for table `groups_conversion_simulation_transfer_types`
 --
 
-DROP TABLE IF EXISTS `groups_conversion_simulation_transfer_types`;
 CREATE TABLE IF NOT EXISTS `groups_conversion_simulation_transfer_types` (
   `group_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -2579,7 +2825,6 @@ CREATE TABLE IF NOT EXISTS `groups_conversion_simulation_transfer_types` (
 -- Table structure for table `groups_default_channels`
 --
 
-DROP TABLE IF EXISTS `groups_default_channels`;
 CREATE TABLE IF NOT EXISTS `groups_default_channels` (
   `group_id` int(11) NOT NULL,
   `channel_id` int(11) NOT NULL,
@@ -2606,7 +2851,6 @@ INSERT INTO `groups_default_channels` (`group_id`, `channel_id`) VALUES
 -- Table structure for table `groups_documents`
 --
 
-DROP TABLE IF EXISTS `groups_documents`;
 CREATE TABLE IF NOT EXISTS `groups_documents` (
   `group_id` int(11) NOT NULL,
   `document_id` int(11) NOT NULL,
@@ -2620,7 +2864,6 @@ CREATE TABLE IF NOT EXISTS `groups_documents` (
 -- Table structure for table `groups_from_transaction_fees`
 --
 
-DROP TABLE IF EXISTS `groups_from_transaction_fees`;
 CREATE TABLE IF NOT EXISTS `groups_from_transaction_fees` (
   `group_id` int(11) NOT NULL,
   `transaction_fee_id` int(11) NOT NULL,
@@ -2634,7 +2877,6 @@ CREATE TABLE IF NOT EXISTS `groups_from_transaction_fees` (
 -- Table structure for table `groups_member_record_types`
 --
 
-DROP TABLE IF EXISTS `groups_member_record_types`;
 CREATE TABLE IF NOT EXISTS `groups_member_record_types` (
   `group_id` int(11) NOT NULL,
   `member_record_type_id` int(11) NOT NULL,
@@ -2665,7 +2907,6 @@ INSERT INTO `groups_member_record_types` (`group_id`, `member_record_type_id`) V
 -- Table structure for table `groups_payment_filters`
 --
 
-DROP TABLE IF EXISTS `groups_payment_filters`;
 CREATE TABLE IF NOT EXISTS `groups_payment_filters` (
   `group_id` int(11) NOT NULL,
   `payment_filter_id` int(11) NOT NULL,
@@ -2737,7 +2978,6 @@ INSERT INTO `groups_payment_filters` (`group_id`, `payment_filter_id`) VALUES
 -- Table structure for table `groups_request_payment_channels`
 --
 
-DROP TABLE IF EXISTS `groups_request_payment_channels`;
 CREATE TABLE IF NOT EXISTS `groups_request_payment_channels` (
   `group_id` int(11) NOT NULL,
   `channel_id` int(11) NOT NULL,
@@ -2751,7 +2991,6 @@ CREATE TABLE IF NOT EXISTS `groups_request_payment_channels` (
 -- Table structure for table `groups_to_transaction_fees`
 --
 
-DROP TABLE IF EXISTS `groups_to_transaction_fees`;
 CREATE TABLE IF NOT EXISTS `groups_to_transaction_fees` (
   `group_id` int(11) NOT NULL,
   `transaction_fee_id` int(11) NOT NULL,
@@ -2765,7 +3004,6 @@ CREATE TABLE IF NOT EXISTS `groups_to_transaction_fees` (
 -- Table structure for table `groups_transfer_types`
 --
 
-DROP TABLE IF EXISTS `groups_transfer_types`;
 CREATE TABLE IF NOT EXISTS `groups_transfer_types` (
   `group_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -2815,7 +3053,6 @@ INSERT INTO `groups_transfer_types` (`group_id`, `transfer_type_id`) VALUES
 -- Table structure for table `groups_transfer_types_as_member`
 --
 
-DROP TABLE IF EXISTS `groups_transfer_types_as_member`;
 CREATE TABLE IF NOT EXISTS `groups_transfer_types_as_member` (
   `group_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -2828,288 +3065,9 @@ CREATE TABLE IF NOT EXISTS `groups_transfer_types_as_member` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `group_broker_account_information_permissions`
---
-
-DROP TABLE IF EXISTS `group_broker_account_information_permissions`;
-CREATE TABLE IF NOT EXISTS `group_broker_account_information_permissions` (
-  `owner_group_id` int(11) NOT NULL,
-  `account_type_id` int(11) NOT NULL,
-  KEY `FKE9668F39461D0C55` (`account_type_id`),
-  KEY `FKE9668F392E6F411B` (`owner_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_buy_with_payment_obligations_from`
---
-
-DROP TABLE IF EXISTS `group_buy_with_payment_obligations_from`;
-CREATE TABLE IF NOT EXISTS `group_buy_with_payment_obligations_from` (
-  `owner_group_id` int(11) NOT NULL,
-  `related_group_id` int(11) NOT NULL,
-  KEY `FKD0447BADF0E43C82` (`related_group_id`),
-  KEY `FKD0447BAD5D14BEFA` (`owner_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_filters`
---
-
-DROP TABLE IF EXISTS `group_filters`;
-CREATE TABLE IF NOT EXISTS `group_filters` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `login_page_name` varchar(20) DEFAULT NULL,
-  `root_url` varchar(100) DEFAULT NULL,
-  `container_url` varchar(100) DEFAULT NULL,
-  `description` longtext,
-  `show_in_profile` bit(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ix_login_page_name` (`login_page_name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `group_filters`
---
-
-INSERT INTO `group_filters` (`id`, `name`, `login_page_name`, `root_url`, `container_url`, `description`, `show_in_profile`) VALUES
-(1, 'Branches', 'branches', NULL, NULL, NULL, b'0');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_filters_groups`
---
-
-DROP TABLE IF EXISTS `group_filters_groups`;
-CREATE TABLE IF NOT EXISTS `group_filters_groups` (
-  `group_id` int(11) NOT NULL,
-  `group_filter_id` int(11) NOT NULL,
-  KEY `FKDB149C589D46A867` (`group_filter_id`),
-  KEY `FKDB149C58B45926EE` (`group_id`),
-  KEY `FKDB149C5825A5B3E8` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `group_filters_groups`
---
-
-INSERT INTO `group_filters_groups` (`group_id`, `group_filter_id`) VALUES
-(9, 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_filters_viewable_by`
---
-
-DROP TABLE IF EXISTS `group_filters_viewable_by`;
-CREATE TABLE IF NOT EXISTS `group_filters_viewable_by` (
-  `group_id` int(11) NOT NULL,
-  `group_filter_id` int(11) NOT NULL,
-  KEY `FKB32047139D46A867` (`group_filter_id`),
-  KEY `FKB3204713B45926EE` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_guarantee_types`
---
-
-DROP TABLE IF EXISTS `group_guarantee_types`;
-CREATE TABLE IF NOT EXISTS `group_guarantee_types` (
-  `group_id` int(11) NOT NULL,
-  `guarantee_type_id` int(11) NOT NULL,
-  KEY `FK7D9DE2429383E848` (`guarantee_type_id`),
-  KEY `FK7D9DE24225A5B3E8` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_history_logs`
---
-
-DROP TABLE IF EXISTS `group_history_logs`;
-CREATE TABLE IF NOT EXISTS `group_history_logs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `element_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKC08E903A47C8C3FD` (`element_id`),
-  KEY `FKC08E903A25A5B3E8` (`group_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=24 ;
-
---
--- Dumping data for table `group_history_logs`
---
-
-INSERT INTO `group_history_logs` (`id`, `element_id`, `group_id`, `start_date`, `end_date`) VALUES
-(1, 2, 6, '2013-12-15 00:36:12', '2013-12-15 00:37:32'),
-(2, 2, 5, '2013-12-15 00:37:32', NULL),
-(3, 3, 6, '2013-12-15 03:08:55', '2013-12-15 03:11:01'),
-(4, 3, 9, '2013-12-15 03:11:01', NULL),
-(5, 4, 12, '2013-12-15 03:35:56', NULL),
-(6, 5, 6, '2013-12-27 12:02:29', '2013-12-27 12:12:35'),
-(7, 5, 5, '2013-12-27 12:12:35', NULL),
-(8, 6, 6, '2013-12-27 12:16:36', '2013-12-27 16:35:31'),
-(9, 7, 6, '2013-12-27 12:26:50', '2013-12-27 12:28:08'),
-(10, 7, 8, '2013-12-27 12:28:08', NULL),
-(11, 8, 6, '2013-12-27 14:46:08', '2013-12-27 16:34:07'),
-(12, 8, 5, '2013-12-27 16:34:07', NULL),
-(13, 6, 5, '2013-12-27 16:35:31', '2013-12-29 06:11:56'),
-(14, 9, 6, '2013-12-27 19:42:38', '2013-12-27 19:48:21'),
-(15, 9, 5, '2013-12-27 19:48:21', NULL),
-(16, 6, 6, '2013-12-29 06:11:56', '2013-12-29 06:12:43'),
-(17, 6, 5, '2013-12-29 06:12:43', '2013-12-29 13:22:34'),
-(18, 6, 6, '2013-12-29 13:22:34', '2013-12-29 13:22:43'),
-(19, 6, 5, '2013-12-29 13:22:43', NULL),
-(20, 10, 6, '2013-12-31 02:30:00', NULL),
-(21, 11, 6, '2013-12-31 19:29:09', NULL),
-(22, 12, 6, '2014-01-01 06:34:17', NULL),
-(23, 13, 6, '2014-01-01 18:38:36', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_issue_certification_to`
---
-
-DROP TABLE IF EXISTS `group_issue_certification_to`;
-CREATE TABLE IF NOT EXISTS `group_issue_certification_to` (
-  `owner_group_id` int(11) NOT NULL,
-  `related_group_id` int(11) NOT NULL,
-  KEY `FK32219C86F0E43C82` (`related_group_id`),
-  KEY `FK32219C865D14BEFA` (`owner_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_operator_account_information_permissions`
---
-
-DROP TABLE IF EXISTS `group_operator_account_information_permissions`;
-CREATE TABLE IF NOT EXISTS `group_operator_account_information_permissions` (
-  `owner_group_id` int(11) NOT NULL,
-  `account_type_id` int(11) NOT NULL,
-  KEY `FKE831E404461D0C55` (`account_type_id`),
-  KEY `FKE831E404CB78BB0` (`owner_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `group_operator_account_information_permissions`
---
-
-INSERT INTO `group_operator_account_information_permissions` (`owner_group_id`, `account_type_id`) VALUES
-(12, 5);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_view_account_information_permissions`
---
-
-DROP TABLE IF EXISTS `group_view_account_information_permissions`;
-CREATE TABLE IF NOT EXISTS `group_view_account_information_permissions` (
-  `owner_group_id` int(11) NOT NULL,
-  `account_type_id` int(11) NOT NULL,
-  KEY `FK25619205461D0C55` (`account_type_id`),
-  KEY `FK256192055D14BEFA` (`owner_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_view_ads_permissions`
---
-
-DROP TABLE IF EXISTS `group_view_ads_permissions`;
-CREATE TABLE IF NOT EXISTS `group_view_ads_permissions` (
-  `owner_group_id` int(11) NOT NULL,
-  `related_group_id` int(11) NOT NULL,
-  KEY `FKBBD1639BF0E43C82` (`related_group_id`),
-  KEY `FKBBD1639B5D14BEFA` (`owner_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `group_view_ads_permissions`
---
-
-INSERT INTO `group_view_ads_permissions` (`owner_group_id`, `related_group_id`) VALUES
-(9, 5),
-(9, 9);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_view_profile_permissions`
---
-
-DROP TABLE IF EXISTS `group_view_profile_permissions`;
-CREATE TABLE IF NOT EXISTS `group_view_profile_permissions` (
-  `owner_group_id` int(11) NOT NULL,
-  `related_group_id` int(11) NOT NULL,
-  KEY `FK58BF4414F0E43C82` (`related_group_id`),
-  KEY `FK58BF44145D14BEFA` (`owner_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `group_view_profile_permissions`
---
-
-INSERT INTO `group_view_profile_permissions` (`owner_group_id`, `related_group_id`) VALUES
-(9, 5),
-(9, 9);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `guarantees`
---
-
-DROP TABLE IF EXISTS `guarantees`;
-CREATE TABLE IF NOT EXISTS `guarantees` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `status` varchar(2) NOT NULL,
-  `amount` decimal(15,6) NOT NULL,
-  `credit_fee` decimal(15,6) DEFAULT '0.000000',
-  `credit_fee_type` varchar(1) DEFAULT NULL,
-  `issue_fee` decimal(15,6) DEFAULT '0.000000',
-  `issue_fee_type` varchar(1) DEFAULT NULL,
-  `begin_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `registration_date` datetime NOT NULL,
-  `loan_id` int(11) DEFAULT NULL,
-  `guarantee_type_id` int(11) NOT NULL,
-  `certification_id` int(11) DEFAULT NULL,
-  `buyer_id` int(11) NOT NULL,
-  `seller_id` int(11) DEFAULT NULL,
-  `issuer_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `loan_id` (`loan_id`),
-  KEY `FKA37612EB608B319E` (`buyer_id`),
-  KEY `FKA37612EB9383E848` (`guarantee_type_id`),
-  KEY `FKA37612EB40A58052` (`seller_id`),
-  KEY `FKA37612EB205CEC57` (`certification_id`),
-  KEY `FKA37612EBA5F0DAD8` (`issuer_id`),
-  KEY `FKA37612EBF9B21025` (`loan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `guarantee_logs`
 --
 
-DROP TABLE IF EXISTS `guarantee_logs`;
 CREATE TABLE IF NOT EXISTS `guarantee_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -3127,7 +3085,6 @@ CREATE TABLE IF NOT EXISTS `guarantee_logs` (
 -- Table structure for table `guarantee_types`
 --
 
-DROP TABLE IF EXISTS `guarantee_types`;
 CREATE TABLE IF NOT EXISTS `guarantee_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -3163,10 +3120,42 @@ CREATE TABLE IF NOT EXISTS `guarantee_types` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `guarantees`
+--
+
+CREATE TABLE IF NOT EXISTS `guarantees` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` varchar(2) NOT NULL,
+  `amount` decimal(15,6) NOT NULL,
+  `credit_fee` decimal(15,6) DEFAULT '0.000000',
+  `credit_fee_type` varchar(1) DEFAULT NULL,
+  `issue_fee` decimal(15,6) DEFAULT '0.000000',
+  `issue_fee_type` varchar(1) DEFAULT NULL,
+  `begin_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `registration_date` datetime NOT NULL,
+  `loan_id` int(11) DEFAULT NULL,
+  `guarantee_type_id` int(11) NOT NULL,
+  `certification_id` int(11) DEFAULT NULL,
+  `buyer_id` int(11) NOT NULL,
+  `seller_id` int(11) DEFAULT NULL,
+  `issuer_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `loan_id` (`loan_id`),
+  KEY `FKA37612EB608B319E` (`buyer_id`),
+  KEY `FKA37612EB9383E848` (`guarantee_type_id`),
+  KEY `FKA37612EB40A58052` (`seller_id`),
+  KEY `FKA37612EB205CEC57` (`certification_id`),
+  KEY `FKA37612EBA5F0DAD8` (`issuer_id`),
+  KEY `FKA37612EBF9B21025` (`loan_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `images`
 --
 
-DROP TABLE IF EXISTS `images`;
 CREATE TABLE IF NOT EXISTS `images` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(3) NOT NULL,
@@ -3253,10 +3242,27 @@ INSERT INTO `images` (`id`, `subclass`, `name`, `content_type`, `image_size`, `l
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `imported_ad_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `imported_ad_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ad_import_id` int(11) NOT NULL,
+  `existing_parent_id` int(11) DEFAULT NULL,
+  `imported_parent_id` int(11) DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKFC5711BDA69BAAC3` (`existing_parent_id`),
+  KEY `FKFC5711BDB79265E7` (`ad_import_id`),
+  KEY `FKFC5711BDA7E88FA0` (`imported_parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `imported_ads`
 --
 
-DROP TABLE IF EXISTS `imported_ads`;
 CREATE TABLE IF NOT EXISTS `imported_ads` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `import_id` int(11) NOT NULL,
@@ -3286,20 +3292,16 @@ CREATE TABLE IF NOT EXISTS `imported_ads` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `imported_ad_categories`
+-- Table structure for table `imported_member_records`
 --
 
-DROP TABLE IF EXISTS `imported_ad_categories`;
-CREATE TABLE IF NOT EXISTS `imported_ad_categories` (
+CREATE TABLE IF NOT EXISTS `imported_member_records` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `ad_import_id` int(11) NOT NULL,
-  `existing_parent_id` int(11) DEFAULT NULL,
-  `imported_parent_id` int(11) DEFAULT NULL,
-  `name` varchar(100) DEFAULT NULL,
+  `imported_member_id` int(11) DEFAULT NULL,
+  `member_record_type_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKFC5711BDA69BAAC3` (`existing_parent_id`),
-  KEY `FKFC5711BDB79265E7` (`ad_import_id`),
-  KEY `FKFC5711BDA7E88FA0` (`imported_parent_id`)
+  KEY `FK579F7038E46288C5` (`member_record_type_id`),
+  KEY `FK579F703881B2B280` (`imported_member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3308,7 +3310,6 @@ CREATE TABLE IF NOT EXISTS `imported_ad_categories` (
 -- Table structure for table `imported_members`
 --
 
-DROP TABLE IF EXISTS `imported_members`;
 CREATE TABLE IF NOT EXISTS `imported_members` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `import_id` int(11) NOT NULL,
@@ -3332,26 +3333,9 @@ CREATE TABLE IF NOT EXISTS `imported_members` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `imported_member_records`
---
-
-DROP TABLE IF EXISTS `imported_member_records`;
-CREATE TABLE IF NOT EXISTS `imported_member_records` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `imported_member_id` int(11) DEFAULT NULL,
-  `member_record_type_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK579F7038E46288C5` (`member_record_type_id`),
-  KEY `FK579F703881B2B280` (`imported_member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `index_operations`
 --
 
-DROP TABLE IF EXISTS `index_operations`;
 CREATE TABLE IF NOT EXISTS `index_operations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -3360,14 +3344,29 @@ CREATE TABLE IF NOT EXISTS `index_operations` (
   `entity_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_indexops_date` (`date`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
 
 --
 -- Dumping data for table `index_operations`
 --
 
 INSERT INTO `index_operations` (`id`, `date`, `entity_type`, `operation_type`, `entity_id`) VALUES
-(18, '2014-01-01 18:38:37', 'MBR', 'ADD', 13);
+(18, '2014-01-01 18:38:37', 'MBR', 'ADD', 13),
+(19, '2014-01-02 09:22:57', 'MBR', 'ADD', 14),
+(20, '2014-01-02 10:23:50', 'MBR', 'ADD', 15),
+(21, '2014-01-02 10:33:51', 'MBR', 'ADD', 16);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `info_text_aliases`
+--
+
+CREATE TABLE IF NOT EXISTS `info_text_aliases` (
+  `info_text_id` int(11) NOT NULL,
+  `alias` varchar(255) DEFAULT NULL,
+  KEY `FK83C54DDDB4F0D375` (`info_text_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3375,7 +3374,6 @@ INSERT INTO `index_operations` (`id`, `date`, `entity_type`, `operation_type`, `
 -- Table structure for table `info_texts`
 --
 
-DROP TABLE IF EXISTS `info_texts`;
 CREATE TABLE IF NOT EXISTS `info_texts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subject` varchar(160) NOT NULL,
@@ -3389,15 +3387,19 @@ CREATE TABLE IF NOT EXISTS `info_texts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `info_text_aliases`
+-- Table structure for table `invoice_payments`
 --
 
-DROP TABLE IF EXISTS `info_text_aliases`;
-CREATE TABLE IF NOT EXISTS `info_text_aliases` (
-  `info_text_id` int(11) NOT NULL,
-  `alias` varchar(255) DEFAULT NULL,
-  KEY `FK83C54DDDB4F0D375` (`info_text_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `invoice_payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `invoice_id` int(11) DEFAULT NULL,
+  `date` datetime NOT NULL,
+  `amount` decimal(15,6) NOT NULL,
+  `transfer_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK1D3D3FFF2F78F3B3` (`transfer_id`),
+  KEY `FK1D3D3FFFE9B959A1` (`invoice_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3405,7 +3407,6 @@ CREATE TABLE IF NOT EXISTS `info_text_aliases` (
 -- Table structure for table `invoices`
 --
 
-DROP TABLE IF EXISTS `invoices`;
 CREATE TABLE IF NOT EXISTS `invoices` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `from_member_id` int(11) DEFAULT NULL,
@@ -3444,19 +3445,35 @@ INSERT INTO `invoices` (`id`, `from_member_id`, `to_member_id`, `sent_by_id`, `p
 -- --------------------------------------------------------
 
 --
--- Table structure for table `invoice_payments`
+-- Table structure for table `loan_groups`
 --
 
-DROP TABLE IF EXISTS `invoice_payments`;
-CREATE TABLE IF NOT EXISTS `invoice_payments` (
+CREATE TABLE IF NOT EXISTS `loan_groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `invoice_id` int(11) DEFAULT NULL,
-  `date` datetime NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` longtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `loan_payments`
+--
+
+CREATE TABLE IF NOT EXISTS `loan_payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `loan_id` int(11) NOT NULL,
+  `payment_index` int(11) NOT NULL,
+  `expiration_date` date NOT NULL,
   `amount` decimal(15,6) NOT NULL,
-  `transfer_id` bigint(20) DEFAULT NULL,
+  `repaid_amount` decimal(15,6) NOT NULL,
+  `status` varchar(1) NOT NULL,
+  `repayment_date` datetime DEFAULT NULL,
+  `external_transfer_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK1D3D3FFF2F78F3B3` (`transfer_id`),
-  KEY `FK1D3D3FFFE9B959A1` (`invoice_id`)
+  KEY `FKAF53099C617A8174` (`external_transfer_id`),
+  KEY `FKAF53099CF9B21025` (`loan_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3465,7 +3482,6 @@ CREATE TABLE IF NOT EXISTS `invoice_payments` (
 -- Table structure for table `loans`
 --
 
-DROP TABLE IF EXISTS `loans`;
 CREATE TABLE IF NOT EXISTS `loans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `transfer_id` bigint(20) NOT NULL,
@@ -3486,46 +3502,9 @@ CREATE TABLE IF NOT EXISTS `loans` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `loan_groups`
---
-
-DROP TABLE IF EXISTS `loan_groups`;
-CREATE TABLE IF NOT EXISTS `loan_groups` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `description` longtext,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `loan_payments`
---
-
-DROP TABLE IF EXISTS `loan_payments`;
-CREATE TABLE IF NOT EXISTS `loan_payments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `loan_id` int(11) NOT NULL,
-  `payment_index` int(11) NOT NULL,
-  `expiration_date` date NOT NULL,
-  `amount` decimal(15,6) NOT NULL,
-  `repaid_amount` decimal(15,6) NOT NULL,
-  `status` varchar(1) NOT NULL,
-  `repayment_date` datetime DEFAULT NULL,
-  `external_transfer_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKAF53099C617A8174` (`external_transfer_id`),
-  KEY `FKAF53099CF9B21025` (`loan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `login_history`
 --
 
-DROP TABLE IF EXISTS `login_history`;
 CREATE TABLE IF NOT EXISTS `login_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -3533,7 +3512,7 @@ CREATE TABLE IF NOT EXISTS `login_history` (
   `remote_address` varchar(40) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK88A801BEA19267FC` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=166 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=168 ;
 
 --
 -- Dumping data for table `login_history`
@@ -3704,119 +3683,9 @@ INSERT INTO `login_history` (`id`, `user_id`, `date`, `remote_address`) VALUES
 (162, 5, '2013-12-30 17:19:57', '172.16.2.47'),
 (163, 1, '2013-12-30 17:39:50', '172.16.2.47'),
 (164, 5, '2013-12-30 17:52:54', '172.16.2.47'),
-(165, 1, '2013-12-31 03:22:24', '172.16.2.47');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `members`
---
-
-DROP TABLE IF EXISTS `members`;
-CREATE TABLE IF NOT EXISTS `members` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subclass` varchar(1) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `creation_date` datetime NOT NULL,
-  `group_id` int(11) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `member_activation_date` datetime DEFAULT NULL,
-  `hide_email` bit(1) NOT NULL DEFAULT b'0',
-  `member_broker_id` int(11) DEFAULT NULL,
-  `member_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ix_email` (`email`),
-  KEY `FK388EC91941F9CE53` (`member_broker_id`),
-  KEY `FK388EC919EAE0AB57` (`member_id`),
-  KEY `FK388EC91925A5B3E8` (`group_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
-
---
--- Dumping data for table `members`
---
-
-INSERT INTO `members` (`id`, `subclass`, `name`, `creation_date`, `group_id`, `email`, `member_activation_date`, `hide_email`, `member_broker_id`, `member_id`) VALUES
-(1, 'A', 'Administrator', '2013-12-14 18:15:32', 1, 'admin@mail.nl', NULL, b'0', NULL, NULL),
-(2, 'M', 'Roberto Andrade', '2013-12-15 00:36:12', 5, 'roberto.andrade@gmail.com', '2013-12-15 00:37:32', b'0', 3, NULL),
-(3, 'M', 'One Thor Branch Manager', '2013-12-15 03:08:55', 9, 'onethor@branch.acacia.br', '2013-12-15 03:11:01', b'0', NULL, NULL),
-(4, 'O', 'Robertoperator', '2013-12-15 03:35:56', 12, 'operator@robertoandrade.com', NULL, b'0', NULL, 2),
-(5, 'M', 'Renato Aparecido Gomes', '2013-12-27 12:02:29', 5, 'renatoapgomes@gmail.com', '2013-12-27 12:12:32', b'0', NULL, NULL),
-(6, 'M', 'Rodrigo Aparecido Gomes', '2013-12-27 12:16:36', 5, 'rodrigo.agomes@gmail.com', '2013-12-27 16:35:31', b'0', NULL, NULL),
-(7, 'M', 'test', '2013-12-27 12:26:50', 8, 'test@test.com', NULL, b'0', NULL, NULL),
-(8, 'M', 'Roberto S Andrade', '2013-12-27 14:46:08', 5, 'me@robertoandrade.com', '2013-12-27 16:34:05', b'0', NULL, NULL),
-(9, 'M', 'Tanagildo Aguiar Feres Junior', '2013-12-27 19:42:38', 5, 'aguiar@globalpremium.co.uk', '2013-12-27 19:48:16', b'0', NULL, NULL),
-(10, 'M', 'Fabiano de Freitas Almeida', '2013-12-31 02:30:00', 6, 'ffasoul@gmail.com', NULL, b'0', NULL, NULL),
-(11, 'M', 'Rogerio Ribeiro dos Santos', '2013-12-31 19:29:09', 6, 'rogersantos1981@gmail.com', NULL, b'0', NULL, NULL),
-(12, 'M', 'Alan Farias dos Santos', '2014-01-01 06:34:17', 6, 'alanfariascacau@hotmail.com', NULL, b'0', NULL, NULL),
-(13, 'M', 'Jovaci Pereira Lima', '2014-01-01 18:38:36', 6, 'jovacilima@yahoo.com.br', NULL, b'0', NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `members_channels`
---
-
-DROP TABLE IF EXISTS `members_channels`;
-CREATE TABLE IF NOT EXISTS `members_channels` (
-  `member_id` int(11) NOT NULL,
-  `channel_id` int(11) NOT NULL,
-  KEY `FK66F8B836EAE0AB57` (`member_id`),
-  KEY `FK66F8B8369B71D578` (`channel_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `members_channels`
---
-
-INSERT INTO `members_channels` (`member_id`, `channel_id`) VALUES
-(7, 1),
-(9, 1),
-(10, 1),
-(11, 1),
-(12, 1),
-(13, 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `members_loans`
---
-
-DROP TABLE IF EXISTS `members_loans`;
-CREATE TABLE IF NOT EXISTS `members_loans` (
-  `loan_id` int(11) NOT NULL,
-  `member_id` int(11) NOT NULL,
-  KEY `FKAD520EDDEAE0AB57` (`member_id`),
-  KEY `FKAD520EDDF9B21025` (`loan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `members_loan_groups`
---
-
-DROP TABLE IF EXISTS `members_loan_groups`;
-CREATE TABLE IF NOT EXISTS `members_loan_groups` (
-  `member_id` int(11) NOT NULL,
-  `loan_group_id` int(11) NOT NULL,
-  KEY `FKBE11EDDDEAE0AB57` (`member_id`),
-  KEY `FKBE11EDDD54774F2E` (`loan_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `members_pending_charge`
---
-
-DROP TABLE IF EXISTS `members_pending_charge`;
-CREATE TABLE IF NOT EXISTS `members_pending_charge` (
-  `account_fee_log_id` int(11) NOT NULL,
-  `member_id` int(11) NOT NULL,
-  KEY `FK265D1E42EAE0AB57` (`member_id`),
-  KEY `FK265D1E426957A5AA` (`account_fee_log_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+(165, 1, '2013-12-31 03:22:24', '172.16.2.47'),
+(166, 1, '2014-01-02 09:43:08', '172.16.2.47'),
+(167, 1, '2014-01-02 10:10:05', '172.16.2.47');
 
 -- --------------------------------------------------------
 
@@ -3824,7 +3693,6 @@ CREATE TABLE IF NOT EXISTS `members_pending_charge` (
 -- Table structure for table `member_account_fee_logs`
 --
 
-DROP TABLE IF EXISTS `member_account_fee_logs`;
 CREATE TABLE IF NOT EXISTS `member_account_fee_logs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -3855,10 +3723,42 @@ INSERT INTO `member_account_fee_logs` (`id`, `date`, `member_id`, `account_fee_l
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `member_group_account_settings`
+--
+
+CREATE TABLE IF NOT EXISTS `member_group_account_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_id` int(11) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `default_type` bit(1) NOT NULL,
+  `transaction_password_required` bit(1) NOT NULL,
+  `hide_when_no_credit_limit` bit(1) NOT NULL,
+  `default_credit_limit` decimal(15,6) NOT NULL,
+  `default_upper_credit_limit` decimal(15,6) DEFAULT NULL,
+  `initial_credit` decimal(15,6) DEFAULT NULL,
+  `initial_credit_transfer_type_id` int(11) DEFAULT NULL,
+  `low_units` decimal(15,6) DEFAULT NULL,
+  `low_units_message` longtext,
+  PRIMARY KEY (`id`),
+  KEY `FK3D84E6FA797D2395` (`initial_credit_transfer_type_id`),
+  KEY `FK3D84E6FAB45926EE` (`group_id`),
+  KEY `FK3D84E6FAB93596D` (`type_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `member_group_account_settings`
+--
+
+INSERT INTO `member_group_account_settings` (`id`, `group_id`, `type_id`, `default_type`, `transaction_password_required`, `hide_when_no_credit_limit`, `default_credit_limit`, `default_upper_credit_limit`, `initial_credit`, `initial_credit_transfer_type_id`, `low_units`, `low_units_message`) VALUES
+(1, 5, 5, b'1', b'0', b'0', 0.000000, NULL, 0.000000, 23, 100.000000, 'Minimum balance limit reached'),
+(2, 9, 5, b'1', b'0', b'0', 0.000000, NULL, 0.000000, 23, 20.000000, 'You are reaching your credit limit');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `member_groups_custom_fields`
 --
 
-DROP TABLE IF EXISTS `member_groups_custom_fields`;
 CREATE TABLE IF NOT EXISTS `member_groups_custom_fields` (
   `custom_field_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -3922,7 +3822,6 @@ INSERT INTO `member_groups_custom_fields` (`custom_field_id`, `group_id`) VALUES
 -- Table structure for table `member_groups_default_sms_message_types`
 --
 
-DROP TABLE IF EXISTS `member_groups_default_sms_message_types`;
 CREATE TABLE IF NOT EXISTS `member_groups_default_sms_message_types` (
   `group_id` int(11) NOT NULL,
   `type` varchar(3) NOT NULL,
@@ -3935,7 +3834,6 @@ CREATE TABLE IF NOT EXISTS `member_groups_default_sms_message_types` (
 -- Table structure for table `member_groups_email_validation`
 --
 
-DROP TABLE IF EXISTS `member_groups_email_validation`;
 CREATE TABLE IF NOT EXISTS `member_groups_email_validation` (
   `group_id` int(11) NOT NULL,
   `type` varchar(1) NOT NULL,
@@ -3956,7 +3854,6 @@ INSERT INTO `member_groups_email_validation` (`group_id`, `type`) VALUES
 -- Table structure for table `member_groups_message_types`
 --
 
-DROP TABLE IF EXISTS `member_groups_message_types`;
 CREATE TABLE IF NOT EXISTS `member_groups_message_types` (
   `group_id` int(11) NOT NULL,
   `type` varchar(3) NOT NULL,
@@ -3969,7 +3866,6 @@ CREATE TABLE IF NOT EXISTS `member_groups_message_types` (
 -- Table structure for table `member_groups_sms_message_types`
 --
 
-DROP TABLE IF EXISTS `member_groups_sms_message_types`;
 CREATE TABLE IF NOT EXISTS `member_groups_sms_message_types` (
   `group_id` int(11) NOT NULL,
   `type` varchar(3) NOT NULL,
@@ -3979,44 +3875,9 @@ CREATE TABLE IF NOT EXISTS `member_groups_sms_message_types` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `member_group_account_settings`
---
-
-DROP TABLE IF EXISTS `member_group_account_settings`;
-CREATE TABLE IF NOT EXISTS `member_group_account_settings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group_id` int(11) NOT NULL,
-  `type_id` int(11) NOT NULL,
-  `default_type` bit(1) NOT NULL,
-  `transaction_password_required` bit(1) NOT NULL,
-  `hide_when_no_credit_limit` bit(1) NOT NULL,
-  `default_credit_limit` decimal(15,6) NOT NULL,
-  `default_upper_credit_limit` decimal(15,6) DEFAULT NULL,
-  `initial_credit` decimal(15,6) DEFAULT NULL,
-  `initial_credit_transfer_type_id` int(11) DEFAULT NULL,
-  `low_units` decimal(15,6) DEFAULT NULL,
-  `low_units_message` longtext,
-  PRIMARY KEY (`id`),
-  KEY `FK3D84E6FA797D2395` (`initial_credit_transfer_type_id`),
-  KEY `FK3D84E6FAB45926EE` (`group_id`),
-  KEY `FK3D84E6FAB93596D` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
-
---
--- Dumping data for table `member_group_account_settings`
---
-
-INSERT INTO `member_group_account_settings` (`id`, `group_id`, `type_id`, `default_type`, `transaction_password_required`, `hide_when_no_credit_limit`, `default_credit_limit`, `default_upper_credit_limit`, `initial_credit`, `initial_credit_transfer_type_id`, `low_units`, `low_units_message`) VALUES
-(1, 5, 5, b'1', b'0', b'0', 0.000000, NULL, 0.000000, 23, 100.000000, 'Minimum balance limit reached'),
-(2, 9, 5, b'1', b'0', b'0', 0.000000, NULL, 0.000000, 23, 20.000000, 'You are reaching your credit limit');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `member_imports`
 --
 
-DROP TABLE IF EXISTS `member_imports`;
 CREATE TABLE IF NOT EXISTS `member_imports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `by_id` int(11) NOT NULL,
@@ -4039,7 +3900,6 @@ CREATE TABLE IF NOT EXISTS `member_imports` (
 -- Table structure for table `member_pos`
 --
 
-DROP TABLE IF EXISTS `member_pos`;
 CREATE TABLE IF NOT EXISTS `member_pos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pos_name` varchar(64) DEFAULT NULL,
@@ -4060,32 +3920,9 @@ CREATE TABLE IF NOT EXISTS `member_pos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `member_records`
---
-
-DROP TABLE IF EXISTS `member_records`;
-CREATE TABLE IF NOT EXISTS `member_records` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `member_record_type_id` int(11) NOT NULL,
-  `element_id` int(11) NOT NULL,
-  `by_id` int(11) NOT NULL,
-  `modified_by_id` int(11) DEFAULT NULL,
-  `date` datetime NOT NULL,
-  `last_modified` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKBFDA159D2B1214C2` (`by_id`),
-  KEY `FKBFDA159DE46288C5` (`member_record_type_id`),
-  KEY `FKBFDA159D47C8C3FD` (`element_id`),
-  KEY `FKBFDA159D41B97FCC` (`modified_by_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `member_record_types`
 --
 
-DROP TABLE IF EXISTS `member_record_types`;
 CREATE TABLE IF NOT EXISTS `member_record_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -4107,10 +3944,30 @@ INSERT INTO `member_record_types` (`id`, `name`, `label`, `editable`, `show_menu
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `member_records`
+--
+
+CREATE TABLE IF NOT EXISTS `member_records` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_record_type_id` int(11) NOT NULL,
+  `element_id` int(11) NOT NULL,
+  `by_id` int(11) NOT NULL,
+  `modified_by_id` int(11) DEFAULT NULL,
+  `date` datetime NOT NULL,
+  `last_modified` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKBFDA159D2B1214C2` (`by_id`),
+  KEY `FKBFDA159DE46288C5` (`member_record_type_id`),
+  KEY `FKBFDA159D47C8C3FD` (`element_id`),
+  KEY `FKBFDA159D41B97FCC` (`modified_by_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `member_sms_status`
 --
 
-DROP TABLE IF EXISTS `member_sms_status`;
 CREATE TABLE IF NOT EXISTS `member_sms_status` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member_id` int(11) NOT NULL,
@@ -4132,7 +3989,6 @@ CREATE TABLE IF NOT EXISTS `member_sms_status` (
 -- Table structure for table `member_sms_status_locks`
 --
 
-DROP TABLE IF EXISTS `member_sms_status_locks`;
 CREATE TABLE IF NOT EXISTS `member_sms_status_locks` (
   `id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
@@ -4141,10 +3997,143 @@ CREATE TABLE IF NOT EXISTS `member_sms_status_locks` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `members`
+--
+
+CREATE TABLE IF NOT EXISTS `members` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subclass` varchar(1) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `creation_date` datetime NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `member_activation_date` datetime DEFAULT NULL,
+  `hide_email` bit(1) NOT NULL DEFAULT b'0',
+  `member_broker_id` int(11) DEFAULT NULL,
+  `member_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ix_email` (`email`),
+  KEY `FK388EC91941F9CE53` (`member_broker_id`),
+  KEY `FK388EC919EAE0AB57` (`member_id`),
+  KEY `FK388EC91925A5B3E8` (`group_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+
+--
+-- Dumping data for table `members`
+--
+
+INSERT INTO `members` (`id`, `subclass`, `name`, `creation_date`, `group_id`, `email`, `member_activation_date`, `hide_email`, `member_broker_id`, `member_id`) VALUES
+(1, 'A', 'Administrator', '2013-12-14 18:15:32', 1, 'admin@mail.nl', NULL, b'0', NULL, NULL),
+(2, 'M', 'Roberto Andrade', '2013-12-15 00:36:12', 5, 'roberto.andrade@gmail.com', '2013-12-15 00:37:32', b'0', 3, NULL),
+(3, 'M', 'One Thor Branch Manager', '2013-12-15 03:08:55', 9, 'onethor@branch.acacia.br', '2013-12-15 03:11:01', b'0', NULL, NULL),
+(4, 'O', 'Robertoperator', '2013-12-15 03:35:56', 12, 'operator@robertoandrade.com', NULL, b'0', NULL, 2),
+(5, 'M', 'Renato Aparecido Gomes', '2013-12-27 12:02:29', 5, 'renatoapgomes@gmail.com', '2013-12-27 12:12:32', b'0', NULL, NULL),
+(6, 'M', 'Rodrigo Aparecido Gomes', '2013-12-27 12:16:36', 5, 'rodrigo.agomes@gmail.com', '2013-12-27 16:35:31', b'0', NULL, NULL),
+(7, 'M', 'test', '2013-12-27 12:26:50', 8, 'test@test.com', NULL, b'0', NULL, NULL),
+(8, 'M', 'Roberto S Andrade', '2013-12-27 14:46:08', 5, 'me@robertoandrade.com', '2013-12-27 16:34:05', b'0', NULL, NULL),
+(9, 'M', 'Tanagildo Aguiar Feres Junior', '2013-12-27 19:42:38', 5, 'aguiar@globalpremium.co.uk', '2013-12-27 19:48:16', b'0', NULL, NULL),
+(10, 'M', 'Fabiano de Freitas Almeida', '2013-12-31 02:30:00', 6, 'ffasoul@gmail.com', NULL, b'0', NULL, NULL),
+(11, 'M', 'Rogerio Ribeiro dos Santos', '2013-12-31 19:29:09', 6, 'rogersantos1981@gmail.com', NULL, b'0', NULL, NULL),
+(12, 'M', 'Alan Farias dos Santos', '2014-01-01 06:34:17', 6, 'alanfariascacau@hotmail.com', NULL, b'0', NULL, NULL),
+(13, 'M', 'Jovaci Pereira Lima', '2014-01-01 18:38:36', 6, 'jovacilima@yahoo.com.br', NULL, b'0', NULL, NULL),
+(14, 'M', 'kemuell santos fortunato', '2014-01-02 09:22:57', 6, 'kemuellfortunato@gmail.com', NULL, b'1', NULL, NULL),
+(15, 'M', 'herderson', '2014-01-02 10:23:49', 6, 'gmdss@outlook.com', NULL, b'0', NULL, NULL),
+(16, 'M', 'herderson', '2014-01-02 10:33:51', 6, 'gmdss@live.com', NULL, b'0', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `members_channels`
+--
+
+CREATE TABLE IF NOT EXISTS `members_channels` (
+  `member_id` int(11) NOT NULL,
+  `channel_id` int(11) NOT NULL,
+  KEY `FK66F8B836EAE0AB57` (`member_id`),
+  KEY `FK66F8B8369B71D578` (`channel_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `members_channels`
+--
+
+INSERT INTO `members_channels` (`member_id`, `channel_id`) VALUES
+(7, 1),
+(9, 1),
+(10, 1),
+(11, 1),
+(12, 1),
+(13, 1),
+(14, 1),
+(15, 1),
+(16, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `members_loan_groups`
+--
+
+CREATE TABLE IF NOT EXISTS `members_loan_groups` (
+  `member_id` int(11) NOT NULL,
+  `loan_group_id` int(11) NOT NULL,
+  KEY `FKBE11EDDDEAE0AB57` (`member_id`),
+  KEY `FKBE11EDDD54774F2E` (`loan_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `members_loans`
+--
+
+CREATE TABLE IF NOT EXISTS `members_loans` (
+  `loan_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  KEY `FKAD520EDDEAE0AB57` (`member_id`),
+  KEY `FKAD520EDDF9B21025` (`loan_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `members_pending_charge`
+--
+
+CREATE TABLE IF NOT EXISTS `members_pending_charge` (
+  `account_fee_log_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  KEY `FK265D1E42EAE0AB57` (`member_id`),
+  KEY `FK265D1E426957A5AA` (`account_fee_log_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `message_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `message_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `message_categories`
+--
+
+INSERT INTO `message_categories` (`id`, `name`) VALUES
+(1, 'Support'),
+(2, 'Administration'),
+(3, 'Loan request');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `messages`
 --
 
-DROP TABLE IF EXISTS `messages`;
 CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -4187,7 +4176,6 @@ INSERT INTO `messages` (`id`, `date`, `subject`, `type`, `direction`, `is_read`,
 -- Table structure for table `messages_to_groups`
 --
 
-DROP TABLE IF EXISTS `messages_to_groups`;
 CREATE TABLE IF NOT EXISTS `messages_to_groups` (
   `message_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -4198,32 +4186,9 @@ CREATE TABLE IF NOT EXISTS `messages_to_groups` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `message_categories`
---
-
-DROP TABLE IF EXISTS `message_categories`;
-CREATE TABLE IF NOT EXISTS `message_categories` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
---
--- Dumping data for table `message_categories`
---
-
-INSERT INTO `message_categories` (`id`, `name`) VALUES
-(1, 'Support'),
-(2, 'Administration'),
-(3, 'Loan request');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `notification_preferences`
 --
 
-DROP TABLE IF EXISTS `notification_preferences`;
 CREATE TABLE IF NOT EXISTS `notification_preferences` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member` int(11) DEFAULT NULL,
@@ -4234,7 +4199,7 @@ CREATE TABLE IF NOT EXISTS `notification_preferences` (
   PRIMARY KEY (`id`),
   KEY `ix_np_member_type` (`member`,`type`),
   KEY `FK9BBCBDA45AA28D11` (`member`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=188 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=239 ;
 
 --
 -- Dumping data for table `notification_preferences`
@@ -4410,7 +4375,58 @@ INSERT INTO `notification_preferences` (`id`, `member`, `type`, `is_message`, `i
 (184, 13, 'tfb', b'1', b'0', b'0'),
 (185, 13, 'cer', b'1', b'0', b'0'),
 (186, 13, 'gua', b'1', b'0', b'0'),
-(187, 13, 'pob', b'1', b'0', b'0');
+(187, 13, 'pob', b'1', b'0', b'0'),
+(188, 14, 'mbr', b'1', b'0', b'0'),
+(189, 14, 'a2m', b'1', b'0', b'0'),
+(190, 14, 'a2g', b'1', b'0', b'0'),
+(191, 14, 'acs', b'1', b'0', b'0'),
+(192, 14, 'act', b'1', b'0', b'0'),
+(193, 14, 'brk', b'1', b'0', b'0'),
+(194, 14, 'pmt', b'1', b'0', b'0'),
+(195, 14, 'ept', b'1', b'0', b'0'),
+(196, 14, 'loa', b'1', b'0', b'0'),
+(197, 14, 'ade', b'1', b'0', b'0'),
+(198, 14, 'adi', b'1', b'0', b'0'),
+(199, 14, 'inv', b'1', b'0', b'0'),
+(200, 14, 'ref', b'1', b'0', b'0'),
+(201, 14, 'tfb', b'1', b'0', b'0'),
+(202, 14, 'cer', b'1', b'0', b'0'),
+(203, 14, 'gua', b'1', b'0', b'0'),
+(204, 14, 'pob', b'1', b'0', b'0'),
+(205, 15, 'mbr', b'1', b'0', b'0'),
+(206, 15, 'a2m', b'1', b'0', b'0'),
+(207, 15, 'a2g', b'1', b'0', b'0'),
+(208, 15, 'acs', b'1', b'0', b'0'),
+(209, 15, 'act', b'1', b'0', b'0'),
+(210, 15, 'brk', b'1', b'0', b'0'),
+(211, 15, 'pmt', b'1', b'0', b'0'),
+(212, 15, 'ept', b'1', b'0', b'0'),
+(213, 15, 'loa', b'1', b'0', b'0'),
+(214, 15, 'ade', b'1', b'0', b'0'),
+(215, 15, 'adi', b'1', b'0', b'0'),
+(216, 15, 'inv', b'1', b'0', b'0'),
+(217, 15, 'ref', b'1', b'0', b'0'),
+(218, 15, 'tfb', b'1', b'0', b'0'),
+(219, 15, 'cer', b'1', b'0', b'0'),
+(220, 15, 'gua', b'1', b'0', b'0'),
+(221, 15, 'pob', b'1', b'0', b'0'),
+(222, 16, 'mbr', b'1', b'0', b'0'),
+(223, 16, 'a2m', b'1', b'0', b'0'),
+(224, 16, 'a2g', b'1', b'0', b'0'),
+(225, 16, 'acs', b'1', b'0', b'0'),
+(226, 16, 'act', b'1', b'0', b'0'),
+(227, 16, 'brk', b'1', b'0', b'0'),
+(228, 16, 'pmt', b'1', b'0', b'0'),
+(229, 16, 'ept', b'1', b'0', b'0'),
+(230, 16, 'loa', b'1', b'0', b'0'),
+(231, 16, 'ade', b'1', b'0', b'0'),
+(232, 16, 'adi', b'1', b'0', b'0'),
+(233, 16, 'inv', b'1', b'0', b'0'),
+(234, 16, 'ref', b'1', b'0', b'0'),
+(235, 16, 'tfb', b'1', b'0', b'0'),
+(236, 16, 'cer', b'1', b'0', b'0'),
+(237, 16, 'gua', b'1', b'0', b'0'),
+(238, 16, 'pob', b'1', b'0', b'0');
 
 -- --------------------------------------------------------
 
@@ -4418,7 +4434,6 @@ INSERT INTO `notification_preferences` (`id`, `member`, `type`, `is_message`, `i
 -- Table structure for table `operator_groups_max_amount`
 --
 
-DROP TABLE IF EXISTS `operator_groups_max_amount`;
 CREATE TABLE IF NOT EXISTS `operator_groups_max_amount` (
   `group_id` int(11) NOT NULL,
   `amount` decimal(15,6) NOT NULL,
@@ -4434,7 +4449,6 @@ CREATE TABLE IF NOT EXISTS `operator_groups_max_amount` (
 -- Table structure for table `password_history`
 --
 
-DROP TABLE IF EXISTS `password_history`;
 CREATE TABLE IF NOT EXISTS `password_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -4460,7 +4474,6 @@ INSERT INTO `password_history` (`id`, `user_id`, `date`, `type`, `password`) VAL
 -- Table structure for table `payment_filters`
 --
 
-DROP TABLE IF EXISTS `payment_filters`;
 CREATE TABLE IF NOT EXISTS `payment_filters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `account_type_id` int(11) NOT NULL,
@@ -4507,10 +4520,26 @@ INSERT INTO `payment_filters` (`id`, `account_type_id`, `name`, `show_in_account
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `payment_obligation_logs`
+--
+
+CREATE TABLE IF NOT EXISTS `payment_obligation_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` datetime NOT NULL,
+  `status` varchar(2) NOT NULL,
+  `payment_obligation_id` int(11) NOT NULL,
+  `by_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK6EE4F972B1214C2` (`by_id`),
+  KEY `FK6EE4F973AEC8F84` (`payment_obligation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `payment_obligations`
 --
 
-DROP TABLE IF EXISTS `payment_obligations`;
 CREATE TABLE IF NOT EXISTS `payment_obligations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `status` varchar(2) NOT NULL,
@@ -4533,28 +4562,9 @@ CREATE TABLE IF NOT EXISTS `payment_obligations` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `payment_obligation_logs`
---
-
-DROP TABLE IF EXISTS `payment_obligation_logs`;
-CREATE TABLE IF NOT EXISTS `payment_obligation_logs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` datetime NOT NULL,
-  `status` varchar(2) NOT NULL,
-  `payment_obligation_id` int(11) NOT NULL,
-  `by_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK6EE4F972B1214C2` (`by_id`),
-  KEY `FK6EE4F973AEC8F84` (`payment_obligation_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `pending_email_changes`
 --
 
-DROP TABLE IF EXISTS `pending_email_changes`;
 CREATE TABLE IF NOT EXISTS `pending_email_changes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `creation_date` datetime NOT NULL,
@@ -4575,7 +4585,6 @@ CREATE TABLE IF NOT EXISTS `pending_email_changes` (
 -- Table structure for table `pending_members`
 --
 
-DROP TABLE IF EXISTS `pending_members`;
 CREATE TABLE IF NOT EXISTS `pending_members` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `creation_date` datetime NOT NULL,
@@ -4605,10 +4614,23 @@ CREATE TABLE IF NOT EXISTS `pending_members` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `permission_denieds`
+--
+
+CREATE TABLE IF NOT EXISTS `permission_denieds` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` datetime NOT NULL,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK61FE25C8A19267FC` (`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `permissions`
 --
 
-DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE IF NOT EXISTS `permissions` (
   `group_id` int(11) NOT NULL,
   `permission` varchar(255) NOT NULL,
@@ -4961,25 +4983,9 @@ INSERT INTO `permissions` (`group_id`, `permission`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `permission_denieds`
---
-
-DROP TABLE IF EXISTS `permission_denieds`;
-CREATE TABLE IF NOT EXISTS `permission_denieds` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` datetime NOT NULL,
-  `user_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK61FE25C8A19267FC` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `pos`
 --
 
-DROP TABLE IF EXISTS `pos`;
 CREATE TABLE IF NOT EXISTS `pos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pos_id` varchar(64) NOT NULL,
@@ -4997,7 +5003,6 @@ CREATE TABLE IF NOT EXISTS `pos` (
 -- Table structure for table `pos_logs`
 --
 
-DROP TABLE IF EXISTS `pos_logs`;
 CREATE TABLE IF NOT EXISTS `pos_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -5018,7 +5023,6 @@ CREATE TABLE IF NOT EXISTS `pos_logs` (
 -- Table structure for table `print_settings`
 --
 
-DROP TABLE IF EXISTS `print_settings`;
 CREATE TABLE IF NOT EXISTS `print_settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member` int(11) DEFAULT NULL,
@@ -5037,7 +5041,6 @@ CREATE TABLE IF NOT EXISTS `print_settings` (
 -- Table structure for table `rate_parameters`
 --
 
-DROP TABLE IF EXISTS `rate_parameters`;
 CREATE TABLE IF NOT EXISTS `rate_parameters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -5063,7 +5066,6 @@ CREATE TABLE IF NOT EXISTS `rate_parameters` (
 -- Table structure for table `reference_history`
 --
 
-DROP TABLE IF EXISTS `reference_history`;
 CREATE TABLE IF NOT EXISTS `reference_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `from_member_id` int(11) NOT NULL,
@@ -5082,7 +5084,6 @@ CREATE TABLE IF NOT EXISTS `reference_history` (
 -- Table structure for table `refs`
 --
 
-DROP TABLE IF EXISTS `refs`;
 CREATE TABLE IF NOT EXISTS `refs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -5107,31 +5108,9 @@ CREATE TABLE IF NOT EXISTS `refs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `registration_agreements`
---
-
-DROP TABLE IF EXISTS `registration_agreements`;
-CREATE TABLE IF NOT EXISTS `registration_agreements` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `contents` longtext NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `registration_agreements`
---
-
-INSERT INTO `registration_agreements` (`id`, `name`, `contents`) VALUES
-(1, 'Contrato General de Cuenta Bancaria', '<p style="margin-bottom: 0in; line-height: 100%"><font face="Trebuchet MS, serif"><font style="font-size: 26pt"><span lang="es-AR"><b>Contrato General de Cuenta</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%"><font face="Trebuchet MS, serif"><font style="font-size: 26pt"><span lang="es-AR"><b>Bancaria</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1. EFECTIVIDAD DELCONTRATO Y LOS SERVICIOS OFRECIDOS POR EL BANCO</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">......................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2. LEYAPLICABLE, JURISDICCIÓN Y DIVULGACION DE INFORMACION</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..........................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Ley Aplicable .. ......................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Sujeción a Jurisdicción .........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Política de Privacidad e Información Confidencial ................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3. INSTRUCCIONES DEL CLIENTE</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4. CAMBIO DE DIRECCIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5. TARIFAS, CARGOS Y PENALIDADES</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.......................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6. NUESTROS DERECHOS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Costos Legales y Tarifas .......................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Derecho de Compensar ........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Gravámenes y Prendas ........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Derechos Relacionados ........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Terminación de la Cuenta .....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7. FORMAS DE PROPIEDAD</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Cuentas Individuales .............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Cuentas Conjuntas “O” (Expresión “O”) ................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Cuentas Colectivas “Y” (Expresión “Y”) ................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Cuentas con Beneficiarios ....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Cuenta Corporativa ...............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8. CLASES DE CUENTAS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Cuentas Corriente No Remuneradas ....................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Cuentas Corriente Remuneradas ..........................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Cuentas Ahorros ...................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Depósitos a Plazo .................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9. MUERTE DELDEPOSITANTE</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.......................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10. CERTIFICACIÓN DE CONDICIÓN DE NO CONTRIBUYENTE.</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...........................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11. FIRMAS AUTORIZADAS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12. RETIROS, CHEQUES Y DEPÓSITOS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">........................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Depósitos ...............................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Tasas de Interés ....................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Acreditar o Devolución ..........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Endosos ...........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Cheques Postdatados ......................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">F. Cheques Caducos ............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">G. Día Laboral ......................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">H. Reclamos .........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">I. Actualización ......................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">J. Cierre de Cuenta ...............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">K. Cuentas Inactivas .............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">L. Poder Especial ..................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">M. Orden de no Pago. ...........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">N. Información Extraña ..........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">O. Fondos Insuficientes .........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">P. Estados de Cuenta ............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">Q. Orden de Cheques y Comisiones .....................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">R. Secciones Adicionales Respecto a Cheques y Depósitos ................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">S. Servicio de Sucursal Virtual ...............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>13. TRANSFERENCIAS PROGRAMADAS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>14. NO TRANSFERENCIADE CUENTA; CESIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">......................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>15. LIMITACIÓN DE RESPONSABILIDAD; FUERZAMAYOR; FALTADE CULPA E INDEMNIZACIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.................................................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>16. CONDICIONES APLICABLES A LA TRANSFERENCIA ELECTRÓNICA DE FONDOS</b></span></font></font><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...............</span></font></font><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Órdenes de Pago ................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Personas Autorizadas .........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Insuficiencia de Fondos ....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Enmiendas o Cancelación ................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Tiempo de Cierre ..............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">F. Banco Beneficiario; Banco Intermediario ..........................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">G. Números de Identificación ................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">H. Solicitud de Información ...................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">I. Rechazos ...........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">J. Registros ...........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">K. Depositantes del Banco ....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">L. Estados de Cuenta y Notificación de Errores ....................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">M. Tarifas ...............................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">N. Órdenes de Pago que Llegan ...........................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">O. Limitación de Responsabilidad - Deber de Cooperar .......................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">P. Indemnización ....................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">Q. Moneda Extranjera .............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>17. ORIGEN DE FONDOS; CUMPLIMIENTO CON LA LEY</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.....................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>18. CONTRATO COMPLETO; INTERPRETACIÓN DEL CONTRATO</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>19. RENUNCIA A LA INMUNIDAD SOBERANA</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.........................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>20. OBLIGATORIEDAD DEL CONTRATO; RESTRICCIÓN EN LA CESIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">........................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>21. SERVICIO DE VALIJA</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>22. DERECHO ARENUNCIAR DELBANCO.</b></span></font></font><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0.14in"><font size="4"><span lang="es-AR"><b>CONTRATO BANCARIO GENERAL DE CUENTA</b></span></font></p><p style="margin-bottom: 0.14in"><font style="font-size: 9pt"><span lang="es-AR"><b>PREÁMBULO</b></span></font></p><p style="margin-bottom: 0.14in" align="justify"><font size="3"><span lang="es-AR">Bienvenido a Acacia Bank S/A (en adelante, el “Banco”) y gracias por abrir la Cuenta con nosotros. Este Contrato establece los términos y condiciones relacionadas con la Cuenta y los productos y servicios que el Banco provee. Además, usted puede recibir otros documentos en los que constan declaraciones aplicables a la Cuenta (“Documentos de Declaraciones”) y tales Documentos de Declaraciones también formarán parte de este Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El presente Contrato aparece publicado en la página de internet del Banco (www.acaciabank.com.pa), a través de la cual usted podrá tener acceso al mismo, sus términos y condiciones, a efectos de conocer la información sobre la Cuenta o producto que mantenga con el Banco. Sin perjuicio de lo anterior, el Banco podrá poner a su disposición una copia física del presente Contrato, contra la apertura de la Cuenta o de cualquier otro producto o servicio del banco regulado en el mismo. Igualmente, contra su solicitud, el Banco podrá poner a su disposición una copia física del presente Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Los términos “Depositante”, “Cliente”, “Titular de la Cuenta”, “Nombre en la Cuenta”, “Usted”, “algunos de ustedes”, “suyo”, “suyos”, cuando se usan en este Contrato, significan el dueño o dueños conjuntos de cualquiera de las Cuentas descritas aquí.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Los términos “nosotros”, “nuestro”, “nuestros”, y el “Banco”, cuando se usan en este Contrato, significa Acacia Bank S/A; entidad bancaria con la cual usted está abriendo una cuenta bajo este Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El término “Cuenta” cuando se usa en este Contrato significa cualquiera y todas las Cuentas o depósitos mantenidos por el Cliente en el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El término “Persona Autorizada”, “Cotitular”, cuando se usa en este Contrato, significa cada individuo que tiene firma autorizada [mediante un “Registro de Firma”] con los mismos derechos de retiro y depósito que el Cliente tiene en la Cuenta, pero sujeto en cada caso a las limitaciones aplicables según el tipo de Cuenta y lo establecido en la “Solicitud de Producto” y “Registro de Firmantes Autorizados”.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Por el hecho de utilizar la Cuenta usted consiente estar obligado por los términos y condiciones de este Contrato. Por el hecho de firmar una Solicitud de Apertura de Cuenta (“Solicitud de Producto”) como se define abajo, usted acuerda que cada una y todas las cuentas que usted establezca con el Banco y cada una y todas las cuentas que las reemplazan (cualquiera y cada una de tales cuentas están siendo referidas aquí como la “Cuenta”) están sujetas a estos términos y condiciones y sus modificaciones (junto con la Solicitud de Producto, este “Contrato”), así como a las leyes de la República de Panamá que le sean aplicables; y las prácticas bancarias comerciales vigentes en la República de Panamá.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cuando se está abriendo una Cuenta en el Banco, el Cliente y/o los Cotitulares que se incluyen en la “Solicitud de Producto” aceptan las siguientes condiciones:</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. El Depositante acuerda estar obligado (y cada uno y todos los sucesores, herederos, albaceas y otros representantes legales del Depositante están obligados en todo momento) por el presente Contrato descrito más adelante, y las modificaciones hechas al mismo, y otros acuerdos adicionales realizados por el Cliente y el Banco, y todas las reglas y regulaciones del Banco. El Banco se reserva el derecho de cambiar o modificar el presente Contrato de tiempo en tiempo, sin necesidad de notificación previa al Depositante. Si usted mantiene sus depósitos con nosotros después del día en el cual tales modificaciones son efectivas se considerará que usted ha aceptado tales modificaciones. Sin embargo, usted será informado de las modificaciones que afectan sus derechos y obligaciones por correo, en la página de Internet del Banco o por el medio que disponga el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Cada individuo que firme la “Solicitud de Producto” está autorizando al Banco a entregar y/o obtener reportes de crédito o información sobre el comportamiento y las relaciones comerciales del Depositante respecto de su Cuenta personal y/o de las Cuentas de otras entidades que él o ella representa, para o de otras instituciones bancarias y agencias de crédito reconocidas y establecimientos comerciales, bases de datos públicas o privadas, tanto nacionales como extranjeras, según se requiera o se considere apropiado, sin responsabilidad alguna para el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Queda entendido que antes que el Banco ponga a disposición del Depositante los servicios aquí mencionados y/o el otorgamiento de créditos, el Banco debe primero recibir toda la documentación pertinente del Depositante y los Autorizados y haber aceptado la “Solicitud de Producto”.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">1. EFECTIVIDAD DELCONTRATO YLOS SERVICIOS OFRECIDOS POR ELBANCO</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Cliente entiende y acuerda que los servicios establecidos en el presente Contrato y los derechos y deberes de las partes aquí establecidos están sujetos a:</span></font></p><ol type="i"><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">que el Banco reciba toda la información y documentación pertinente del Cliente, los Cotitulares y los Firmantes Autorizados,</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">la aceptación de la“Solicitud de Producto” por parte del Banco, y</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">al cumplimiento con los demás términos y condiciones que pueda establecer el Banco de tiempo en tiempo para la oferta de sus productos y servicios.</span></font></p></li></ol><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">2. LEYAPLICABLE, JURISDICCIÓN YDIVULGACION DE INFORMACION.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Ley Aplicable.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">En razón del principio de especialidad, la Cuenta está regida por el presente Contrato, y en lo que se refiera a asuntos que en este no se hallen especialmente determinados, por las leyes de la República de Panamá, que estén vigentes o puedan ser adoptadas en el futuro, y en su defecto por los usos y costumbres bancarios locales e internacionales; sin perjuicio de aquellas normas que sean de obligatorio cumplimiento.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Sujeción a Jurisdicción.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Usted acuerda que todos los procedimientos legales relacionados con la Cuenta tienen que ser presentados ante los tribunales de la República de Panamá, los cuales usted acuerda que tendrán jurisdicción exclusiva sobre este Contrato y cualquier otro acuerdo que usted tenga con el Banco o cualquier disputa que resulte bajo éste, y usted irrevocablemente acuerda someterse a la jurisdicción de cualquiera de estos tribunales con respecto a tales procedimientos y disputas. Además, usted aquí renuncia irrevocablemente, según sea permitido por la ley, a cualquier reclamo de que tal demanda ha sido presentada ante un tribunal cuyo foro es inconveniente. Usted también acuerda irrevocablemente que la sentencia final en relación con tales procedimientos ante dicho tribunal es definitiva y que la sentencia se puede ejecutar en cualquier jurisdicción o de cualquier otra forma. Sin embargo, nada en este Contrato puede excluir o de ninguna manera limitar el derecho del Banco a demandarlo o tomar cualquier acción en contra suya en cualquier tribunal, donde quiera que esté localizado, con jurisdicción sobre usted o algunos de sus activos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Adicionalmente, usted reconoce que el dinero y demás bienes y valores depositados en el Banco se consideran domiciliados en la República de Panamá, por tanto están sujetos a la jurisdicción de los tribunales panameños. Por su parte, el dinero y demás bienes y valores depositados en el Banco, cuyo Depositante sea una persona de nacionalidad no panameña y no residente en la República de Panamá al momento en que se perfeccione la transferencia de tales dineros, bienes y valores, quedan sometidos plenamente al principio de la autonomía de la voluntad y al régimen de libre disposición de bienes, aún cuando las leyes sucesoria o el régimen matrimonial del país de la nacionalidad o del domicilio del Depositante dispongan otra cosa.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Política de Privacidad e Información Confidencial.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco no divulga información sobre el Depositante y sus operaciones financieras pasada ni presente (Información Confidencial) a terceros, excepto cuando medie consentimiento expreso por parte del Depositante, y en los casos en que sea permitido</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">por la ley. El Banco queda expresamente autorizado para divulgar Información Confidencial en los siguientes casos:</span></font></p><ul><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cuando la información fuese requerida por autoridad competente en la República de Panamá de conformidad con la ley.</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cuando por iniciativa propia el Banco deba proporcionarla en cumplimiento de leyes panameñas o estándares internacionales en materia de prevención</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">de los delitos de blanqueo de capitales, financiamiento del terrorismo y delitos relacionados; o en cumplimiento de leyes panameñas, estándares internacionales o políticas en materia de transparencia tributaria.</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A agencias calificadoras para fines de análisis de riesgo.</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A agencias u oficinas procesadoras de datos para fines contables y operativos, cual incluye nuestra casa matriz, subsidiarias y filiales del banco en caso de tercerizaciones de actividades o proceso, sin perjuicio de trasladar el deber de confidencialidad.</span></font></p></li></ul><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">3. INSTRUCCIONES DELCLIENTE.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco puede requerir que cualquier pregunta relacionada con la Cuenta debe ser enviada por fax, documento digitalizado, correo regular o servicio de correo expreso a su representante de cuenta a la dirección del Banco. El Banco sólo aceptará instrucciones por teléfono, fax, documento digitalizado, Sucursal Virtual en relación con la Cuenta, según lo que determine el Banco, y en particular con algún pago, retiro o transferencia de fondos, según lo previsto en la Sección sobre las Condiciones Aplicables a la Transferencia Electrónica de Fondos de este Contrato. Todas las instrucciones recibidas estarán sujetas a verificación de que cumplen con los términos de la referida Sección. El Banco puede también requerir que usted siempre incluya el número de Cuenta en toda correspondencia.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">4. CAMBIO DE DIRECCIÓN.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco puede requerir que todo cambio de dirección postal sea notificado por escrito, mediante solicitud enviada por el Depositante al Banco. La correspondencia, incluyendo estados de cuenta enviados a la dirección registrada en el Banco, se considerará como correctamente enviada. Cualquier correspondencia, incluyendo estados de cuenta, devueltos al Banco porque el Depositante no le notificó sobre el cambio de su dirección permanente generará la suspensión del envío de nueva correspondencia hasta que la dirección correcta haya sido recibida por el Banco, y el Banco tendrá el derecho de cobrar los cargos por cuenta de terceros que correspondan por la devolución de correo.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">5. TARIFAS, CARGOS Y PENALIDADES.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">La Cuenta está sujeta a los intereses, las comisiones, recargos y cargos por cuenta de terceros, según lo previsto en el presente Contrato y sus respectivas modificaciones, y la tabla de productos y tarifas publicada por el Banco (“Tabla de Productos y Tarifas”) que será informada al Depositante al momento de su vinculación y de tiempo en tiempo cuando las mismas sean modificadas. La Tabla de Productos y Tarifas establecerá el importe o método de cálculo de tales intereses, comisiones, recargos y cargos por cuenta de terceros, su periodicidad y demás condiciones específicas para el cobro de las mismas. La Cuenta estará sujeta a los intereses, comisiones, recargos y cargos por cuenta de terceros previamente acordado en el Contrato y la Tabla de Productos y Tarifas, incluyendo pero sin limitación, comisiones, recargos y cargos por cuenta de terceros por saldo promedio mínimo inferior al acordado, servicio de valija, cheques devueltos por insuficiencia de fondos, sobregiros, investigación de cargos que resultan de las peticiones del Depositante o por demanda legal, firmas de referencia o cartas de verificación, cartas notariadas, servicios de mantenimiento, incluyendo Cuentas Inactivas (definidas más adelante), órdenes de no pago de cheques emitidas por el Depositante, correo devuelto y cierre de la Cuenta. Igualmente, el Banco establecerá en la Tabla de Productos y Tarifas, que será informada al Depositante al momento de su vinculación y de tiempo en tiempo cuando la misma sea modificada, el saldo mínimo a partir del cual los dineros depositados en la Cuenta devengarán intereses, la tasa de interés pagadera sobre la Cuenta, la forma en que dichos intereses serán computados, y la periodicidad en que serán pagados. No obstante el derecho que el Banco tiene de realizar cambios en las comisiones, recargos, cargos por cuenta de terceros e intereses sin notificación previa, el Depositante será informado con anticipación sobre cualquier cambio a la Tabla de Productos y Tarifas por correo, o por cualquier otro medio establecido por el Banco, con indicación de la fecha efectiva de entrada en vigencia de las mismas. Sin perjuicio de lo anterior, la Tabla de Productos y Tarifas actualizada estará disponible en la página web del Banco y en las oficinas de atención al público del Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">6. NUESTROS DERECHOS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Costos Legales y Tarifas. El Depositante acuerda pagar una vez requerido todas las pérdidas, costos y gastos (incluyendo sin limitación las tarifas y gastos de abogado, bien sea que hayan sido incurridos en un juicio, apelación o sin litigio alguno), si los hay, incurridos por el Banco en conexión con o en relación con la ejecución de los deberes y obligaciones contenidos en este Contrato o cualquier otro documento entregado bajo este Contrato, incluyendo pero no limitado a pérdidas, costos y gastos sufridos como resultado de: (i) incumplimiento por el Depositante de sus obligaciones y (ii) cualquier reclamo por una tercera persona sin importar si es legalmente válida o no, relacionada con el Depositante o la Cuenta del Depositante en el Banco; (iii) cualquier reclamo de un tercero relacionado con daños y perjuicios sufridos que sean consecuencia directa o indirecta de fraude o negligencia del Depositante, sus empleados o agentes o Personas Autorizadas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Derecho de Compensar. Además de cualquier derecho prendario o derecho de compensación o similar al cual el Banco tendría derecho de conformidad con la ley, el Banco puede en cualquier momento y sin notificación previa a usted (dicha notificación siendo expresamente renunciada por usted) combinar o consolidar: (i) todas o cualquiera de las obligaciones y deudas (bien sea directas o indirectas, en calidad de deudor, garante, fiador o avalista, conjuntas o individuales, original o como resultado de una compra o cesión, y bien sea por principal, interés, gastos de abogados, u otros gastos o cualquier otra cantidad) que son ahora o de aquí en adelante debidas y pagables a el Banco por usted o cualquiera de ustedes (con o sin otros responsables), junto con: (ii) todas o cualquiera de las Cuentas (bien sea generales o especiales, incluyendo sin limitación depósitos de los cuales son dueños conjuntamente o como unidad), interés sobre los mismos, balances y créditos mantenidos en el Banco por usted o algunos de ustedes (y cualquier obligación de cualquier otra clase que el Banco le debe a usted o cualquiera de ustedes), por este medio compensando y aplicando esos activos de ustedes mencionados en la Sección (ii) arriba, en el orden que el Banco decida, contra esas obligaciones y deudas de ustedes mencionadas en la Sección (i) arriba. Los derechos de el Banco bajo las provisiones anteriores serán además de, y no exclusivas de, algún derecho similar, incluyendo derechos de compensación, a los que el Banco tiene derecho por ley u otro contrato. En el evento de que los activos mencionados en la Sección (ii) arriba no sean suficientes para cubrir las obligaciones mencionadas en la Sección (i) arriba, el Banco se reserva el derecho de sobregirar las Cuentas para reflejar los saldos adeudados, en cuyo caso serán de aplicación las tasas de interés, comisiones, y recargos vigentes aplicables al servicio de sobregiro.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Gravámenes y Prendas.En consideración de alguna extensión de crédito u otro acuerdo financiero, otorgado ahora o en el futuro o como continuación de uno existente por el Banco a usted o alguno de ustedes, y como garantía de pago de todas las deudas, obligaciones y deudas (sean directos o indirectos, obligación individual o solidaria, vencidos o no vencidos, liquidados o no liquidados, incondicionales o eventuales, originales o resultantes de adquisición o cesión, y sean por capital, intereses, honorarios de abogados y otros costos o gastos) que ahora o en el futuro, usted o cualquiera de ustedes (con o sin otros deudores) le deba a el Banco (todas esas obligaciones y deudas se denominan el “Endeudamiento”), usted o cualquiera de ustedes pignoran a el Banco todo lo siguiente, exista ahora o en el futuro (la “Garantía”): (i) Cuentas, depósitos (generales o especiales incluyendo, sin limitación, depósitos de propiedad conjunta o por la unidad), sus intereses correspondientes, saldos y créditos mantenidos con el Banco (o con alguna oficina de éste) o con un afiliado de el Banco por usted o cualquiera de ustedes (y toda clase de obligación que el Banco o una sucursal o banco afiliado a el Banco, debiere al Titular), (ii) cualquiera y todos los demás activos (incluyendo, sin limitación, todos los valores y otros activos de inversión) mantenidos en el Banco (en o con alguna oficina de éste) o en cualquier afiliado de el Banco por cuenta de o para la cuenta de usted o cualquiera de ustedes, y (iii) todos los dineros provenientes de las Garantías. Toda falta de pago al vencimiento de cualquier Endeudamiento en que incurra usted o cualquiera de ustedes, el Banco está autorizada por este Contrato para compensar y aplicar cualquier Garantía o sus fondos a dicho Endeudamiento, y a vender o liquidar de otra manera cualquier otra Garantía que hubiere y aplicar los fondos resultantes a dicho Endeudamiento, en cualquier momento, en cualquier medida y en cualquier orden por los cuales optare el Banco su sola discreción. Esta prenda, hecha bajo este Contrato, permanecerá e irrevocable hasta el momento en que todo el Endeudamiento esté pagado por completo y el Banco esté satisfecho con que no surgirá mas Endeudamiento en el futuro.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Derechos Relacionados. La prenda a que se refiere el literal C anterior se entenderá perfeccionada ante el incumplimiento del pago de algún Endeudamiento. Apartir de su perfeccionamiento, el Banco podrá a su sola discreción tomar o retener la posesión de cualquier o de todos los instrumentos o certificados que demuestren o representen la Garantía; así como de ahí en adelante, por el tiempo que la prenda aquí referida siga vigente, toda Garantía capaz de ser renovada y redepositada será automáticamente renovada y redepositada en forma continua, a menos que el Banco opte por otra opción.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Mientras que la prenda aquí referida tenga vigencia, toda renovación, reemplazo, o adición de activos (y todo instrumento, recibo y otros documentos que representen tales activos) que se emitan o surjan de otra manera por razón de cualquier Garantía, se constituirán en Garantía adicional y serán retenidos por el Banco conforme a los términos de esta Garantía. Por el presente Contrato el Banco queda autorizada para notificar a cualquier oficina o afiliada de el Banco sobre la Garantía aquí referida, y para ordenar que esa Garantía sea registrada en los libros de esa oficina o afiliada, y que tal oficina o afiliada acepte y acuerde por escrito los términos de dicha Garantía. Usted autoriza por el presente Contrato a el Banco para que registre todos los documentos de financiamiento, los estados de continuidad u otros documentos o instrumentos que, a juicio de el Banco, demuestren, perfeccionen o protejan la seguridad de los intereses de el Banco aquí referidos; por el presente Contrato el Banco queda autorizada para registrar dichos documentos, sin su firma, en cualquier oficina pública de cualquier jurisdicción y para debitar de la Cuenta todos los costos de esos registros. El Banco también queda autorizada para debitar de la Cuenta y de aumentar el Endeudamiento garantizado aquí por el valor de todos los costos (incluyendo cualquier gasto de abogados, incurridos en juicio, apelación o sin juicio), de cualquier venta, compensar o disponer de otra manera, o liquidar la Garantía bajo este Contrato. El Banco no será responsable por rechazar ningún documento debido a falta de fondos en cualquiera de sus Cuentas que resulte de aplicar, compensar o bloquear fondos conforme a esta Garantía.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Terminación de la Cuenta. Salvo que se establezca algo distinto en las condiciones aplicables a una determinada clase de Cuenta, las Cuentas no tendrán un término fijo, y en consecuencia, el Banco o el Depositante podrán darlas por terminado en cualquier momento, sin aviso previo, y sin necesidad de que medie causa justa para ello. El Banco por este Contrato se reserva el derecho, a su discreción, a cerrar la Cuenta en cualquier momento. En caso que la Cuenta se cierre, el Banco enviará notificación al Depositante y le enviará un cheque por el balance de la Cuenta, después de haber deducido las comisiones respectivas, así como cualquier saldo adeudado a favor del Banco según sus libros, a la última dirección que está en nuestros archivos. El Depositante será responsable por las transacciones iniciados antes del cierre de la Cuenta. Sin limitar de ninguna manera la generalidad de lo anterior, cualquier Cuenta que mantenga un balance de cero (0) por un periodo de sesenta (60) días puede ser cerrada por el Banco o cualquier Cuenta en la cual tres (3) cheques o más han sido devueltos por insuficiencia de fondos puede ser terminada sin notificación alguna a usted.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">7. FORMAS DE PROPIEDAD.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Cliente acuerda entregar a el Banco toda la documentación necesaria para establecer la capacidad del Cliente para abrir una Cuenta en particular y proveer a el Banco con toda la información requerida en relación con el cumplimiento de las leyes y políticas para la prevención del blanqueo de capitales y financiamiento del terrorismo, así como de las políticas en materia de transparencia tributaria.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Cuentas Individuales.Una Cuenta Individual es una Cuenta de depósito cuyo dueño es una sola persona natural.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Cuentas Colectiva “O” (expresión “O”). Una Cuenta Colectiva “O” es una Cuenta de depósito cuya propiedad pertenece a dos o más personas naturales bajo la condición de titularidad “O”, según lo previsto en la ley 42 de1984. Usted acuerda que si la cuenta fue abierta por dos o más personas es una Cuenta Colectiva “O” a menos que usted le haya dado a el Banco instrucciones contrarias. Si esta es una Cuenta Colectiva “O”, usted acuerda que la expresión “O” en la Cuenta para designar la relación entre las personas a cuyo nombre está la Cuenta, hará entender que cada una de ellas es dueña de la totalidad de la cuenta, y en consecuencia; (i) la firma de cualquiera de ellas es suficiente para retirar fondos, ordenar pagos, cerrar la cuenta, revocar o suspender retiros de fondos y órdenes de pago, ceder o gravar los derechos derivados de la Cuenta y lo demás que acuerden el Banco y los Titulares; (ii) Cada uno de los Titulares responderá por la totalidad de la cuenta en caso de sobregiro o saldo deudor, y cargo de la Cuenta por la cantidad debida al Banco; (iii) la orden de embargo, secuestro, suspensión o retención de pagos decretada por autoridad competente sobre los fondos de cualquiera de los titulares recae sobre la totalidad de la Cuenta hasta la concurrencia de la suma indicada en la orden; (iv) la muerte o declaración judicial de ausencia, presunción de muerte, interdicción, quiebra o concurso de acreedores de cualquiera de los titulares no afecta el derecho de giro ni el de propiedad del o de los otros titulares sobre la Cuenta. Adicionalmente, los titulares y el Banco acuerdan que la firma de cualquiera de los titulares será suficiente para retirar o eliminar a otro titular o titulares de la Cuenta, así como para adicionar uno o más titulares a la Cuenta. Cada Titular de la Cuenta puede aprobar estados de cuenta, puede obtener información en relación con la Cuenta. Sin perjuicio de los acuerdos que pudieran existir entre los Titulares de la Cuenta, el Banco no será responsable por los daños y perjuicios que pudieran derivar del cumplimiento de las instrucciones en la forma antes prescrita. El Banco podrá abstenerse de atender instrucciones respecto de la Cuenta, cuando haya recibido instrucciones contradictorias o incompatibles de dos o más titulares, respecto de la Cuenta. El Banco se reserva el derecho a determinar razonablemente a su opción y exclusivo criterio, bajo qué circunstancias las instrucciones recibidas respecto de la Cuenta poseen carácter incompatible o contradictorio, en cuyo caso procederá a notificarlo a los Titulares. El Banco no será responsable por los daños y perjuicios ocasionados con el ejercicio de esta facultad. Sin perjuicio de lo anterior, y aunque el Banco no tiene la obligación de notificar a ninguna persona de cualquier cambio u otra acción en relación con la Cuenta hecha por alguno de ustedes, el Banco puede, requerir la firma de todos ustedes para pagar algún ítem o tomar alguna acción en relación con la Cuenta, si el Banco ha recibido órdenes contradictorias de cualquiera dos o más de ustedes, ha recibido una orden firmada por no todos ustedes buscando cambiar la titularidad de la Cuenta (o restringir el pago o la transferencia de fondos), o ha concluido por cualquier otra razón, a discreción del Banco, que es prudente requerir las firmas de todos ustedes.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Cuentas Conjuntas “Y” (expresión “Y”). Una Cuenta Conjunta “Y” es la que está a nombre de dos o más personas naturales bajo la condición de titularidad “y” o “y/o” según lo previsto en la ley 42 de1984. Si esta es una Cuenta Conjunta “Y” bajo la condición de titularidad “Y”, usted acuerda que la expresión “Y” en la Cuenta para designar la relación entre las personas a cuyo nombre está la Cuenta, hará entender que (i) los titulares son acreedores mancomunados del Banco y deudores solidarios del mismo, en caso de sobregiro, saldo deudor, o cargos de la Cuenta por la cantidad debida al Banco por dichos conceptos; (ii) la firma de todos los titulares se requiere para retirar fondos, ordenar pagos, cerrar la cuenta, revocar o suspender retiros de fondos y órdenes de pago, ceder o gravar los derechos derivados de la Cuenta y los demás que los Titulares y el Banco acuerden; (iii) la orden de embargo, secuestro, suspensión o retención de pagos decretada por la autoridad competente sobre los fondos de uno o más de los titulares en dicha Cuenta, sólo recae sobre la parte alícuota que le corresponde al afectado por dicha orden hasta el momento de la suma indicada en la misma. El saldo de la parte alícuota no afectado por la orden, si lo hubiera, así como la parte alícuota de los titulares no afectados por la mencionada orden, sigue las normas detalladas en las secciones (i) (ii) y (iv). Si la orden recayere sobre la totalidad de la parte alícuota, la firma del o de los titulares afectados por la misma no será necesaria para las operaciones a que se refiere la sección (ii) anterior, mientras subsista dicha orden; (iv) la muerte o declaración judicial de ausencia, presunción de muerte, interdicción, quiebra o concurso de acreedores o la liquidación de uno o más de los titulares, sólo afecta la parte alícuota del o de los titulares de que se trate, la cual será retenida por el Banco a nombre de o de los titulares respectivos. En estos casos la firma del o de los titulares tampoco será necesaria para las operaciones a que se refiere la sección (ii) anterior, mientras subsista dicha situación. Si esta es una Cuenta Conjunta “Y” bajo la condición de titularidad “y/o”, usted acuerda que la expresión “y/o” en la Cuenta para designar la relación entre las personas a cuyo nombre está la Cuenta, hará entender lo mismo que la expresión “y”según lo indicado anteriormente, salvo que la firma de cualquiera de los titulares será suficiente para retirar fondos, ordenar pagos, cerrar la cuenta, revocar o suspender retiros de fondos y órdenes de pago, y ceder o gravar los derechos de la cuenta. Adicionalmente, los titulares y el Banco acuerdan que la firma de cualquiera de los titulares será suficiente para retirar o eliminar a otro titular o titulares de la Cuenta, así como para adicionar uno o más titulares a la Cuenta. El Banco no tiene obligación de informar al o a los titulares sobre las instrucciones dadas por algún titular respecto de la Cuenta. Sin perjuicio de los acuerdos que pudieran existir entre los Titulares de la Cuenta, el Banco no será responsable por los daños y perjuicios que pudieran derivar del cumplimiento de las instrucciones en la forma antes prescrita respecto de las cuentas “y/o”. El Banco podrá abstenerse de atender instrucciones respecto de la Cuenta bajo la condición de titularidad “y/o”, cuando haya recibido instrucciones contradictorias o incompatibles de dos o más titulares, respecto de la Cuenta. El Banco se reserva el derecho a determinar razonablemente a su opción y exclusivo criterio, bajo qué circunstancias las instrucciones recibidas respecto de la Cuenta poseen carácter incompatible o contradictorio, en cuyo caso procederá a notificarlo a los Titulares. El Banco no será responsable por los daños y perjuicios ocasionados con el ejercicio de esta facultad. Indistintamente, se trate de una cuenta bajo la titularidad “y” o “y/o” cualquiera de los titulares podrá solicitar información sobre la Cuenta, sin necesidad de requerir la firma del o de los demás titulares, y sin necesidad de notificarles sobre la solicitud o sobre la información entregada con motivo de la misma.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Cuentas con Beneficiarios. El Depositante podrá solicitar al Banco que en caso de fallecimiento, el sado de la Cuenta sea pagado por el Banco directamente y sin ningún otro trámite o procedimiento judicial, a la persona o personas designadas por el Depositante como beneficiario o beneficiarios, o a su custodio, tutor o representante legal debidamente acreditado, según sea el caso. Para tal efecto el Depositante deberá hacer la designación del o de los beneficiarios, siguiendo las formalidades y procedimientos que el Banco determine. El pago a favor del o de los beneficiarios se realizará una vez identificado debidamente el beneficiario y comprobada la muerte del Depositante, para cuyos efectos el Banco podrá exigir el cumplimiento de aquellas formalidades que estime conveniente. Queda entendido que los beneficiarios no tienen facultades de disposición sobre la Cuenta, ni tampoco derecho a recibir información sobre la Cuenta. Los beneficiarios tienen derecho a recibir los saldos de la Cuenta, en las proporciones establecidas por el o los titulares, sin perjuicio de los derechos que correspondan a los titulares de cuentas conjuntas o comunes, según la condición de titularidad de la Cuenta; y sin perjuicio de los derechos de prenda, compensación y demás que pueda tener el Banco sobre la Cuenta. Si el beneficiario muere (o, si hay más de un beneficiario, todos mueren) antes de la muerte del último de los Depositantes entonces la característica mencionada de Cuenta con Beneficiario se terminará dejará de tener efecto automáticamente y la Cuenta corresponderá a quien sea declarado heredero dentro del proceso de sucesión del último Depositante; salvo que se designen nuevos beneficiarios. Si más de un beneficiario es nombrado, sólo esos beneficiarios que están vivos al momento de la muerte del último de los Depositantes tendrán derecho a recibir los saldos de la Cuenta. Si más de un beneficiario sobrevive al último Depositante, cada uno de esos beneficiarios tendrá derecho a recibir el saldo de la Cuenta en la proporción que le corresponda según las instrucciones del Depositante. Si habiendo sido designados varios beneficiarios, al momento de la entrega del saldo de la Cuenta alguno o algunos de ellos (no todos) hayan fallecido, los fondos que le hubiesen correspondido al o a los beneficiarios fallecidos serán repartidos en parte iguales entre los beneficiarios sobrevivientes, o entregado en su totalidad al beneficiario sobreviviente, según sea el caso.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Cuenta Corporativa. Cuentas Corporativas pueden ser abiertas bajo el nombre de una corporación o entidad legal similar. Una Cuenta corporativa podrá ser abierta mediante el cumplimiento con los requisitos establecidos por el Banco y la entrega de todos los documentos requeridos por el Banco, incluyendo la entrega de los documentos de organización de la entidad legal, la debida autorización de la junta de directores u órgano directivo similar de la entidad legal, en el formato requerido por el Banco y la designación de las Firmas Autorizadas por la entidad legal a manejar la Cuenta Corporativa. Una vez se active la Cuenta Corporativa, y sujeto a las limitaciones aplicables a las designaciones de Firmas Autorizadas de la corporación o entidad legal similar notificadas al Banco, las Firmas Autorizadas pueden solicitar al Banco todas aquellas gestiones para las cuales este autorizado conforme a su designación, incluyendo, pero sin limitarse a, el pago y el débito de la Cuenta Corporativa, cualquiera y todas las notas, u otras órdenes para debitar la Cuenta o que han sido entregadas al Banco para transferir o retirar fondos de la Cuenta Corporativa, la modificación o cancelación de la Cuenta Corporativa.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">8. CLASES DE CUENTAS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco ofrece una variedad de cuentas a personas naturales y jurídicas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Cuentas Corriente No Remuneradas. Son cuentas corrientes con chequera, que no genera rentabilidad y permiten realizar pagos y transferencias de manera ilimitada. El Banco requiere un monto mínimo para su apertura, y el mantenimiento de un saldo promedio mínimo en la Cuenta; el Banco cobrará una comisión cuando la Cuenta tenga un saldo promedio inferior al requerido. La cuenta no posee una duración limitada, por lo tanto podrá ser cancelada por cualquiera de las partes, cuando así se determine, si usted decide cancelar la cuenta antes de los seis (6) meses posteriores a la apertura de la misma, el Banco tendrá la facultad de cobrarle una comisión por cancelación anticipada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Cuentas Corriente Remuneradas. Son cuentas corrientes con chequera, que generan rentabilidad y permiten realizar un número limitado de pagos y transferencias. El Banco requiere un monto mínimo para su apertura y el mantenimiento de un saldo promedio mínimo; el Banco cobrará una comisión cuando la Cuenta tenga un saldo promedio inferior al requerido. Igualmente, el Banco cobrará una comisión en el evento de que se realicen pagos o transferencias en exceso a la cantidad permitida. El interés que se paga sobre las Cuentas puede variar dependiendo de las condiciones del mercado. El Banco se reserva el derecho de, a su sola discreción, cambiar el interés pagado sobre las Cuentas. La cuenta no posee una duración limitada, por lo tantopodrá ser cancelada por cualquiera de las partes, cuando así se determine, si usted decide cancelar la cuenta antes de los seis (6) meses posteriores a la apertura de la misma, el Banco tendrá la facultad de cobrarle una comisión por cancelación anticipada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Cuentas Ahorros. Son cuentas de depósito a la vista remuneradas. El Banco requiere un monto mínimo para su apertura y el mantenimiento de un saldo promedio mínimo; el banco cobrará una comisión cuando la Cuenta tenga un saldo promedio inferior al requerido. El interés que se paga sobre las Cuentas puede variar dependiendo de las condiciones del mercado. El Banco se reserva el derecho de, a su sola discreción, cambiar el interés pagado sobre las Cuentas. La cuenta no posee una duración limitada, por lo tanto podrá ser cancelada por cualquiera de las partes, cuando así se determine, si usted decide cancelar la cuenta antes de los seis (6) meses posteriores a la apertura de la misma, el Banco tendrá la facultad de cobrarle una comisión por cancelación anticipada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Depósitos a Plazo. Son depósitos a término remunerados. El Banco a su entera discreción, determinará la tasa de interés aplicable según las condiciones prevalentes en el mercado (y según la cantidad y el término del depósito) al tiempo que el depósito fue originalmente realizado y al momento en el cual el depósito es renovado. La tasa de interés así determinada no podrá se variada durante el tiempo de vigencia del Depósito, con excepción de los Depósitos Tasa Variable, cuya tasa de interés está indexada a una tasa de referencia. El Banco se reserva el derecho a establecer la fecha valor de cada depósito, ya sea constituido mediante cheques, transferencias, o cualquier otra forma que El Banco determine, y será a partir de dicha fecha cuando el Depósito empezará a devengar intereses. Al momento de la apertura del Depósito a plazo, usted puede solicitar al Banco la impresión de una constancia de inversión en la cual constan las características principales del producto y sus titulares, en ningún momento dicha constancia de inversión debe entenderse como un certificado negociable. El Depósito podrá ser cedido a otro u otros titulares, solicitándolo Salvo que el Banco y el Depositante acuerden otra cosa, los intereses devengados por el Depósito se acumularán al capital en cada fecha de vencimiento. Los Depósitos a Plazo que no sean renovados, dejarán de devengar intereses a partir de la fecha de vencimiento, y los fondos serán puestos a disposición del Depositante. El Depósito a Plazo no podrá incrementarse antes de su vencimiento, salvo acuerdo entre el Banco y el Depositante, mediante capitalización de intereses o nuevos aportes. Los retiros o cancelaciones anticipados del Depósito a Plazo serán permitidos solamente en virtud de una orden de autoridad competente, o en el evento de que el Depósito a Plazo estuviere pignorada a favor de un Banco y la garantía fuere ejecutada en todo o en parte en virtud del incumplimiento de la obligación garantizada; o si el Banco, en su absoluta discreción le autoriza tales retiros o cancelación anticipada, en cuyo caso será solamente permitido bajo los términos que el Banco determine y una vez usted haya realizado una solicitud de cancelación por escrito al Banco, dicha solicitud debe realizarse 10 días antes de la fecha en la que se desea la disponibilidad de los fondos. Queda entendido que si bien el Banco puede autorizar el retiro o cancelación anticipada del Depósito a Plazo, no significa que está obligado a hacerlo. En el evento en que el Banco autorice el retiro o cancelación anticipada del Depósito, la cancelación debe ser por el total del valor del Depósito y queda facultado para cobrar un buen valor, el cual es el resultado del ajuste retroactivo de la tasa del Depósito, teniendo en cuenta los costos financieros en que el banco deba incurrir, derivados de dicha cancelación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">9. MUERTE DELDEPOSITANTE.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Si cualquiera de los dueños de la Cuenta muere, nosotros debemos recibir una copia autenticada de la partida de defunción o cualquier otro documento que a nuestra discreción puede ser necesario para establecer la muerte del dueño. Hasta tanto el Banco sea notificado sobre la muerte del dueño de la Cuenta, en la forma antes prescrita, el Banco no será responsable frente a los beneficiarios, sucesores o herederos o frente a cualquier tercero, por la ejecución de instrucciones indebidas o fraudulentas impartidas sobre la Cuenta por Personas Autorizadas, mandatarios, o representantes legales. Acreditada a satisfacción del Banco la muerte del titular de la Cuenta, se procederá a entregar el saldo de la Cuenta o la parte alícuota de este, según la condición de titularidad de la Cuenta, a favor del o de los beneficiarios designados, de haber alguno, en las proporciones que corresponda; o a favor de aquellas personas que hayan sido declaradas como herederos del dueño, según las instrucciones recibidas al efecto por los tribunales panameños dictadas dentro del proceso de sucesión correspondiente, en caso de que no existan beneficiarios designados y sobrevivientes a la muerte del dueño de la Cuenta. Sin embargo, usted acuerda que no tendremos obligación de desembolsar tal balance o una parte del mismo o cualquier otro activo del causante, a menos y hasta que nosotros estemos completamente satisfechos, según nuestro propio juicio, que no tendremos ninguna responsabilidad actual o potencial por dicha entrega bajo las leyes de la República de Panamá .</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">10. CERTIFICACIÓN DE CONDICIÓN DE NO CONTRIBUYENTE.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cada Depositante de la Cuenta que sea una persona natural deberá certificar su condición de no residente o domiciliado en la República de Panamá, mediante la presentación de aquellos documentos que el Banco considere necesarios para acreditar dicha condición. Cada Depositante de la Cuenta que sea una persona jurídica, independientemente del lugar de su domicilio o constitución, deberá certificar que no genera ingresos gravables en la República de Panamá, mediante la presentación de aquellos documentos que el Banco considere necesarios para acreditar dicha condición. Adicionalmente, el Banco podrá requerir a cada Depositante, Persona Autorizada o cualquier otra relacionada con la Cuenta que certifique si es una persona residente de los Estados Unidos de América para efectos tributarios, o en el caso de personas jurídicas, si es de propiedad sustancial de personas que sean residentes de los Estados Unidos de América para efectos tributarios. Sin perjuicio de cualquier información o documentación adicional que el Banco estime conveniente solicitar para acreditar la condición de residente de los Estados Unidos de América del Depositante o de sus propietarios sustanciales, el estatus de no residente de los Estados Unidos se acreditará entregando a el Banco la Forma W-8BEN expedida por el Departamento Interno de Rentas; y, el estatus de residente de los Estados Unidos se acreditará entregado al Banco la Forma W-9 expedida por el Departamento Interno de Rentas, donde conste el número de identificación tributario. Alternativamente, las certificaciones mencionadas arriba pueden ser entregadas en alguna forma similar a la Forma W-8BEN o a la Forma W-9, según sea el caso. La certificación del Depositante que no es un residente en los Estados Unidos debe de ser renovada antes del último día del tercer año calendario siguiente a la fecha en que la certificación fue firmada, o con la periodicidad que el Banco determine de tiempo en tiempo. El Banco queda por este medio plenamente autorizado para cerrar una Cuenta o rehusar cualquier transacción a o de la Cuenta o aplicar retenciones sobre la Cuenta, si la certificación no consta en los registros del Banco, o no son renovadas a tiempo. Si el Depositante que ha certificado su estatus de no residente de los Estados Unidos al tiempo que él o ella abren la Cuenta con el Banco y después dicha persona llega a ser un ciudadano de los Estados Unidos, o llega a ser un residente fiscal o para efectos de tributarios en los Estados Unidos, debe de certificar por escrito al Banco dentro de los treinta (30) días siguientes al cambio de status, en la forma entregada por el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">11. FIRMAS AUTORIZADAS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco tendrá el derecho de confiar en la firma o cualquier resolución o designación de firmantes autorizados entregados por el Cliente en relación con la Cuenta, hasta que el Cliente haya entregado al Banco otro documento que revoque o modifique las autorizaciones contenidas en las resoluciones o designación de firmantes autorizados previamente entregados al Banco en relación con la Cuenta. El Cliente exonera al Banco de cualquier responsabilidad por la ejecución de instrucciones con base en documentos cuyas firmas hayan sido alteradas o falsificadas, salvo que medie culpa grave o dolo por parte del Banco. Cuando se trate de personas jurídicas, el Cliente está obligado a poner en conocimiento del Banco, de inmediato y por escrito, todos los acuerdos, hechos, circunstancias, o acontecimientos relativos a su personería jurídica o estructura administrativa y social, con inclusión de todo cambio o modificación de su pacto social o estatutos, así como la integración o estructura de sus órganos sociales, y el otorgamiento, alteración o revocación de poderes y mandatos, designación y destitución de directores, dignatario y funcionarios principales de la compañía. Es entendido que no bastará el otorgamiento, la protocolización, o la inscripción del documento en la entidad pública pertinente y/o la publicación de tales cambios para que sean oponibles al Banco, siendo necesario que estos le sean notificados por escrito, quedando el Banco relevado de toda responsabilidad si realizara operaciones o ejecutara instrucciones con base en la información que conste en sus registros.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">12. RETIROS, CHEQUES YDEPOSITOS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Esta sección provee información respecto a las diferentes cuentas de depósitos y productos del Banco, inclusive de Certificados de Depósito, Cuentas con chequera, y Cuentas de Ahorros.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Depósitos. No obstante cualquier información que puede ser dada al Depositante al momento de realizar el depósito o de otra manera, todos los ítems recibidos por el Banco para crédito o cobro son recibidos a riesgo y cuenta del Depositante sujetos a que el Banco reciba los fondos. El Banco puede debitar la Cuenta en cualquier momento respecto a algún ítem cuyo pago final no fue recibido.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco sólo actuará como agente del Depositante y no asume responsabilidad mas allá que la de actuar con el debido cuidado. No se considerará que el Banco ha recibido un ítem enviado por correo o entregado en alguna de las oficinas de sus afiliados o corresponsales hasta que el Banco no haya efectivamente recibido dicho ítem en su oficina en días hábiles y dentro de horas de oficina. El Banco puede, a su sola discreción, rechazar un depósito, limitar la cantidad que puede ser depositada o devolver parte o todo de la cantidad depositada. Ítems depositados en la Cuenta del Depositante estarán disponibles para ser retirados o para otro uso por el Depositante de acuerdo con el presente Contrato, la legislación aplicable, y los usos y costumbres bancarios. En el evento de que el Banco reciba para su depósito dinero en divisas o denominaciones distintas a la moneda de curso legal de los Estados Unidos de América, procederá con la conversión de la moneda a la tasa vigente para dicha fecha en el mercado de la plaza. El Banco queda autorizado para cobrar y debitar de su Cuenta los cargos por cuenta de terceros en que haya de incurrir para la conversión de la moneda.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Tasas de Interés. El Banco se reserva el derecho, a su sola discreción, de cambiar las tasas de interés pagadas por el Banco sobre alguna Cuenta de Depósito con interés o cualquier otra Cuenta ofrecida por el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Acreditar o Devolución. Todos los ítems cobrados por cuenta del Depositante o depositados en la Cuenta (sin importar si tales ítems fueron cobrados contra dicho depósito) serán manejados por el Banco como agente del Depositante sujeto al correspondiente débito, extorno, contra cargo o devolución si por alguna razón el pago final no es recibido en efectivo o mediante crédito incondicional aceptado por el Banco. Igualmente, cualquier ítem girado contra el Banco y cobrado por cuenta del Depositante, o depositado en la Cuenta, estará sujeto al correspondiente débito, extorno, contra cargo o devolución si por alguna razón dicho ítem es considerado como no pagadero. Los créditos o anotaciones hechos por error a una cuenta del Depositante podrán ser anulados por el Banco mediante el correspondiente débito o extorno. En general cualquier crédito hecho por el Banco a una Cuenta por razón de depósito de un documento es bajo la condición de que dicho documento será pagado a su vencimiento, y es entendido que si no es pagado en esa fecha el Banco queda autorizado para realizar el correspondiente débito, pudiendo además cobrar los intereses causados, aún cuando el documento no pueda ser devuelto por el banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Endosos. El Banco puede, a su sola opción y discreción, aceptar cualquier ítem endosado para ser depositado en la Cuenta y dicho endoso puede ser realizado manualmente, en imprenta, por sello, o de otra manera; y dicho endoso será considerado como legítimo en todo caso. El pago de un ítem puede ser rechazado a opción y exclusivo criterio de el Banco, si esta endosado en lápiz, o mal realizado, ilegible, o si el ítem contiene doble endoso.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Cheques Postdatados. En relación con cualquier cheque postdatado girado por el Depositante, es el deber del Depositante notificar a el Banco por escrito, dando una completa descripción del ítem, incluyendo el beneficiario, la fecha, el número y su monto; en caso de no existir dicha notificación por escrita, el Banco no será responsable por pagar algún cheque postdatado antes de la fecha escrita en el cheque. Un cargo puede ser cobrado por cada ítem postdatado girado por el Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">F. Cheques Caducos. El Banco no está obligado a pagar un cheque que ha sido girado respecto a la Cuenta con más de tres (3) meses de antelación a la fecha de su presentación para pago al Banco. Sin embargo, el Banco podrá a su opción y exclusivo criterio, atender el pago de tales cheques con un periodo de caducidad mayor a éste.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">G. Día Laboral. Los días y horas laborales del Banco son de lunes a viernes desde las 8:00 a.m. hasta las 3:00 p.m. Los sábados, domingos y días de fiesta no son días laborales. Cheques y otros ítems depositados o recibidos después de las 3:00 p.m. en cualquier día laboral serán registrados el día laboral siguiente.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">H. Reclamos. Si algún reclamo es hecho al Banco para el reembolso de alguna parte de un ítem que fue cobrado (incluyendo cualquier ítem cobrado por cuenta del Depositante) después del pago final de este, por causa que el ítem fue alterado o tenía una firma fraudulenta o no autorizada o no era susceptible de ser pagado en debida forma, el Banco puede retener la cantidad de éste ítem de la Cuenta hasta que se emita una determinación final sobre dicho reclamo.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">I. Actualización. Es obligación del Depositante entregar información veraz y verificable, y actualizar su información por lo menos una vez al año o cuando se produzcan cambios sustanciales en su actividad, nivel de ingresos o transacciones, suministrando la totalidad de los soportes documentales exigidos según la Cuenta. Tal actualización supone el diligenciamiento de los formatos vigentes que el Banco establezca para dicho propósito. El Banco podrá cerrar las Cuenta si Usted desatiende esta obligación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">J. Cierre de Cuenta. El Depositante puede en cualquier momento cerrar alguna de las Cuentas por medio de notificación escrita al Banco. Una vez la notificación haya sido recibida el Banco cerrará la Cuenta inmediatamente. Al cierre de la cuenta Usted se compromete a devolver al Banco los cheques que no hubiere utilizado, y si así no lo hiciere, responderá al Banco de todos los perjuicios que ocasione la utilización indebida de los cheques no devueltos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Teniendo en cuenta lo anterior, el Banco se reserva el derecho de continuar pagando cheques que sigan siendo presentados para su pago contra la Cuenta cerrada. Usted continuará siendo responsable de cualquier cargo por los servicios y transacciones iniciadas antes del cierre de la Cuenta o que se originan por el cierre de la Cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">K. Cuentas Inactivas. Para la clasificación y tratamiento de las cuentas inactivas se estará a lo dispuesto para tal efecto en la legislación panameña. No obstante lo anterior se considerará una Cuenta como inactiva cuando no se realicen sobre la misma, depósitos o retiros por orden del Depositante por un periodo consecutivo de cinco (5) años, y se ignore el paradero del Depositante, luego de haber realizado intentos fehacientes de localizarlo. En el caso de Cuentas de Depósito a Plazo Fijo, se entenderá que existe inactividad cuando la Cuenta haya sido renovada automáticamente por cinco (5) periodos consecutivos, y se ignore el paradero del Depositante, luego de haber realizado intentos fehacientes de localizarlo. Las Cuentas clasificadas como inactivas, estarán sujetas a las comisiones por inactividad vigentes de tiempo en tiempo, además de cualquier otra comisión aplicable a la Cuenta. Las Cuentas clasificadas como inactivas devengarán intereses que correspondan según el tipo de Cuenta de que se trate. De conformidad con la legislación vigente el Banco estar obligado a entregar al Banco Nacional de Panamá o aquella entidad designada por ley de tiempo en tiempo, cualquier fondo mantenido en una Cuenta clasificada como inactiva.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">L. Poder Especial. Usted puede autorizar otra persona por escrito y en una forma aceptable al Banco, para que actúe en su nombre y representación y realice operaciones sobre la Cuenta. Sin limitar la generalidad de lo anterior, el Banco a su sola discreción puede o no aceptar el poder especial que usted pretende utilizar para abrir o cerrar una Cuenta o para depositar o retirar fondos de la Cuenta o para endosar cheques o cualquier otro ítem.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">M. Orden de no Pago. El Banco requiere que todos las órdenes de no pago sean recibidas por el Banco por escrito o por cualquier otro medio autorizado por el Banco, siempre y cuando exista absoluta identidad entre los elementos del cheque y los datos suministrados por Usted; y siempre que reciba la instrucción antes de que el cheque haya sido presentado para su cobro o antes de haberlo certificado, según sea el caso. Todas las órdenes de no pago serán efectivas por un lapso de tres (3) meses, pero en ningún caso serán por más de tres (3) contados a partir de la fecha del cheque. La orden de no pago debe incluir la fecha de la orden, el número del cheque, la fecha del cheque, nombre del beneficiario, nombre del depositante, cantidad, y naturaleza de la orden. Nuestra responsabilidad por aceptar la orden de no pago es limitada a lo que ordena la ley. El Banco atenderá las órdenes de no pago emitidas por autoridad competente. Nosotros no aceptamos una orden de no pago de un cheque que esté siendo procesado al tiempo que la orden de no pago es recibida. Por el hecho de hacer una orden de no pago, usted acuerda a lo siguiente:</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(i) rembolsar al Banco por cualquier pérdida que resulte del no pago de un cheque o de una orden de pago;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(ii) cancelar la orden de no pago prontamente por escrito si el cheque o la orden de pago es destruida o de otra manera esta fuera de circulación;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(iii) notificar al Banco antes que usted emita un cheque u orden de pago de reemplazo;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(iv) escribir en la parte del frente de dicho cheque la palabra “reemplazo” y un número y fecha diferente del cheque emitido originalmente.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Depositante acuerda no hacer responsable a el Banco si un cheque respecto del cual se haya emitido una orden de no pago es pagado o si el cheque emitido en su reemplazo no es pagado debido a mala identificación por parte de Ustedes siempre que el Banco haya seguido sus procedimientos internos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Depositante acuerda que el Banco no aceptará una orden de no pago de un cheque certificado hasta que noventa (90) días hayan pasado desde la fecha de certificación, y sólo si el Depositante entrega una certificación y acuerdo indemnizatorio para efectos que el cheque fue perdido, robado, o que no pudo ser encontrado.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">N. Información Extraña. El Banco puede, en su discreción, desconocer cualquier información en el cheque presentado para ser pagado contra la Cuenta que no sea la firma de los giradores, la identificación del banco pagador, el beneficiario, la cantidad, la fecha e información que aparece en la línea MICR. El Depositante acuerda ser responsable por los daños sufridos por el Banco como resultado de alguna otra información escrita en el frente o al reverso del cheque.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">O. Fondos Insuficientes. Si no hay fondos suficientes en la Cuenta o si los fondos suficientes no están disponibles para retiro cuando un ítem es presentado para ser pagado, el Banco puede, pero no está obligado, a pagar el ítem y crear un sobregiro sin notificarle previamente. Usted acuerda depositar fondos suficientes para cubrir el sobregiro tan pronto como sea posible después que el Banco le informe a usted del sobregiro. Usted acuerda que una comisión le será cobrada, y que el Banco se reserva el derecho a cobrar interés a la tarifa vigente para el servicio de sobregiro hasta que el sobregiro haya sido pagado completamente. En caso que sea necesario para proveer al Banco con los fondos necesarios para pagar el cheque presentado para su pago en alguna Cuenta de ustedes, o fondos para cubrir un sobregiro en una Cuenta de ustedes (y el interés sobre dicho sobregiro), el Banco puede, en su sola discreción, transferir fondos de una Cuenta de ustedes a otra Cuenta de ustedes, sin importar si tales Cuentas están a nombre individual o conjunta, y sin importar si es una cuenta de depósito o de certificado de depósito; sin embargo, si no hay acuerdo específico por escrito, el Banco no tiene obligación de hacer lo anterior.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">P. Estados de Cuenta. El Cliente recibirá estados de cuenta mensuales detallando toda la actividad en la Cuenta. Si el Cliente cree que el estado de cuenta contiene un error o discrepancia, entonces el Cliente debe notificar al Banco por escrito dentro de los treinta (30) días siguientes de la fecha del estado de cuenta que contiene el error o discrepancia; de otra manera, se concluirá que el Cliente está de acuerdo con y acepta el estado de cuenta. En consecuencia, el Cliente no tendrá el derecho de reclamar contra el Banco que la firma no es autorizada o que está alterada en algún ítem que fue pagado por el Banco (y pagado antes que el Banco haya recibido notificación de lo incorrecto), si la persona que hizo la firma no autorizada o alteración también es responsable por la discrepancia y que el Cliente no reportó a tiempo a el Banco. Los estados de cuenta serán enviados a la última dirección conocida por el Banco o a otra dirección que el Cliente haya designado por escrito a el Banco; sin embargo, si algún estado de cuenta es devuelto a el Banco con un sello de no entregado, el Banco puede suspender el envío de los estados de cuenta hasta que el Cliente rectifique la dirección, y su Cuenta puede ser debitada por una comisión por el manejo y conservación de la correspondencia que no ha sido entregada. En esas situaciones, cada estado de cuenta será considerado como disponible y recibido por el Cliente en la fecha que está en el estado de cuenta. Si algún estado de cuenta no ha sido recibido por el Cliente a tiempo, el Cliente debe notificar al Banco de esto tan pronto como sea posible y en ningún caso más tarde de treinta (30) días contados a partir de la fecha que tal estado de cuenta es recibido normalmente por el Cliente (o recibido por su apoderado). El Banco podrá de tiempo en tiempo modificar los estados de cuenta y podrá para estos efectos utilizar cualquier medio tecnológico de información que se implemente para su emisión. Usted podrá solicitar en cualquier momento al Banco un estado de cuenta distinto al estado de cuenta emitido ordinariamente por el Banco. En estos casos el Banco cobrará a Ustedes una comisión por la emisión de dichos estados de cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Q. Orden de Cheques y Comisiones. El Banco suministrará a Usted, previa solicitud escrita, la libreta de cheques que usted requiera para hacer giros contra la Cuenta. Si Usted quisiera confeccionar sus propios cheques deberá obtener la autorización del Banco y suscribir un convenio especial para la utilización de tales cheques. El Banco podrá cobrar una comisión por la impresión de cheques. Igualmente, el Banco queda autorizado para aplicar los cargos por cuenta de terceros que correspondan para el pago del impuesto de timbre aplicable a los cheques, de conformidad con la legislación vigente. Las comisiones y cargos aplicables serán deducidas del balance de la Cuenta. Un recibo de confirmación enviado con la libreta de cheques debe de ser debidamente firmado y devuelto a el Banco. El Banco podrá rehusar el pago de cheques extendidos que no sean de los impresos o autorizados por el Banco. Usted deberá dar aviso al Banco de la pérdida o extravío de sus cheques o libreta de cheques. En caso de omitir este aviso, Usted será responsable de los perjuicios que puedan resultar.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco también se encargará de coordinar la impresión de los comprobantes de depósito, peticiones de órdenes de no pago y otras formas que sean necesarias para la operación de la Cuenta, y el Banco no aceptará ninguna otra forma en relación con la operación de la Cuenta (a menos que el Banco, en su absoluta discreción, haya acordado previamente por escrito con usted una forma diferente).</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">R. Secciones Adicionales Respecto a Cheques y Depósitos. El Banco no será responsable por ningún error, negligencia, falta, mala conducta o insolvencia de parte del agente seleccionado por el Banco, o alguno de los subagentes seleccionados por los agentes, todos los cuales serán considerados como agentes del Depositante. Respecto al cobro de algún cheque o ítem similar, el Banco y cualquier agente de cobro pueden aceptar las notas o créditos de cualquier agencia, banco pagador, o pagador en lugar de dinero en efectivo. Si el pago de algún cheque o ítem similar excede el balance disponible en cualquiera de las Cuentas de usted o excede el sobregiro autorizado, el Banco rechazará tal pago. El Banco no tiene la obligación de aceptar ninguna leyenda que está en algún cheque firmado, aceptado o girado por usted. Usted tiene que ejercer en todo tiempo cuidado razonable para prevenir que libros de cheques o cheques en blanco lleguen a caer en manos de personas no autorizadas por usted y de prevenir alguna orden, cheque o ítem similar de ser alterado, perdido o falsificado. Usted debe inmediatamente reportar a el Banco por escrito, por telefax o correo rápido, el robo, pérdida o alteración de algún cheque o libro de cheques. Usted se compromete a firmar los cheques con autógrafo idéntico al registrado en las tarjetas de firma correspondientes. Para efectos del reconocimiento de autógrafos registrados, en casos de fraude o falsificación, el Banco únicamente será responsable en el evento de que las firmas hubiesen sido tan notoriamente falsificadas que no se requiera de conocimientos especiales para reparar en su falsificación. El Banco podrá cobrar las comisiones vigentes cuando un cheque abonado a la Cuenta sea devuelto o rechazado por el Banco librado.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">S. Servicio de Sucursal Virtual. Podrán utilizar el servicio de sucursal virtual los Clientes que soliciten y se les haya habilitado el canal Sucursal Virtual Personas o Empresas Entidades del Exterior</span></font> <font size="3"><span lang="es-AR"><b>Grupo Acacia</b></span></font><font size="3"><span lang="es-AR">conforme al procedimiento establecido por el Banco. El Depositante, para acceder al Servicio de Sucursal Virtual, deberá identificarse utilizando, además del ingreso del usuario y la clave, las demás seguridades adicionales implementadas por el Banco tales como: teclado virtual y/o, identidad protegida y/o seguridades adicionales que se llegaren a establecer, las cuales son personales e intransferibles y deberán ser utilizadas únicamente por el Cliente. El Cliente acepta y reconoce que el canal Sucursal Virtual Personas o Empresas Entidades del Exterior</span></font> <font size="3"><span lang="es-AR"><b>Grupo Acacia</b></span></font><font size="3"><span lang="es-AR">, le otorgará acceso a la información de sus productos y servicios contratados con todas las entidades afiliadas que pertenecen o llegaren a pertenecer al</span></font> <font size="3"><span lang="es-AR"><b>Grupo Acacia</b></span></font><font size="3"><span lang="es-AR">ubicadas en el exterior.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco provee a sus Clientes el beneficio de acceso virtual a su Cuenta con el Banco. El Cliente puede realizar gestiones, transacciones y/o negocios con el Banco o con cualquiera de sus afiliadas utilizando un nombre de usuario y una clave para tener acceso al servicio de banca sucursal virtual del Banco. La clave es la firma electrónica del Cliente mientras está realizando transacciones electrónicas con el Banco. El Cliente tiene la obligación de mantener su clave en absoluto secreto, previniendo su uso por terceras personas. En consecuencia, el Cliente acuerda mantener al Banco libre de todo reclamo, pérdidas, obligaciones y gastos de cualquier clase, que resulten del uso de la clave por personas no autorizadas. Utilizando la clave según los términos y condiciones de este Contrato, el Cliente tendrá acceso a todas las transacciones electrónicas que el Banco ha puesto a disposición del Cliente como solicitud de balances, transferencia de fondos, realización de pagos, cancelar órdenes, y revisar contra órdenes, entre otros. El Cliente acepta como evidencia válida los registros magnéticos que resultan del uso de su clave para realizar negocios electrónicamente con el Banco. El Cliente aquí acuerda que las fechas de las transacciones electrónicas reportadas en los registros financieros que fueron internamente preparados por el Banco o cualquiera de sus afiliadas son ciertos y correctos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Cliente mantendrá al Banco libre de toda responsabilidad que resulte de fallas ocasionales en el equipo, malas conexiones, problemas técnicos, suspensión del servicio, y en general por cualquier circunstancia que impida al Cliente utilizar el servicio de sucursal virtual del Banco. El Cliente no tendrá derecho a ser compensado por el Banco como resultado de la cancelación o la suspensión del servicio de sucursal virtual del Banco. El Banco puede imponer y deducir automáticamente de la Cuenta del Cliente, tarifas y cualquier otro cargo que resulte de realizar negocios electrónicamente con el Banco, tal como aparece en la Tabla de Productos y Tarifas. Sujeto a los términos del Reglamento Sucursal Virtual aplicable, el Cliente puede autorizar, a su propio riesgo, a otra persona a acceder y a realizar transacciones electrónicas en la Cuenta del Cliente reconociendo el contrato correspondiente y obteniendo otra clave sujeto a los requisitos del Banco. El Cliente aceptará como válidas las operaciones electrónicas realizadas por la persona autorizada bajo la nueva clave. El Cliente puede revocar la autorización concedida a otra persona por medio de notificación escrita al Banco. Dicha revocación tendrá efecto después de 24 horas desde que el Banco reciba la notificación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Si hay algún reclamo en relación con transacciones electrónicas realizadas en su Cuenta, el Cliente deberá mencionar tales reclamos dentro de los treinta (30) días siguientes a la fecha de la transacción cuestionada, a menos que la transacción sea una Orden de Pago sujeta a una fecha específica diferente. Los términos y condiciones establecidos aquí tendrán validez y se harán cumplir siempre y cuando el Cliente realice transacciones electrónicas utilizando su clave. Esta sección no regula los términos específicos del servicio de sucursal virtual. Tales acuerdos, si existen, serán parte de un contrato separado.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">13. TRANSFERENCIAS PROGRAMADAS</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Con la firma y presentación del formato de solicitud de “Transferencias Programadas”, usted acepta los siguientes términos y condiciones para el manejo de dichas transferencias con el Banco. Usted autoriza incondicionalmente al Banco para debitar de su Cuenta Corriente o de Ahorros a través de cualquier otro medio de pago habilitado por el Banco y aceptado por usted, el valor inscrito correspondiente a los pagos periódicos determinados por usted. Usted se compromete a tener los fondos suficientes en sus cuentas o a mantener la disponibilidad de cupo, en cada caso, para cubrir el valor facturado el día de cobro.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco se encuentra autorizado para entregar la suma debitada al destinatario del pago designado por el usuario. El Banco no asume responsabilidad en el evento de que la cuenta sea conjunta “Y” y la solicitud no estuviere suscrita por todos los titulares. El Banco cargará el valor facturado en las cuentas siempre que no se implique rebajar el saldo disponible. Así mismo, el Banco podrá debitar de la cuenta en una fecha diferente a la indicada en aquellos casos en los que el Banco tenga inconveniente de índole técnico u operativo que no permitan debitar de la cuenta oportunamente. Usted acepta como prueba de las operaciones efectuadas los registros, cintas, extractos, o cualquier comprobante que se origine en virtud de las autorizaciones dadas por usted en el Banco o a terceros beneficiarios del recaudo. Usted deberá notificar inmediatamente por escrito al Banco, todo cambio de dirección, teléfono o demás información registrada en la solicitud, así como cualquier novedad, modificación o retiro del servicio, en la oficina del Banco donde haya realizado la inscripción del mismo.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Usted podrá cancelar la autorización de pagos preautorizados mediante comunicación escrita dirigida al Banco, con diez (10) días hábiles de antelación a la fecha en la cual se va a ser efectiva. El Banco no será responsable por el pago automático, si la contraorden no es presentada en la forma indicada. El Banco informará de los valores debitados, a través del extracto de su cuenta y solo atenderá reclamaciones por situaciones imputables a éste, en un plazo máximo de cuarenta y cinco (45) días contados desde la realización del pago o débito. Si usted no dispone de cupo o fondos suficientes para cubrir el valor a debitar, el Banco no cargará el valor facturado, salvo que haya autorizado facilidad de crédito en las tasas de interés, plazo y demás condiciones vigentes al momento de su otorgamiento. El Banco no asumirá ninguna responsabilidad frente a usted ni frente a terceras personas cuando se presenten inconsistencias al cargar la cuenta tales como: cuenta cancelada, cuenta saldada, cuenta en sobregiro, cuenta embargada, saldo en canje, titular fallecido o cualquier otro problema que no permita cargar el valor del Pago Preautorizado. Tampoco será responsable por transacciones que no se puedan efectuar por problemas de línea o de congestión, fuerza mayor, caso fortuito o cualquier otra circunstancia no imputable al Banco. El Banco puede cancelar, limitar o adicionar los presentes términos y condiciones en cualquier momento, mediante aviso a usted dado en tal sentido por cualquier medio. Si anunciada la modificación usted no manifiesta por escrito su decisión de excluirse de este servicio, o continúa ejecutándolo, se entenderá que acepta incondicionalmente las modificaciones introducidas. La suspensión, limitación o cancelación del servicio por parte del Banco no dará lugar a ninguna reclamación de responsabilidad o perjuicio a favor de usted. El presente servicio es de término. El Banco cobrará las comisiones que éste fijare por inscripción del servicio, transacción exitosa, transacción fallida y por cobro del mensaje de la transferencia, las cuales serán informadas a usted por los medios establecidos por el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">14. NO TRANSFERENCIA DE CUENTA; CESIÓN</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Usted no puede transferir la propiedad legal o el beneficio de la Cuenta sin el consentimiento del Banco. Ninguna transferencia o cesión de la Cuenta será válida a menos que exista una notificación por escrito y que sea satisfactoria para el Banco, y sólo entonces en el caso que el Banco haya concedido aprobación por escrito y que haya tenido tiempo razonable para registrar la transferencia o cesión en sus libros y registros. En general, no es la política del Banco permitir la transferencia y cesión de las Cuentas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">15. LIMITACIÓN DE RESPONSABILIDAD; FUERZAMAYOR; FALTADE CULPAE INDEMNIZACIÓN</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Si el Banco recibe notificación de alguna demanda legal, citación, requerimiento, ejecución, embargo, emplazamiento, notificación, o cualquier otro procedimiento legal relacionado con (o que parece estar relacionado con) la Cuenta, (de aquí en adelante el “Proceso”), el Banco puede seguir (y puede confiar totalmente en) el concepto de su asesor legal referente a la respuesta apropiada a dicho Proceso, y no tendrá responsabilidad ni obligación alguna por haber seguido tal concepto, aún si dicho concepto luego es considerado como incorrecto. El Banco puede cobrar a cualquier Cuenta del Depositante (sin importar si es la misma Cuenta respecto a la cual el Proceso se refiere) los gastos, incluyendo gastos de abogado, incurridos por el Banco en responder al Proceso en relación con la Cuenta del Depositante en el Banco, y el Depositante será responsable por el pago de tales gastos. En consecuencia, en el evento de cualquier Proceso, el Banco puede, en su sola discreción, retener en prenda todo o parte de la Cuenta del Depositante para cubrir los gastos esperados del Banco, en dicho caso el Banco puede, sin responsabilidad alguna, devolver los cheques girados sobre la Cuenta o de otra manera rechazar el pago de cualquier retiro de la Cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">En caso de alguna disputa en relación con alguna Cuenta de usted (sin importar si fue iniciada por usted, por el Banco, o por una tercera persona), o en el evento que el Banco reciba órdenes contradictorias, reclamos o demandas relacionadas con dicha Cuenta, el Banco puede tomar cualquier acción que el Banco o su asesor legal consideren recomendable, incluyendo sin limitación abstenerse de ejecutar instrucciones respecto de la Cuenta hasta tanto se determine a satisfacción cuál de los demandantes tiene derecho a recibir los fondos. Todos los costos y gastos que resulten para el Banco, incluyendo sin limitación honorarios legales (incluyendo gastos de abogados) incurridos en el juicio, o en apelación, o gastos incurridos en caso de no haber juicio, deberán ser reembolsados a el Banco por usted una vez hayan sido reclamados (y usted acuerda autorizar a el Banco a debitar alguna o todas de sus Cuentas hasta completar dicha cantidad).</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco no será responsable ante usted por alguna falla, demora, omisión, interrupción o error respecto de la actuación del Banco de alguna de sus obligaciones bajo este Contrato o bajo cualquier documento que se firme con respecto a la relación entre usted y el Banco, si los mismos resultados por cualquier causa más allá del control del Banco, incluyendo sin limitación fallas en la energía, mal funcionamiento de equipos, suspensión en el pago por otras instituciones financieras, disputas laborales, moratoria bancaria, restricciones en la moneda, suspensión en el mercado, actos de Dios, guerras, conmociones civiles, actos de terrorismo, coacción legal, negligencia de otra institución financiera, y cualquier otra acción o restricción de algún gobierno, autoridades monetarias o de supervisión, o cualquier otra tercera persona.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco y sus directores, oficiales, empleados, abogados y agentes (cada uno de los anteriores, incluyendo el Banco, siendo “Parte sin Culpa”) no incurrirán en ningún momento en responsabilidad para con usted (y usted expresamente renuncia y libera algún y todos los reclamos y causas de demandas que usted pueda en algún momento tener contra la Parte sin Culpa) en conexión con algún acto, omisión o circunstancias que resulten en algún momento de este Contrato, o la presentación, pago o no pago de algún ítem girado contra alguna Cuenta de usted, o la aceptación de algún ítem que ha sido depositado en alguna Cuenta, o algún proceso relacionado con (o que parezca estar relacionado) alguna de tales Cuentas, o cualquier otra cosa o transacción contemplada por este Contrato (que no sea ningún acto que sea equivalente a culpa grave o mala conducta intencional proveniente de dicha Parte sin Culpa). Además, el Banco y sus directores, oficiales, empleados, abogados y agentes (cada uno de los anteriores , incluyendo el Banco, siendo una “Parte Indemnizada”) serán en todo momento indemnizados, reembolsados y mantenidos libres de todo daño por usted (y, a petición del Banco, serán defendidos por usted) de y contra alguna y todos los reclamos, demandas, causas de demandas, obligaciones, pérdidas, daños, costos y gastos (incluyendo sin limitación cualquier gasto de abogados, bien sea que hayan sido incurridos en juicio, apelación, o gastos incurridos sin juicio) que pueden ser en cualquier momento impuestos sobre, incurridos o sufridos por, o alegados en contra de dicha Parte Indemnizada en conexión con algún acto, omisión o circunstancias que resulten o estén relacionadas con este Contrato, o cualquier violación de este Contrato por usted, o la presentación, pago o no pago de algún ítem girado sobre alguna Cuenta de usted, o la aceptación de algún ítem para ser depositado en dicha Cuenta, o algún Proceso relacionado con (o que parezca estar relacionado con) cualquiera de dichas Cuentas, o alguna otra cosa o transacción contemplada por este Contrato (que no sea ningún acto u omisión que sea equivalente a culpa grave o mala conducta intencional proveniente de dicha Parte indemnizada).</span></font></p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">16. CONDICIONES APLICABLES ALATRANSFERENCIAELECTRÓNICADE FONDOS</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Las provisiones de esta Sección rigen todos los servicios de transferencia de fondos ofrecidos en conjunto con sus Cuentas con el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Órdenes de Pago. Sujeto a los términos y condiciones establecidos en este Contrato, el Banco está autorizado para aceptar y debitar a alguna de las Cuentas del Depositante en el Banco, sin limitación alguna de la cantidad, cada orden de pagar (cada una la “Orden de Pago”), o hacer que otro banco pague, una suma cierta de dinero (que puede ser en dólares de los Estados Unidos de América o en cualquier otra moneda extranjera) a un beneficiario designado siempre y cuando que la Orden de Pago sea: (i) enviada por una Persona Autorizada, como se define más adelante, o (ii) autorizada por el Depositante según la ley aplicable. El Banco puede de tiempo en tiempo por notificación escrita al Depositante establecer o enmendar reglas administrativas en relación con las Órdenes de Pago y el servicio de transferencia de fondos a ser provistos bajo este Contrato. Nada de lo establecido aquí obligará al Banco a aceptar y ejecutar una Orden de Pago, o la cancelación o enmienda de ésta; y solamente se entenderá que el Banco ha aceptado una Orden de Pago, su cancelación o enmienda, al momento de su ejecución. Usted deberá indemnizar y mantener a el Banco libre de toda responsabilidad, reclamos, pérdidas, costos y gastos (incluyendo gastos de abogado) que resulten de la ejecución por parte de el Banco de cualquier cancelación o enmienda de una Orden de Pago.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Personas Autorizadas. Cualquier persona que tenga firma autorizada en alguna Cuenta será considerada como una Persona Autorizada para efectos de esta Sección. El Depositante será responsable por mantener actualizadas las Personas Autorizadas designadas en su Cuenta. Cualquier cambio en relación con las Personas Autorizadas, y cualesquiera otras órdenes dadas al Banco, puede ser realizada por el Depositante solamente por medio de una notificación escrita a el Banco y dichos cambios serán efectivos no antes de diez (10) días calendarios desde la fecha de la notificación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Insuficiencia de Fondos. Si el Banco recibe una Orden de Pago y la Cuenta no tiene fondos suficientes para cubrir la Orden de Pago, el Banco puede, en su absoluta discreción, pero no está obligado a aceptar la Orden de Pago: (i) creando un sobregiro en la Cuenta, o (ii) transfiriendo fondos de alguna otra Cuenta del Depositante a la Cuenta sobre la que se emitió la Orden de Pago, en cualquier caso sólo en la medida de los fondos que faltan. El Banco puede debitar la Cuenta por la cantidad de la Orden de Pago (aunque la Orden de Pago puede ser en beneficio de uno de los oficiales del Depositante, agentes, o empleados), más la respectiva comisión. Si la cuenta no tiene fondos suficientes para debitar la comisión establecida por el Banco, éste podrá abstenerse de procesar la Orden de Pago. Si la Orden de Pago genera un sobregiro, el Depositante debe prontamente pagar al Banco la cantidad del sobregiro, junto con la comisión por el sobregiro y el interés sobre el mismo a la tasa de interés anual que cobra el Banco por los sobregiros. Usted acuerda que el Banco puede compensar la cantidad del sobregiro y el interés contra los fondos de alguna otra Cuenta que usted tiene en el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Enmiendas o Cancelación. El Banco no está obligado a aceptar o efectuar cualquier enmienda o cancelación de cualquier Orden de Pago enviada a el Banco, y en cualquier caso podrá condicionar su acción al: (i) recibo de información razonable identificando la Orden de Pago original, (ii) cumplimiento con los procedimientos de seguridad establecidos en la “Solicitud de Producto”, (iii) recibo de un acuerdo de indemnización o caución u otra forma de seguridad aceptable por el Banco, según la cual el Banco será resarcida por todas las pérdidas, gastos (incluyendo gastos de abogado) y otras obligaciones que puedan resultar de la ejecución de la enmienda o cancelación de la Orden de Pago, y (iv) recibo de la petición de la enmienda o cancelación no mas tarde del tiempo de cierre (tal como lo establece el Banco de tiempo en tiempo) del día laboral anterior al día en que se va a ejecutar o pagar la Orden de Pago original. El Depositante estará obligado por la enmienda o cancelación de la Orden de Pago en la misma medida que hubiera estado obligado por el envío de la Orden de Pago bajo esta misma Sección.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Tiempo de Cierre. Órdenes de Pago, enmiendas o cancelaciones deberán ser comunicadas al Banco durante las horas de operación en que el Banco esté abierto para el recibo, procesamiento y transmisión de Órdenes de Pago, enmiendas y cancelaciones de acuerdo con el horario de cierre establecido por el Banco de tiempo en tiempo. Ordenes de Pago, enmiendas o cancelaciones recibidas después de dicho horario de cierre serán consideradas como recibidas el día hábil siguiente para transferencia de fondos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">F. Banco Beneficiario; Banco Intermediario.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(1) Falta de Identificación. Si una Orden de Pago no designa el banco del beneficiario, el Banco en su discreción puede realizar el pago a cualquier agencia en la cual tenga razón para creer que el beneficiario tiene una cuenta o tratar de buscar instrucciones adicionales del Depositante, y en cualquier caso el Banco no será responsable por pérdidas que resulten de la falla del Depositante de identificar apropiadamente el banco donde el beneficiario mantiene una cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(2) Intermediarios. El Depositante puede dar instrucciones al Banco a través del formato “Solicitud de Transferencia” para el envío de Órdenes de Pago a través de corresponsales que considere apropiados después de consultar el manual de referencia del Banco de las relaciones con corresponsales. Al momento de ejecutar una Orden de Pago, el Banco puede utilizar cualquier sistema de transferencia de fondos, sistemas de comunicaciones, y agencias intermediarias designadas por el Depositante, excepto donde el Banco de buena fe concluye que el uso de tal sistema de transferencia de fondos, sistema de comunicaciones, o intermediario no es posible o se demoraría mucho, en tal caso el Banco debería usar el sistema de transferencia de fondos en los cuales el Banco participa (por ejemplo SWIFT), y tales intermediarios, agentes o subagentes que el Banco considere pertinentes para ejecutar la Orden de Pago. En la medida que sea permitido por la ley, (i) cualquier transferencia de fondos o sistema de comunicaciones, intermediarios, agente o subagente serán considerados como agentes del Depositante y el Banco no estará bajo ninguna responsabilidad por cualquier error, negligencia, o falla de alguno de ellos o por alguna falla de identificar el beneficiario o cualquier mal pago por alguno de ellos, y (ii) el Banco no será responsable por ningún error, mutilación, demora, mal entrega o falla en la entrega de la transferencia de alguna Orden de Pago en conexión con dicha transacción o por cualquiera interrupción de cualquier medio de transmisión o por alguna imposición de alguna censura, control de cambios u otra restricción, todos estos riesgos perteneciendo al Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">G. Números de Identificación. Al ejecutar la Orden de Pago, el Banco podrá confiar exclusivamente en el número de identificación de cuenta de un beneficiario, banco del beneficiario o banco intermediario en vez de nombres aún si ambos son identificados. El Banco no tendrá la obligación de detectar alguna inconsistencia entre el nombre y cualquier dicho número incluido en una Orden de Pago. El Depositante será responsable por tales inconsistencias e indemnizará y mantendrá libre al Banco de toda pérdida, obligación, gasto o daño que pueda ocurrir como resultado de tal inconsistencia, incluyendo sin limitación, gastos de abogado y gastos de litigio.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">H. Solicitud de Información. Una vez solicitada, el Depositante proveerá al Banco con toda información de transacciones que sea necesaria para que el Banco pueda manejar las preguntas y rastreos, incluyendo pero sin limitación, cantidades en dólares, cuentas afectadas, fechas, y beneficiarios.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">I. Rechazos. Si el Banco determina no ejecutar una Orden de Pago recibida del Depositante, el Banco deberá notificar al Depositante de tal decisión utilizando la misma forma de comunicación utilizada por el Depositante para transmitir la Orden de Pago a el Banco o por comunicación con el Depositante de acuerdo con los procedimientos para notificaciones contenidas aquí o definidas por el Banco de tiempo en tiempo. El Depositante acuerda que lo anterior constituye una manera comercialmente razonable de dar notificación y acepta que Ordenes de Pago comunicadas a el Banco por una forma que no cumple con esta Sección no puede ser ejecutada por el Banco y el Banco no está obligado de dar la notificación de rechazo al Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">J. Registros. El Banco está autorizado (pero no está obligado) a registrar electrónicamente y a grabar conversaciones telefónicas entre el Depositante y/o Personas Autorizadas y el Banco. La forma como el Banco entienda órdenes verbales será determinante en el evento de una discrepancia, con alguna confirmación por escrito de dicha orden, sin importar si el Banco grabó la conversación o no, o si alguna grabación que está disponible no se entiende.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">K. Depositantes del Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(1) Responsabilidad por Pérdidas Sufridas por el Originador. Si bajo la ley aplicable el Depositante no es considerado como el originador de la transferencia de fondos a la cual la Orden de Pago se refiere, el Depositante acuerda indemnizar y mantener a el Banco libre de cualquier pérdida o responsabilidad para con dicho originador siempre y cuando tal pérdida o responsabilidad no hubiera ocurrido si el Depositante hubiera sido el originador.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(2) Bancos Fuera de Línea. Si el Depositante es un banco fuera de línea, y el Depositante no notifica expresamente al Banco por escrito que mantiene una cuenta para otro banco, el Depositante garantiza al Banco que el Depositante no actúa como un banco intermediario o como banco del beneficiario con respecto a Órdenes de Pago recibidas a través de los sistemas de transferencias de pago por el beneficiario que es una agencia.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">L. Estados de Cuenta y Notificación de Errores. Si el Depositante lo solicita, el Banco deberá proveerle estados de cuenta periódicos o avisos describiendo cada Orden de Pago realizada a nombre del Depositante. Dentro de un término razonable de tiempo que no exceda cinco (5) días laborales después de haber recibido tal información o el día laboral próximo después del recibo de un aviso, el que ocurra primero, el Depositante debe notificar a el Banco de cualquier discrepancia, transacciones no autorizadas u otros errores. Si tal comunicación es notificada verbalmente, deberá ser confirmada por escrito prontamente por el Banco. El Depositante será considerado como si hubiese recibido cualquier información enviada por correo por el Banco cinco (5) días laborales después que dicha información es enviada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">M. Tarifas. El Banco puede cobrar, y el Depositante debe de pagar prontamente, las comisiones y cargos aplicables por los servicios prestados bajo esta Sección. A menos que se haya estipulado por escrito, el Banco está autorizado para cobrar tales tarifas por medio de débitos a la Cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">N. Órdenes de Pago que Llegan. Órdenes de Pago aceptadas por el Banco y recibidas como crédito para ser depositadas en las Cuentas del Depositante, a opción de el Banco, serán aceptadas electrónicamente, por correo de primera clase o según se acuerde de otra forma.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">O. Limitación de Responsabilidad - Deber de Cooperar.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(1) El Banco no estará obligado a aceptar, y no será responsable por no aceptar, cualquier Orden de Pago. El Banco no será responsable por fallas, tardanzas, errores, reclamos o daños en la ejecución o cumplimiento de cualquier transferencia ocasionada por falla o negligencia de cualquier otro banco o parte, como tampoco será responsable el Banco por alguna otra causa más allá del control del Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(2) El Banco no será responsable por ningún pago de daños consecuenciales, especiales, indirectos, punitivos o ejemplares, o pérdidas que el depositante pueda incurrir o sufrir por razón de las acciones del Banco u omisión en relación con una transferencia de fondos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(3) El Depositante reconoce que el Banco está sujeto a leyes y regulaciones y estándares internacionales y acuerda que el Banco puede negarse a cumplir cualquier actividad que esté en conflicto o sea inconsistente con tales leyes o regulaciones o estándares internacionales.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(4) El Banco no será responsable por pérdidas o daños que resultan de su inhabilidad para completar una transferencia u Orden de Pago solicitada por el Depositante debido a actos de fuerza mayor, incendios, inundaciones, huracanes, acción de alguna autoridad gubernamental, mecánico, computadores, telecomunicaciones o fallas eléctricas, mal funcionamiento de equipos, guerras, insurrecciones civiles, actividades terroristas de la guerrilla, huelgas, paros, bloques, o cualquier otra circunstancia similar.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(5) El Depositante confirma a el Banco que ninguna de las provisiones de esta Sección, como tampoco ninguna transacción contemplada bajo esta Sección violará ninguna ley de control de cambios o ninguna otra restricción legal aplicable al Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(6) El Depositante tendrá que firmar cualquier documento y realizar cualquier acto requerido por el Banco para poder asistirlo en cobrar fondos de o en relación con cualquier otra transacción con cualquier tercera persona o personas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">P. Indemnización. Excepto como esté limitado por la ley, usted acuerda indemnizar a el Banco y mantener a el Banco libre de todo daño en relación con cada uno y todos de los siguientes (las “Obligaciones”):</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(i) cualquier costo o gasto incurrido por el Banco en la ejecución de una Orden de Pago o en cumplimiento con los términos y condiciones de este Contrato;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(ii) todas obligaciones con terceras personas que surgen de, o en relación con, los términos y condiciones de este Contrato y/o la ejecución de una Orden de Pago por parte del Banco;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(iii) cualquier y todos los reclamos, demandas, procesos, multas y penalidad que resulten de la ejecución de una Orden de Pago por parte del Banco o de otra manera en cumplimiento de cualquier deber u obligación que resulte de los términos y condiciones de este Contrato; y</span></font></p><p style="margin-bottom: 0.14in"><span lang="es-AR">(iv) cualquier daño, pérdida, costos y gastos (incluyendo gastos de abogado razonables) sufridos o incurridos por</span> <font size="3"><span lang="es-AR">el Banco como resultado de cualquiera de lo anterior o por el incumplimiento de alguna ley o condición por parte de usted. El Banco está aquí autorizado a</span></font> <font size="3"><span lang="es-AR">compensar la cantidad de alguna obligación contra cualquiera de sus Cuentas en el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Q. Moneda Extranjera. Si el Banco recibe una Orden de Pago de usted en la cual se ordena el pago en una moneda distinta de dólares de los Estados Unidos, el Banco puede proceder a debitar la Cuenta antes de ejecutar la Orden de Pago por el equivalente en dólares de los Estados Unidos de la moneda extranjera a ser pagada, a la tasa de cambio que tenga el Banco. Usted además acuerda que la ejecución de una Orden de Pago la cual requiere pago en una moneda diferente de dólares de los Estados Unidos puede demorarse un tiempo prudencial para permitirle al Banco realizar el cambio de moneda.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">17. ORIGEN DE FONDOS; CUMPLIMIENTO CON LALEY</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Depositante acepta y reconoce que el Banco está obligado bajo la ley aplicable y sus reglamentos y procedimientos internos a tomar medidas para combatir el uso de los productos del Banco, servicios y oficinas para llevar a cabo transacciones de lavado de dinero y otras actividades ilícitas. El Depositante se compromete a entregar al Banco cualquier información, y cumplir con cualquier procedimiento que el Banco razonablemente le solicite, con la finalidad de cumplir con las obligaciones que le sean exigible de conformidad con la legislación aplicable y los estándares internacionales vigentes para combatir el blanqueo de capitales y financiamiento del terrorismo. El Depositante acepta que el incumplimiento de este compromiso, podría resultar en la suspensión de los procesos de vinculación y apertura de Cuenta, la suspensión de la transacción, la devolución de recursos o el cierre de la Cuenta. El Depositante reconoce y acepta que en cumplimiento de dichas leyes y estándares internacionales, el Banco tendrá que divulgar información sobre el Depositante y sus Cuentas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Adicionalmente, el Depositante representa, garantiza y acuerda que todos los fondos existentes y los que serán depositados en la Cuenta tendrán un origen legal, y que el Depositante no efectuará ni iniciará ninguna transacción en o a través de la Cuenta que sea ilegal bajo las leyes de la República de Panamá, o cualquier otra jurisdicción cuyas leyes le sean aplicables a dicha transacción.</span></font></p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">18. CONTRATO COMPLETO; INTERPRETACIÓN DELCONTRATO</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Este Contrato y todos los documentos que gobiernan la relación del Cliente con el Banco, incluyendo la Solicitud de Producto para el producto o servicio particular, constituyen acuerdo entre las partes en relación con los términos y condiciones contenidos en este Contrato. De existir una discrepancia entre los términos de la Solicitud de Producto y este Contrato, prevalecerá lo dispuesto en la Solicitud de Producto. Si alguno de los términos o secciones de este Contrato es declarado inválido, ilegal, o sin validez legal alguna por un tribunal con jurisdicción competente, la validez, legalidad, u obligatoriedad de los términos y Secciones restantes de este Contrato no se verá afectado ni impedido por dicha declaración de ilegalidad. La ambigüedad de algunas de las Secciones de este Contrato no será interpretada en contra del Banco por el hecho que el Banco o su asesor legal fueron los que redactaron dicha Sección. La utilización de subtítulos en este Contrato es solamente por conveniencia; ningún subtitulo es parte de este Contrato o deberá afectar el significado o interpretación de este Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">19. RENUNCIA A LA INMUNIDAD SOBERANA</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">En la medida que alguno de ustedes tenga o más tarde adquiera inmunidad de la jurisdicción que pueda tener cualquier tribunal o de cualquier proceso legal (sin importar si es por notificación de demanda, vinculación antes de la sentencia, vinculación para facilitar la ejecución de la sentencia, ejecución o de otra forma) con respecto a usted o a sus activos, usted por este Contrato renuncia irrevocablemente a tal inmunidad en relación con sus obligaciones bajo este Contrato y, sin limitar la generalidad de lo anterior, acuerda que usted renuncia a tal inmunidad por este Contrato en la medida que tal renuncia sea permitida por la legislación aplicable.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">20. OBLIGATORIEDAD DEL CONTRATO; RESTRICCIÓN EN LA CESIÓN</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Este Contrato será obligatorio para los herederos, representantes legales, sucesores y asignatarios. No obstante lo anterior, sus derechos y obligaciones bajo este Contrato no podrá ser cedido por usted sin el consentimiento previo por escrito de el Banco, y cualquier cesión de este sin dicho consentimiento previo por escrito lo hará nulo y sin efecto legal alguno.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">21. SERVICIO DE VALIJA</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">ELBANCO podrá ofrecer eventualmente al cliente, directamente o por medio de sus representantes autorizados en el extranjero, el servicio de correo o de valija para el envío de sus consignaciones con destino a su cuenta. En tal caso, el Depositante acepta que la prestación de este servicio se dará exclusivamente por su cuenta y riesgo, y por lo tanto exonera al BANCO de cualquier responsabilidad por la pérdida o extravío de los cheques o documentos remitidos por consignación; y estará sujeto a las comisiones y cargos por cuenta de terceros aplicables según la Tabla de Productos y Tarifas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">22. DERECHO A RENUNCIAR DEL BANCO.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco puede sin prejuicio a este Contrato en aspecto alguno, renunciar a cualquiera de los términos y provisiones anteriores en un caso en particular, pero dicha renuncia aplica solamente a ese caso específico.</span></font></p>');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `registration_agreement_logs`
 --
 
-DROP TABLE IF EXISTS `registration_agreement_logs`;
 CREATE TABLE IF NOT EXISTS `registration_agreement_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member_id` int(11) NOT NULL,
@@ -5141,7 +5120,7 @@ CREATE TABLE IF NOT EXISTS `registration_agreement_logs` (
   PRIMARY KEY (`id`),
   KEY `FK415CBF0AEAE0AB57` (`member_id`),
   KEY `FK415CBF0A33E01D0A` (`registration_agreement_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 --
 -- Dumping data for table `registration_agreement_logs`
@@ -5157,7 +5136,30 @@ INSERT INTO `registration_agreement_logs` (`id`, `member_id`, `registration_agre
 (7, 10, 1, '2013-12-31 02:30:01', '172.16.2.47'),
 (8, 11, 1, '2013-12-31 19:29:09', '172.16.2.47'),
 (9, 12, 1, '2014-01-01 06:34:18', '172.16.2.47'),
-(10, 13, 1, '2014-01-01 18:38:37', '172.16.2.47');
+(10, 13, 1, '2014-01-01 18:38:37', '172.16.2.47'),
+(11, 14, 1, '2014-01-02 09:22:57', '172.16.2.47'),
+(12, 15, 1, '2014-01-02 10:23:50', '172.16.2.47'),
+(13, 16, 1, '2014-01-02 10:33:51', '172.16.2.47');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `registration_agreements`
+--
+
+CREATE TABLE IF NOT EXISTS `registration_agreements` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `contents` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `registration_agreements`
+--
+
+INSERT INTO `registration_agreements` (`id`, `name`, `contents`) VALUES
+(1, 'Contrato General de Cuenta Bancaria', '<p style="margin-bottom: 0in; line-height: 100%"><font face="Trebuchet MS, serif"><font style="font-size: 26pt"><span lang="es-AR"><b>Contrato General de Cuenta</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%"><font face="Trebuchet MS, serif"><font style="font-size: 26pt"><span lang="es-AR"><b>Bancaria</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1. EFECTIVIDAD DELCONTRATO Y LOS SERVICIOS OFRECIDOS POR EL BANCO</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">......................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2. LEYAPLICABLE, JURISDICCIÓN Y DIVULGACION DE INFORMACION</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..........................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Ley Aplicable .. ......................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Sujeción a Jurisdicción .........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>1.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Política de Privacidad e Información Confidencial ................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3. INSTRUCCIONES DEL CLIENTE</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4. CAMBIO DE DIRECCIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5. TARIFAS, CARGOS Y PENALIDADES</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.......................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6. NUESTROS DERECHOS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Costos Legales y Tarifas .......................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Derecho de Compensar ........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>2.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Gravámenes y Prendas ........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Derechos Relacionados ........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Terminación de la Cuenta .....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7. FORMAS DE PROPIEDAD</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Cuentas Individuales .............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Cuentas Conjuntas “O” (Expresión “O”) ................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>3.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Cuentas Colectivas “Y” (Expresión “Y”) ................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Cuentas con Beneficiarios ....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Cuenta Corporativa ...............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8. CLASES DE CUENTAS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Cuentas Corriente No Remuneradas ....................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Cuentas Corriente Remuneradas ..........................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>4.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Cuentas Ahorros ...................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Depósitos a Plazo .................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9. MUERTE DELDEPOSITANTE</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.......................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10. CERTIFICACIÓN DE CONDICIÓN DE NO CONTRIBUYENTE.</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...........................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11. FIRMAS AUTORIZADAS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>5.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12. RETIROS, CHEQUES Y DEPÓSITOS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">........................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Depósitos ...............................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Tasas de Interés ....................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Acreditar o Devolución ..........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Endosos ...........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Cheques Postdatados ......................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">F. Cheques Caducos ............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">G. Día Laboral ......................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">H. Reclamos .........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">I. Actualización ......................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">J. Cierre de Cuenta ...............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">K. Cuentas Inactivas .............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>6.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">L. Poder Especial ..................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">M. Orden de no Pago. ...........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">N. Información Extraña ..........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">O. Fondos Insuficientes .........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">P. Estados de Cuenta ............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">Q. Orden de Cheques y Comisiones .....................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>7.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">R. Secciones Adicionales Respecto a Cheques y Depósitos ................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">S. Servicio de Sucursal Virtual ...............................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>13. TRANSFERENCIAS PROGRAMADAS</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>8.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>14. NO TRANSFERENCIADE CUENTA; CESIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">......................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>15. LIMITACIÓN DE RESPONSABILIDAD; FUERZAMAYOR; FALTADE CULPA E INDEMNIZACIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.................................................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>16. CONDICIONES APLICABLES A LA TRANSFERENCIA ELECTRÓNICA DE FONDOS</b></span></font></font><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...............</span></font></font><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">A. Órdenes de Pago ................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">B. Personas Autorizadas .........................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>9.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">C. Insuficiencia de Fondos ....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">D. Enmiendas o Cancelación ................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">E. Tiempo de Cierre ..............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">F. Banco Beneficiario; Banco Intermediario ..........................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">G. Números de Identificación ................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">H. Solicitud de Información ...................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">I. Rechazos ...........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">J. Registros ...........................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">K. Depositantes del Banco ....................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">L. Estados de Cuenta y Notificación de Errores ....................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>10.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">M. Tarifas ...............................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">N. Órdenes de Pago que Llegan ...........................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">O. Limitación de Responsabilidad - Deber de Cooperar .......................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">P. Indemnización ....................................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">Q. Moneda Extranjera .............................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>17. ORIGEN DE FONDOS; CUMPLIMIENTO CON LA LEY</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.....................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>18. CONTRATO COMPLETO; INTERPRETACIÓN DEL CONTRATO</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">...................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>11.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>19. RENUNCIA A LA INMUNIDAD SOBERANA</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">.........................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>20. OBLIGATORIEDAD DEL CONTRATO; RESTRICCIÓN EN LA CESIÓN</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">........................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>21. SERVICIO DE VALIJA</b></span></font></font> <font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">................................................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%"><font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>22. DERECHO ARENUNCIAR DELBANCO.</b></span></font></font><font face="Arial, serif"><font style="font-size: 8pt"><span lang="es-AR">..................................................................................................</span></font></font> <font face="Arial, serif"><font style="font-size: 9pt"><span lang="es-AR"><b>12.</b></span></font></font></p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0in; line-height: 100%" lang="es-AR"> </p><p style="margin-bottom: 0.14in"><font size="4"><span lang="es-AR"><b>CONTRATO BANCARIO GENERAL DE CUENTA</b></span></font></p><p style="margin-bottom: 0.14in"><font style="font-size: 9pt"><span lang="es-AR"><b>PREÁMBULO</b></span></font></p><p style="margin-bottom: 0.14in" align="justify"><font size="3"><span lang="es-AR">Bienvenido a Acacia Bank S/A (en adelante, el “Banco”) y gracias por abrir la Cuenta con nosotros. Este Contrato establece los términos y condiciones relacionadas con la Cuenta y los productos y servicios que el Banco provee. Además, usted puede recibir otros documentos en los que constan declaraciones aplicables a la Cuenta (“Documentos de Declaraciones”) y tales Documentos de Declaraciones también formarán parte de este Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El presente Contrato aparece publicado en la página de internet del Banco (www.acaciainternacional.com), a través de la cual usted podrá tener acceso al mismo, sus términos y condiciones, a efectos de conocer la información sobre la Cuenta o producto que mantenga con el Banco. Sin perjuicio de lo anterior, el Banco podrá poner a su disposición una copia física del presente Contrato, contra la apertura de la Cuenta o de cualquier otro producto o servicio del banco regulado en el mismo. Igualmente, contra su solicitud, el Banco podrá poner a su disposición una copia física del presente Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Los términos “Depositante”, “Cliente”, “Titular de la Cuenta”, “Nombre en la Cuenta”, “Usted”, “algunos de ustedes”, “suyo”, “suyos”, cuando se usan en este Contrato, significan el dueño o dueños conjuntos de cualquiera de las Cuentas descritas aquí.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Los términos “nosotros”, “nuestro”, “nuestros”, y el “Banco”, cuando se usan en este Contrato, significa Acacia Bank S/A; entidad bancaria con la cual usted está abriendo una cuenta bajo este Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El término “Cuenta” cuando se usa en este Contrato significa cualquiera y todas las Cuentas o depósitos mantenidos por el Cliente en el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El término “Persona Autorizada”, “Cotitular”, cuando se usa en este Contrato, significa cada individuo que tiene firma autorizada [mediante un “Registro de Firma”] con los mismos derechos de retiro y depósito que el Cliente tiene en la Cuenta, pero sujeto en cada caso a las limitaciones aplicables según el tipo de Cuenta y lo establecido en la “Solicitud de Producto” y “Registro de Firmantes Autorizados”.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Por el hecho de utilizar la Cuenta usted consiente estar obligado por los términos y condiciones de este Contrato. Por el hecho de firmar una Solicitud de Apertura de Cuenta (“Solicitud de Producto”) como se define abajo, usted acuerda que cada una y todas las cuentas que usted establezca con el Banco y cada una y todas las cuentas que las reemplazan (cualquiera y cada una de tales cuentas están siendo referidas aquí como la “Cuenta”) están sujetas a estos términos y condiciones y sus modificaciones (junto con la Solicitud de Producto, este “Contrato”), así como a las leyes de la República de Panamá que le sean aplicables; y las prácticas bancarias comerciales vigentes en la República de Panamá.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cuando se está abriendo una Cuenta en el Banco, el Cliente y/o los Cotitulares que se incluyen en la “Solicitud de Producto” aceptan las siguientes condiciones:</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. El Depositante acuerda estar obligado (y cada uno y todos los sucesores, herederos, albaceas y otros representantes legales del Depositante están obligados en todo momento) por el presente Contrato descrito más adelante, y las modificaciones hechas al mismo, y otros acuerdos adicionales realizados por el Cliente y el Banco, y todas las reglas y regulaciones del Banco. El Banco se reserva el derecho de cambiar o modificar el presente Contrato de tiempo en tiempo, sin necesidad de notificación previa al Depositante. Si usted mantiene sus depósitos con nosotros después del día en el cual tales modificaciones son efectivas se considerará que usted ha aceptado tales modificaciones. Sin embargo, usted será informado de las modificaciones que afectan sus derechos y obligaciones por correo, en la página de Internet del Banco o por el medio que disponga el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Cada individuo que firme la “Solicitud de Producto” está autorizando al Banco a entregar y/o obtener reportes de crédito o información sobre el comportamiento y las relaciones comerciales del Depositante respecto de su Cuenta personal y/o de las Cuentas de otras entidades que él o ella representa, para o de otras instituciones bancarias y agencias de crédito reconocidas y establecimientos comerciales, bases de datos públicas o privadas, tanto nacionales como extranjeras, según se requiera o se considere apropiado, sin responsabilidad alguna para el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Queda entendido que antes que el Banco ponga a disposición del Depositante los servicios aquí mencionados y/o el otorgamiento de créditos, el Banco debe primero recibir toda la documentación pertinente del Depositante y los Autorizados y haber aceptado la “Solicitud de Producto”.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">1. EFECTIVIDAD DELCONTRATO YLOS SERVICIOS OFRECIDOS POR ELBANCO</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Cliente entiende y acuerda que los servicios establecidos en el presente Contrato y los derechos y deberes de las partes aquí establecidos están sujetos a:</span></font></p><ol type="i"><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">que el Banco reciba toda la información y documentación pertinente del Cliente, los Cotitulares y los Firmantes Autorizados,</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">la aceptación de la“Solicitud de Producto” por parte del Banco, y</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">al cumplimiento con los demás términos y condiciones que pueda establecer el Banco de tiempo en tiempo para la oferta de sus productos y servicios.</span></font></p></li></ol><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">2. LEYAPLICABLE, JURISDICCIÓN YDIVULGACION DE INFORMACION.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Ley Aplicable.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">En razón del principio de especialidad, la Cuenta está regida por el presente Contrato, y en lo que se refiera a asuntos que en este no se hallen especialmente determinados, por las leyes de la República de Panamá, que estén vigentes o puedan ser adoptadas en el futuro, y en su defecto por los usos y costumbres bancarios locales e internacionales; sin perjuicio de aquellas normas que sean de obligatorio cumplimiento.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Sujeción a Jurisdicción.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Usted acuerda que todos los procedimientos legales relacionados con la Cuenta tienen que ser presentados ante los tribunales de la República de Panamá, los cuales usted acuerda que tendrán jurisdicción exclusiva sobre este Contrato y cualquier otro acuerdo que usted tenga con el Banco o cualquier disputa que resulte bajo éste, y usted irrevocablemente acuerda someterse a la jurisdicción de cualquiera de estos tribunales con respecto a tales procedimientos y disputas. Además, usted aquí renuncia irrevocablemente, según sea permitido por la ley, a cualquier reclamo de que tal demanda ha sido presentada ante un tribunal cuyo foro es inconveniente. Usted también acuerda irrevocablemente que la sentencia final en relación con tales procedimientos ante dicho tribunal es definitiva y que la sentencia se puede ejecutar en cualquier jurisdicción o de cualquier otra forma. Sin embargo, nada en este Contrato puede excluir o de ninguna manera limitar el derecho del Banco a demandarlo o tomar cualquier acción en contra suya en cualquier tribunal, donde quiera que esté localizado, con jurisdicción sobre usted o algunos de sus activos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Adicionalmente, usted reconoce que el dinero y demás bienes y valores depositados en el Banco se consideran domiciliados en la República de Panamá, por tanto están sujetos a la jurisdicción de los tribunales panameños. Por su parte, el dinero y demás bienes y valores depositados en el Banco, cuyo Depositante sea una persona de nacionalidad no panameña y no residente en la República de Panamá al momento en que se perfeccione la transferencia de tales dineros, bienes y valores, quedan sometidos plenamente al principio de la autonomía de la voluntad y al régimen de libre disposición de bienes, aún cuando las leyes sucesoria o el régimen matrimonial del país de la nacionalidad o del domicilio del Depositante dispongan otra cosa.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Política de Privacidad e Información Confidencial.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco no divulga información sobre el Depositante y sus operaciones financieras pasada ni presente (Información Confidencial) a terceros, excepto cuando medie consentimiento expreso por parte del Depositante, y en los casos en que sea permitido</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">por la ley. El Banco queda expresamente autorizado para divulgar Información Confidencial en los siguientes casos:</span></font></p><ul><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cuando la información fuese requerida por autoridad competente en la República de Panamá de conformidad con la ley.</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cuando por iniciativa propia el Banco deba proporcionarla en cumplimiento de leyes panameñas o estándares internacionales en materia de prevención</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">de los delitos de blanqueo de capitales, financiamiento del terrorismo y delitos relacionados; o en cumplimiento de leyes panameñas, estándares internacionales o políticas en materia de transparencia tributaria.</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A agencias calificadoras para fines de análisis de riesgo.</span></font></p></li><li><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A agencias u oficinas procesadoras de datos para fines contables y operativos, cual incluye nuestra casa matriz, subsidiarias y filiales del banco en caso de tercerizaciones de actividades o proceso, sin perjuicio de trasladar el deber de confidencialidad.</span></font></p></li></ul><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">3. INSTRUCCIONES DELCLIENTE.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco puede requerir que cualquier pregunta relacionada con la Cuenta debe ser enviada por fax, documento digitalizado, correo regular o servicio de correo expreso a su representante de cuenta a la dirección del Banco. El Banco sólo aceptará instrucciones por teléfono, fax, documento digitalizado, Sucursal Virtual en relación con la Cuenta, según lo que determine el Banco, y en particular con algún pago, retiro o transferencia de fondos, según lo previsto en la Sección sobre las Condiciones Aplicables a la Transferencia Electrónica de Fondos de este Contrato. Todas las instrucciones recibidas estarán sujetas a verificación de que cumplen con los términos de la referida Sección. El Banco puede también requerir que usted siempre incluya el número de Cuenta en toda correspondencia.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">4. CAMBIO DE DIRECCIÓN.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco puede requerir que todo cambio de dirección postal sea notificado por escrito, mediante solicitud enviada por el Depositante al Banco. La correspondencia, incluyendo estados de cuenta enviados a la dirección registrada en el Banco, se considerará como correctamente enviada. Cualquier correspondencia, incluyendo estados de cuenta, devueltos al Banco porque el Depositante no le notificó sobre el cambio de su dirección permanente generará la suspensión del envío de nueva correspondencia hasta que la dirección correcta haya sido recibida por el Banco, y el Banco tendrá el derecho de cobrar los cargos por cuenta de terceros que correspondan por la devolución de correo.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">5. TARIFAS, CARGOS Y PENALIDADES.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">La Cuenta está sujeta a los intereses, las comisiones, recargos y cargos por cuenta de terceros, según lo previsto en el presente Contrato y sus respectivas modificaciones, y la tabla de productos y tarifas publicada por el Banco (“Tabla de Productos y Tarifas”) que será informada al Depositante al momento de su vinculación y de tiempo en tiempo cuando las mismas sean modificadas. La Tabla de Productos y Tarifas establecerá el importe o método de cálculo de tales intereses, comisiones, recargos y cargos por cuenta de terceros, su periodicidad y demás condiciones específicas para el cobro de las mismas. La Cuenta estará sujeta a los intereses, comisiones, recargos y cargos por cuenta de terceros previamente acordado en el Contrato y la Tabla de Productos y Tarifas, incluyendo pero sin limitación, comisiones, recargos y cargos por cuenta de terceros por saldo promedio mínimo inferior al acordado, servicio de valija, cheques devueltos por insuficiencia de fondos, sobregiros, investigación de cargos que resultan de las peticiones del Depositante o por demanda legal, firmas de referencia o cartas de verificación, cartas notariadas, servicios de mantenimiento, incluyendo Cuentas Inactivas (definidas más adelante), órdenes de no pago de cheques emitidas por el Depositante, correo devuelto y cierre de la Cuenta. Igualmente, el Banco establecerá en la Tabla de Productos y Tarifas, que será informada al Depositante al momento de su vinculación y de tiempo en tiempo cuando la misma sea modificada, el saldo mínimo a partir del cual los dineros depositados en la Cuenta devengarán intereses, la tasa de interés pagadera sobre la Cuenta, la forma en que dichos intereses serán computados, y la periodicidad en que serán pagados. No obstante el derecho que el Banco tiene de realizar cambios en las comisiones, recargos, cargos por cuenta de terceros e intereses sin notificación previa, el Depositante será informado con anticipación sobre cualquier cambio a la Tabla de Productos y Tarifas por correo, o por cualquier otro medio establecido por el Banco, con indicación de la fecha efectiva de entrada en vigencia de las mismas. Sin perjuicio de lo anterior, la Tabla de Productos y Tarifas actualizada estará disponible en la página web del Banco y en las oficinas de atención al público del Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">6. NUESTROS DERECHOS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Costos Legales y Tarifas. El Depositante acuerda pagar una vez requerido todas las pérdidas, costos y gastos (incluyendo sin limitación las tarifas y gastos de abogado, bien sea que hayan sido incurridos en un juicio, apelación o sin litigio alguno), si los hay, incurridos por el Banco en conexión con o en relación con la ejecución de los deberes y obligaciones contenidos en este Contrato o cualquier otro documento entregado bajo este Contrato, incluyendo pero no limitado a pérdidas, costos y gastos sufridos como resultado de: (i) incumplimiento por el Depositante de sus obligaciones y (ii) cualquier reclamo por una tercera persona sin importar si es legalmente válida o no, relacionada con el Depositante o la Cuenta del Depositante en el Banco; (iii) cualquier reclamo de un tercero relacionado con daños y perjuicios sufridos que sean consecuencia directa o indirecta de fraude o negligencia del Depositante, sus empleados o agentes o Personas Autorizadas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Derecho de Compensar. Además de cualquier derecho prendario o derecho de compensación o similar al cual el Banco tendría derecho de conformidad con la ley, el Banco puede en cualquier momento y sin notificación previa a usted (dicha notificación siendo expresamente renunciada por usted) combinar o consolidar: (i) todas o cualquiera de las obligaciones y deudas (bien sea directas o indirectas, en calidad de deudor, garante, fiador o avalista, conjuntas o individuales, original o como resultado de una compra o cesión, y bien sea por principal, interés, gastos de abogados, u otros gastos o cualquier otra cantidad) que son ahora o de aquí en adelante debidas y pagables a el Banco por usted o cualquiera de ustedes (con o sin otros responsables), junto con: (ii) todas o cualquiera de las Cuentas (bien sea generales o especiales, incluyendo sin limitación depósitos de los cuales son dueños conjuntamente o como unidad), interés sobre los mismos, balances y créditos mantenidos en el Banco por usted o algunos de ustedes (y cualquier obligación de cualquier otra clase que el Banco le debe a usted o cualquiera de ustedes), por este medio compensando y aplicando esos activos de ustedes mencionados en la Sección (ii) arriba, en el orden que el Banco decida, contra esas obligaciones y deudas de ustedes mencionadas en la Sección (i) arriba. Los derechos de el Banco bajo las provisiones anteriores serán además de, y no exclusivas de, algún derecho similar, incluyendo derechos de compensación, a los que el Banco tiene derecho por ley u otro contrato. En el evento de que los activos mencionados en la Sección (ii) arriba no sean suficientes para cubrir las obligaciones mencionadas en la Sección (i) arriba, el Banco se reserva el derecho de sobregirar las Cuentas para reflejar los saldos adeudados, en cuyo caso serán de aplicación las tasas de interés, comisiones, y recargos vigentes aplicables al servicio de sobregiro.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Gravámenes y Prendas.En consideración de alguna extensión de crédito u otro acuerdo financiero, otorgado ahora o en el futuro o como continuación de uno existente por el Banco a usted o alguno de ustedes, y como garantía de pago de todas las deudas, obligaciones y deudas (sean directos o indirectos, obligación individual o solidaria, vencidos o no vencidos, liquidados o no liquidados, incondicionales o eventuales, originales o resultantes de adquisición o cesión, y sean por capital, intereses, honorarios de abogados y otros costos o gastos) que ahora o en el futuro, usted o cualquiera de ustedes (con o sin otros deudores) le deba a el Banco (todas esas obligaciones y deudas se denominan el “Endeudamiento”), usted o cualquiera de ustedes pignoran a el Banco todo lo siguiente, exista ahora o en el futuro (la “Garantía”): (i) Cuentas, depósitos (generales o especiales incluyendo, sin limitación, depósitos de propiedad conjunta o por la unidad), sus intereses correspondientes, saldos y créditos mantenidos con el Banco (o con alguna oficina de éste) o con un afiliado de el Banco por usted o cualquiera de ustedes (y toda clase de obligación que el Banco o una sucursal o banco afiliado a el Banco, debiere al Titular), (ii) cualquiera y todos los demás activos (incluyendo, sin limitación, todos los valores y otros activos de inversión) mantenidos en el Banco (en o con alguna oficina de éste) o en cualquier afiliado de el Banco por cuenta de o para la cuenta de usted o cualquiera de ustedes, y (iii) todos los dineros provenientes de las Garantías. Toda falta de pago al vencimiento de cualquier Endeudamiento en que incurra usted o cualquiera de ustedes, el Banco está autorizada por este Contrato para compensar y aplicar cualquier Garantía o sus fondos a dicho Endeudamiento, y a vender o liquidar de otra manera cualquier otra Garantía que hubiere y aplicar los fondos resultantes a dicho Endeudamiento, en cualquier momento, en cualquier medida y en cualquier orden por los cuales optare el Banco su sola discreción. Esta prenda, hecha bajo este Contrato, permanecerá e irrevocable hasta el momento en que todo el Endeudamiento esté pagado por completo y el Banco esté satisfecho con que no surgirá mas Endeudamiento en el futuro.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Derechos Relacionados. La prenda a que se refiere el literal C anterior se entenderá perfeccionada ante el incumplimiento del pago de algún Endeudamiento. Apartir de su perfeccionamiento, el Banco podrá a su sola discreción tomar o retener la posesión de cualquier o de todos los instrumentos o certificados que demuestren o representen la Garantía; así como de ahí en adelante, por el tiempo que la prenda aquí referida siga vigente, toda Garantía capaz de ser renovada y redepositada será automáticamente renovada y redepositada en forma continua, a menos que el Banco opte por otra opción.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Mientras que la prenda aquí referida tenga vigencia, toda renovación, reemplazo, o adición de activos (y todo instrumento, recibo y otros documentos que representen tales activos) que se emitan o surjan de otra manera por razón de cualquier Garantía, se constituirán en Garantía adicional y serán retenidos por el Banco conforme a los términos de esta Garantía. Por el presente Contrato el Banco queda autorizada para notificar a cualquier oficina o afiliada de el Banco sobre la Garantía aquí referida, y para ordenar que esa Garantía sea registrada en los libros de esa oficina o afiliada, y que tal oficina o afiliada acepte y acuerde por escrito los términos de dicha Garantía. Usted autoriza por el presente Contrato a el Banco para que registre todos los documentos de financiamiento, los estados de continuidad u otros documentos o instrumentos que, a juicio de el Banco, demuestren, perfeccionen o protejan la seguridad de los intereses de el Banco aquí referidos; por el presente Contrato el Banco queda autorizada para registrar dichos documentos, sin su firma, en cualquier oficina pública de cualquier jurisdicción y para debitar de la Cuenta todos los costos de esos registros. El Banco también queda autorizada para debitar de la Cuenta y de aumentar el Endeudamiento garantizado aquí por el valor de todos los costos (incluyendo cualquier gasto de abogados, incurridos en juicio, apelación o sin juicio), de cualquier venta, compensar o disponer de otra manera, o liquidar la Garantía bajo este Contrato. El Banco no será responsable por rechazar ningún documento debido a falta de fondos en cualquiera de sus Cuentas que resulte de aplicar, compensar o bloquear fondos conforme a esta Garantía.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Terminación de la Cuenta. Salvo que se establezca algo distinto en las condiciones aplicables a una determinada clase de Cuenta, las Cuentas no tendrán un término fijo, y en consecuencia, el Banco o el Depositante podrán darlas por terminado en cualquier momento, sin aviso previo, y sin necesidad de que medie causa justa para ello. El Banco por este Contrato se reserva el derecho, a su discreción, a cerrar la Cuenta en cualquier momento. En caso que la Cuenta se cierre, el Banco enviará notificación al Depositante y le enviará un cheque por el balance de la Cuenta, después de haber deducido las comisiones respectivas, así como cualquier saldo adeudado a favor del Banco según sus libros, a la última dirección que está en nuestros archivos. El Depositante será responsable por las transacciones iniciados antes del cierre de la Cuenta. Sin limitar de ninguna manera la generalidad de lo anterior, cualquier Cuenta que mantenga un balance de cero (0) por un periodo de sesenta (60) días puede ser cerrada por el Banco o cualquier Cuenta en la cual tres (3) cheques o más han sido devueltos por insuficiencia de fondos puede ser terminada sin notificación alguna a usted.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">7. FORMAS DE PROPIEDAD.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Cliente acuerda entregar a el Banco toda la documentación necesaria para establecer la capacidad del Cliente para abrir una Cuenta en particular y proveer a el Banco con toda la información requerida en relación con el cumplimiento de las leyes y políticas para la prevención del blanqueo de capitales y financiamiento del terrorismo, así como de las políticas en materia de transparencia tributaria.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Cuentas Individuales.Una Cuenta Individual es una Cuenta de depósito cuyo dueño es una sola persona natural.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Cuentas Colectiva “O” (expresión “O”). Una Cuenta Colectiva “O” es una Cuenta de depósito cuya propiedad pertenece a dos o más personas naturales bajo la condición de titularidad “O”, según lo previsto en la ley 42 de1984. Usted acuerda que si la cuenta fue abierta por dos o más personas es una Cuenta Colectiva “O” a menos que usted le haya dado a el Banco instrucciones contrarias. Si esta es una Cuenta Colectiva “O”, usted acuerda que la expresión “O” en la Cuenta para designar la relación entre las personas a cuyo nombre está la Cuenta, hará entender que cada una de ellas es dueña de la totalidad de la cuenta, y en consecuencia; (i) la firma de cualquiera de ellas es suficiente para retirar fondos, ordenar pagos, cerrar la cuenta, revocar o suspender retiros de fondos y órdenes de pago, ceder o gravar los derechos derivados de la Cuenta y lo demás que acuerden el Banco y los Titulares; (ii) Cada uno de los Titulares responderá por la totalidad de la cuenta en caso de sobregiro o saldo deudor, y cargo de la Cuenta por la cantidad debida al Banco; (iii) la orden de embargo, secuestro, suspensión o retención de pagos decretada por autoridad competente sobre los fondos de cualquiera de los titulares recae sobre la totalidad de la Cuenta hasta la concurrencia de la suma indicada en la orden; (iv) la muerte o declaración judicial de ausencia, presunción de muerte, interdicción, quiebra o concurso de acreedores de cualquiera de los titulares no afecta el derecho de giro ni el de propiedad del o de los otros titulares sobre la Cuenta. Adicionalmente, los titulares y el Banco acuerdan que la firma de cualquiera de los titulares será suficiente para retirar o eliminar a otro titular o titulares de la Cuenta, así como para adicionar uno o más titulares a la Cuenta. Cada Titular de la Cuenta puede aprobar estados de cuenta, puede obtener información en relación con la Cuenta. Sin perjuicio de los acuerdos que pudieran existir entre los Titulares de la Cuenta, el Banco no será responsable por los daños y perjuicios que pudieran derivar del cumplimiento de las instrucciones en la forma antes prescrita. El Banco podrá abstenerse de atender instrucciones respecto de la Cuenta, cuando haya recibido instrucciones contradictorias o incompatibles de dos o más titulares, respecto de la Cuenta. El Banco se reserva el derecho a determinar razonablemente a su opción y exclusivo criterio, bajo qué circunstancias las instrucciones recibidas respecto de la Cuenta poseen carácter incompatible o contradictorio, en cuyo caso procederá a notificarlo a los Titulares. El Banco no será responsable por los daños y perjuicios ocasionados con el ejercicio de esta facultad. Sin perjuicio de lo anterior, y aunque el Banco no tiene la obligación de notificar a ninguna persona de cualquier cambio u otra acción en relación con la Cuenta hecha por alguno de ustedes, el Banco puede, requerir la firma de todos ustedes para pagar algún ítem o tomar alguna acción en relación con la Cuenta, si el Banco ha recibido órdenes contradictorias de cualquiera dos o más de ustedes, ha recibido una orden firmada por no todos ustedes buscando cambiar la titularidad de la Cuenta (o restringir el pago o la transferencia de fondos), o ha concluido por cualquier otra razón, a discreción del Banco, que es prudente requerir las firmas de todos ustedes.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Cuentas Conjuntas “Y” (expresión “Y”). Una Cuenta Conjunta “Y” es la que está a nombre de dos o más personas naturales bajo la condición de titularidad “y” o “y/o” según lo previsto en la ley 42 de1984. Si esta es una Cuenta Conjunta “Y” bajo la condición de titularidad “Y”, usted acuerda que la expresión “Y” en la Cuenta para designar la relación entre las personas a cuyo nombre está la Cuenta, hará entender que (i) los titulares son acreedores mancomunados del Banco y deudores solidarios del mismo, en caso de sobregiro, saldo deudor, o cargos de la Cuenta por la cantidad debida al Banco por dichos conceptos; (ii) la firma de todos los titulares se requiere para retirar fondos, ordenar pagos, cerrar la cuenta, revocar o suspender retiros de fondos y órdenes de pago, ceder o gravar los derechos derivados de la Cuenta y los demás que los Titulares y el Banco acuerden; (iii) la orden de embargo, secuestro, suspensión o retención de pagos decretada por la autoridad competente sobre los fondos de uno o más de los titulares en dicha Cuenta, sólo recae sobre la parte alícuota que le corresponde al afectado por dicha orden hasta el momento de la suma indicada en la misma. El saldo de la parte alícuota no afectado por la orden, si lo hubiera, así como la parte alícuota de los titulares no afectados por la mencionada orden, sigue las normas detalladas en las secciones (i) (ii) y (iv). Si la orden recayere sobre la totalidad de la parte alícuota, la firma del o de los titulares afectados por la misma no será necesaria para las operaciones a que se refiere la sección (ii) anterior, mientras subsista dicha orden; (iv) la muerte o declaración judicial de ausencia, presunción de muerte, interdicción, quiebra o concurso de acreedores o la liquidación de uno o más de los titulares, sólo afecta la parte alícuota del o de los titulares de que se trate, la cual será retenida por el Banco a nombre de o de los titulares respectivos. En estos casos la firma del o de los titulares tampoco será necesaria para las operaciones a que se refiere la sección (ii) anterior, mientras subsista dicha situación. Si esta es una Cuenta Conjunta “Y” bajo la condición de titularidad “y/o”, usted acuerda que la expresión “y/o” en la Cuenta para designar la relación entre las personas a cuyo nombre está la Cuenta, hará entender lo mismo que la expresión “y”según lo indicado anteriormente, salvo que la firma de cualquiera de los titulares será suficiente para retirar fondos, ordenar pagos, cerrar la cuenta, revocar o suspender retiros de fondos y órdenes de pago, y ceder o gravar los derechos de la cuenta. Adicionalmente, los titulares y el Banco acuerdan que la firma de cualquiera de los titulares será suficiente para retirar o eliminar a otro titular o titulares de la Cuenta, así como para adicionar uno o más titulares a la Cuenta. El Banco no tiene obligación de informar al o a los titulares sobre las instrucciones dadas por algún titular respecto de la Cuenta. Sin perjuicio de los acuerdos que pudieran existir entre los Titulares de la Cuenta, el Banco no será responsable por los daños y perjuicios que pudieran derivar del cumplimiento de las instrucciones en la forma antes prescrita respecto de las cuentas “y/o”. El Banco podrá abstenerse de atender instrucciones respecto de la Cuenta bajo la condición de titularidad “y/o”, cuando haya recibido instrucciones contradictorias o incompatibles de dos o más titulares, respecto de la Cuenta. El Banco se reserva el derecho a determinar razonablemente a su opción y exclusivo criterio, bajo qué circunstancias las instrucciones recibidas respecto de la Cuenta poseen carácter incompatible o contradictorio, en cuyo caso procederá a notificarlo a los Titulares. El Banco no será responsable por los daños y perjuicios ocasionados con el ejercicio de esta facultad. Indistintamente, se trate de una cuenta bajo la titularidad “y” o “y/o” cualquiera de los titulares podrá solicitar información sobre la Cuenta, sin necesidad de requerir la firma del o de los demás titulares, y sin necesidad de notificarles sobre la solicitud o sobre la información entregada con motivo de la misma.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Cuentas con Beneficiarios. El Depositante podrá solicitar al Banco que en caso de fallecimiento, el sado de la Cuenta sea pagado por el Banco directamente y sin ningún otro trámite o procedimiento judicial, a la persona o personas designadas por el Depositante como beneficiario o beneficiarios, o a su custodio, tutor o representante legal debidamente acreditado, según sea el caso. Para tal efecto el Depositante deberá hacer la designación del o de los beneficiarios, siguiendo las formalidades y procedimientos que el Banco determine. El pago a favor del o de los beneficiarios se realizará una vez identificado debidamente el beneficiario y comprobada la muerte del Depositante, para cuyos efectos el Banco podrá exigir el cumplimiento de aquellas formalidades que estime conveniente. Queda entendido que los beneficiarios no tienen facultades de disposición sobre la Cuenta, ni tampoco derecho a recibir información sobre la Cuenta. Los beneficiarios tienen derecho a recibir los saldos de la Cuenta, en las proporciones establecidas por el o los titulares, sin perjuicio de los derechos que correspondan a los titulares de cuentas conjuntas o comunes, según la condición de titularidad de la Cuenta; y sin perjuicio de los derechos de prenda, compensación y demás que pueda tener el Banco sobre la Cuenta. Si el beneficiario muere (o, si hay más de un beneficiario, todos mueren) antes de la muerte del último de los Depositantes entonces la característica mencionada de Cuenta con Beneficiario se terminará dejará de tener efecto automáticamente y la Cuenta corresponderá a quien sea declarado heredero dentro del proceso de sucesión del último Depositante; salvo que se designen nuevos beneficiarios. Si más de un beneficiario es nombrado, sólo esos beneficiarios que están vivos al momento de la muerte del último de los Depositantes tendrán derecho a recibir los saldos de la Cuenta. Si más de un beneficiario sobrevive al último Depositante, cada uno de esos beneficiarios tendrá derecho a recibir el saldo de la Cuenta en la proporción que le corresponda según las instrucciones del Depositante. Si habiendo sido designados varios beneficiarios, al momento de la entrega del saldo de la Cuenta alguno o algunos de ellos (no todos) hayan fallecido, los fondos que le hubiesen correspondido al o a los beneficiarios fallecidos serán repartidos en parte iguales entre los beneficiarios sobrevivientes, o entregado en su totalidad al beneficiario sobreviviente, según sea el caso.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Cuenta Corporativa. Cuentas Corporativas pueden ser abiertas bajo el nombre de una corporación o entidad legal similar. Una Cuenta corporativa podrá ser abierta mediante el cumplimiento con los requisitos establecidos por el Banco y la entrega de todos los documentos requeridos por el Banco, incluyendo la entrega de los documentos de organización de la entidad legal, la debida autorización de la junta de directores u órgano directivo similar de la entidad legal, en el formato requerido por el Banco y la designación de las Firmas Autorizadas por la entidad legal a manejar la Cuenta Corporativa. Una vez se active la Cuenta Corporativa, y sujeto a las limitaciones aplicables a las designaciones de Firmas Autorizadas de la corporación o entidad legal similar notificadas al Banco, las Firmas Autorizadas pueden solicitar al Banco todas aquellas gestiones para las cuales este autorizado conforme a su designación, incluyendo, pero sin limitarse a, el pago y el débito de la Cuenta Corporativa, cualquiera y todas las notas, u otras órdenes para debitar la Cuenta o que han sido entregadas al Banco para transferir o retirar fondos de la Cuenta Corporativa, la modificación o cancelación de la Cuenta Corporativa.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">8. CLASES DE CUENTAS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco ofrece una variedad de cuentas a personas naturales y jurídicas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Cuentas Corriente No Remuneradas. Son cuentas corrientes con chequera, que no genera rentabilidad y permiten realizar pagos y transferencias de manera ilimitada. El Banco requiere un monto mínimo para su apertura, y el mantenimiento de un saldo promedio mínimo en la Cuenta; el Banco cobrará una comisión cuando la Cuenta tenga un saldo promedio inferior al requerido. La cuenta no posee una duración limitada, por lo tanto podrá ser cancelada por cualquiera de las partes, cuando así se determine, si usted decide cancelar la cuenta antes de los seis (6) meses posteriores a la apertura de la misma, el Banco tendrá la facultad de cobrarle una comisión por cancelación anticipada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Cuentas Corriente Remuneradas. Son cuentas corrientes con chequera, que generan rentabilidad y permiten realizar un número limitado de pagos y transferencias. El Banco requiere un monto mínimo para su apertura y el mantenimiento de un saldo promedio mínimo; el Banco cobrará una comisión cuando la Cuenta tenga un saldo promedio inferior al requerido. Igualmente, el Banco cobrará una comisión en el evento de que se realicen pagos o transferencias en exceso a la cantidad permitida. El interés que se paga sobre las Cuentas puede variar dependiendo de las condiciones del mercado. El Banco se reserva el derecho de, a su sola discreción, cambiar el interés pagado sobre las Cuentas. La cuenta no posee una duración limitada, por lo tantopodrá ser cancelada por cualquiera de las partes, cuando así se determine, si usted decide cancelar la cuenta antes de los seis (6) meses posteriores a la apertura de la misma, el Banco tendrá la facultad de cobrarle una comisión por cancelación anticipada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Cuentas Ahorros. Son cuentas de depósito a la vista remuneradas. El Banco requiere un monto mínimo para su apertura y el mantenimiento de un saldo promedio mínimo; el banco cobrará una comisión cuando la Cuenta tenga un saldo promedio inferior al requerido. El interés que se paga sobre las Cuentas puede variar dependiendo de las condiciones del mercado. El Banco se reserva el derecho de, a su sola discreción, cambiar el interés pagado sobre las Cuentas. La cuenta no posee una duración limitada, por lo tanto podrá ser cancelada por cualquiera de las partes, cuando así se determine, si usted decide cancelar la cuenta antes de los seis (6) meses posteriores a la apertura de la misma, el Banco tendrá la facultad de cobrarle una comisión por cancelación anticipada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Depósitos a Plazo. Son depósitos a término remunerados. El Banco a su entera discreción, determinará la tasa de interés aplicable según las condiciones prevalentes en el mercado (y según la cantidad y el término del depósito) al tiempo que el depósito fue originalmente realizado y al momento en el cual el depósito es renovado. La tasa de interés así determinada no podrá se variada durante el tiempo de vigencia del Depósito, con excepción de los Depósitos Tasa Variable, cuya tasa de interés está indexada a una tasa de referencia. El Banco se reserva el derecho a establecer la fecha valor de cada depósito, ya sea constituido mediante cheques, transferencias, o cualquier otra forma que El Banco determine, y será a partir de dicha fecha cuando el Depósito empezará a devengar intereses. Al momento de la apertura del Depósito a plazo, usted puede solicitar al Banco la impresión de una constancia de inversión en la cual constan las características principales del producto y sus titulares, en ningún momento dicha constancia de inversión debe entenderse como un certificado negociable. El Depósito podrá ser cedido a otro u otros titulares, solicitándolo Salvo que el Banco y el Depositante acuerden otra cosa, los intereses devengados por el Depósito se acumularán al capital en cada fecha de vencimiento. Los Depósitos a Plazo que no sean renovados, dejarán de devengar intereses a partir de la fecha de vencimiento, y los fondos serán puestos a disposición del Depositante. El Depósito a Plazo no podrá incrementarse antes de su vencimiento, salvo acuerdo entre el Banco y el Depositante, mediante capitalización de intereses o nuevos aportes. Los retiros o cancelaciones anticipados del Depósito a Plazo serán permitidos solamente en virtud de una orden de autoridad competente, o en el evento de que el Depósito a Plazo estuviere pignorada a favor de un Banco y la garantía fuere ejecutada en todo o en parte en virtud del incumplimiento de la obligación garantizada; o si el Banco, en su absoluta discreción le autoriza tales retiros o cancelación anticipada, en cuyo caso será solamente permitido bajo los términos que el Banco determine y una vez usted haya realizado una solicitud de cancelación por escrito al Banco, dicha solicitud debe realizarse 10 días antes de la fecha en la que se desea la disponibilidad de los fondos. Queda entendido que si bien el Banco puede autorizar el retiro o cancelación anticipada del Depósito a Plazo, no significa que está obligado a hacerlo. En el evento en que el Banco autorice el retiro o cancelación anticipada del Depósito, la cancelación debe ser por el total del valor del Depósito y queda facultado para cobrar un buen valor, el cual es el resultado del ajuste retroactivo de la tasa del Depósito, teniendo en cuenta los costos financieros en que el banco deba incurrir, derivados de dicha cancelación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">9. MUERTE DELDEPOSITANTE.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Si cualquiera de los dueños de la Cuenta muere, nosotros debemos recibir una copia autenticada de la partida de defunción o cualquier otro documento que a nuestra discreción puede ser necesario para establecer la muerte del dueño. Hasta tanto el Banco sea notificado sobre la muerte del dueño de la Cuenta, en la forma antes prescrita, el Banco no será responsable frente a los beneficiarios, sucesores o herederos o frente a cualquier tercero, por la ejecución de instrucciones indebidas o fraudulentas impartidas sobre la Cuenta por Personas Autorizadas, mandatarios, o representantes legales. Acreditada a satisfacción del Banco la muerte del titular de la Cuenta, se procederá a entregar el saldo de la Cuenta o la parte alícuota de este, según la condición de titularidad de la Cuenta, a favor del o de los beneficiarios designados, de haber alguno, en las proporciones que corresponda; o a favor de aquellas personas que hayan sido declaradas como herederos del dueño, según las instrucciones recibidas al efecto por los tribunales panameños dictadas dentro del proceso de sucesión correspondiente, en caso de que no existan beneficiarios designados y sobrevivientes a la muerte del dueño de la Cuenta. Sin embargo, usted acuerda que no tendremos obligación de desembolsar tal balance o una parte del mismo o cualquier otro activo del causante, a menos y hasta que nosotros estemos completamente satisfechos, según nuestro propio juicio, que no tendremos ninguna responsabilidad actual o potencial por dicha entrega bajo las leyes de la República de Panamá .</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">10. CERTIFICACIÓN DE CONDICIÓN DE NO CONTRIBUYENTE.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Cada Depositante de la Cuenta que sea una persona natural deberá certificar su condición de no residente o domiciliado en la República de Panamá, mediante la presentación de aquellos documentos que el Banco considere necesarios para acreditar dicha condición. Cada Depositante de la Cuenta que sea una persona jurídica, independientemente del lugar de su domicilio o constitución, deberá certificar que no genera ingresos gravables en la República de Panamá, mediante la presentación de aquellos documentos que el Banco considere necesarios para acreditar dicha condición. Adicionalmente, el Banco podrá requerir a cada Depositante, Persona Autorizada o cualquier otra relacionada con la Cuenta que certifique si es una persona residente de los Estados Unidos de América para efectos tributarios, o en el caso de personas jurídicas, si es de propiedad sustancial de personas que sean residentes de los Estados Unidos de América para efectos tributarios. Sin perjuicio de cualquier información o documentación adicional que el Banco estime conveniente solicitar para acreditar la condición de residente de los Estados Unidos de América del Depositante o de sus propietarios sustanciales, el estatus de no residente de los Estados Unidos se acreditará entregando a el Banco la Forma W-8BEN expedida por el Departamento Interno de Rentas; y, el estatus de residente de los Estados Unidos se acreditará entregado al Banco la Forma W-9 expedida por el Departamento Interno de Rentas, donde conste el número de identificación tributario. Alternativamente, las certificaciones mencionadas arriba pueden ser entregadas en alguna forma similar a la Forma W-8BEN o a la Forma W-9, según sea el caso. La certificación del Depositante que no es un residente en los Estados Unidos debe de ser renovada antes del último día del tercer año calendario siguiente a la fecha en que la certificación fue firmada, o con la periodicidad que el Banco determine de tiempo en tiempo. El Banco queda por este medio plenamente autorizado para cerrar una Cuenta o rehusar cualquier transacción a o de la Cuenta o aplicar retenciones sobre la Cuenta, si la certificación no consta en los registros del Banco, o no son renovadas a tiempo. Si el Depositante que ha certificado su estatus de no residente de los Estados Unidos al tiempo que él o ella abren la Cuenta con el Banco y después dicha persona llega a ser un ciudadano de los Estados Unidos, o llega a ser un residente fiscal o para efectos de tributarios en los Estados Unidos, debe de certificar por escrito al Banco dentro de los treinta (30) días siguientes al cambio de status, en la forma entregada por el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">11. FIRMAS AUTORIZADAS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco tendrá el derecho de confiar en la firma o cualquier resolución o designación de firmantes autorizados entregados por el Cliente en relación con la Cuenta, hasta que el Cliente haya entregado al Banco otro documento que revoque o modifique las autorizaciones contenidas en las resoluciones o designación de firmantes autorizados previamente entregados al Banco en relación con la Cuenta. El Cliente exonera al Banco de cualquier responsabilidad por la ejecución de instrucciones con base en documentos cuyas firmas hayan sido alteradas o falsificadas, salvo que medie culpa grave o dolo por parte del Banco. Cuando se trate de personas jurídicas, el Cliente está obligado a poner en conocimiento del Banco, de inmediato y por escrito, todos los acuerdos, hechos, circunstancias, o acontecimientos relativos a su personería jurídica o estructura administrativa y social, con inclusión de todo cambio o modificación de su pacto social o estatutos, así como la integración o estructura de sus órganos sociales, y el otorgamiento, alteración o revocación de poderes y mandatos, designación y destitución de directores, dignatario y funcionarios principales de la compañía. Es entendido que no bastará el otorgamiento, la protocolización, o la inscripción del documento en la entidad pública pertinente y/o la publicación de tales cambios para que sean oponibles al Banco, siendo necesario que estos le sean notificados por escrito, quedando el Banco relevado de toda responsabilidad si realizara operaciones o ejecutara instrucciones con base en la información que conste en sus registros.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">12. RETIROS, CHEQUES YDEPOSITOS.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Esta sección provee información respecto a las diferentes cuentas de depósitos y productos del Banco, inclusive de Certificados de Depósito, Cuentas con chequera, y Cuentas de Ahorros.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Depósitos. No obstante cualquier información que puede ser dada al Depositante al momento de realizar el depósito o de otra manera, todos los ítems recibidos por el Banco para crédito o cobro son recibidos a riesgo y cuenta del Depositante sujetos a que el Banco reciba los fondos. El Banco puede debitar la Cuenta en cualquier momento respecto a algún ítem cuyo pago final no fue recibido.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco sólo actuará como agente del Depositante y no asume responsabilidad mas allá que la de actuar con el debido cuidado. No se considerará que el Banco ha recibido un ítem enviado por correo o entregado en alguna de las oficinas de sus afiliados o corresponsales hasta que el Banco no haya efectivamente recibido dicho ítem en su oficina en días hábiles y dentro de horas de oficina. El Banco puede, a su sola discreción, rechazar un depósito, limitar la cantidad que puede ser depositada o devolver parte o todo de la cantidad depositada. Ítems depositados en la Cuenta del Depositante estarán disponibles para ser retirados o para otro uso por el Depositante de acuerdo con el presente Contrato, la legislación aplicable, y los usos y costumbres bancarios. En el evento de que el Banco reciba para su depósito dinero en divisas o denominaciones distintas a la moneda de curso legal de los Estados Unidos de América, procederá con la conversión de la moneda a la tasa vigente para dicha fecha en el mercado de la plaza. El Banco queda autorizado para cobrar y debitar de su Cuenta los cargos por cuenta de terceros en que haya de incurrir para la conversión de la moneda.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Tasas de Interés. El Banco se reserva el derecho, a su sola discreción, de cambiar las tasas de interés pagadas por el Banco sobre alguna Cuenta de Depósito con interés o cualquier otra Cuenta ofrecida por el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Acreditar o Devolución. Todos los ítems cobrados por cuenta del Depositante o depositados en la Cuenta (sin importar si tales ítems fueron cobrados contra dicho depósito) serán manejados por el Banco como agente del Depositante sujeto al correspondiente débito, extorno, contra cargo o devolución si por alguna razón el pago final no es recibido en efectivo o mediante crédito incondicional aceptado por el Banco. Igualmente, cualquier ítem girado contra el Banco y cobrado por cuenta del Depositante, o depositado en la Cuenta, estará sujeto al correspondiente débito, extorno, contra cargo o devolución si por alguna razón dicho ítem es considerado como no pagadero. Los créditos o anotaciones hechos por error a una cuenta del Depositante podrán ser anulados por el Banco mediante el correspondiente débito o extorno. En general cualquier crédito hecho por el Banco a una Cuenta por razón de depósito de un documento es bajo la condición de que dicho documento será pagado a su vencimiento, y es entendido que si no es pagado en esa fecha el Banco queda autorizado para realizar el correspondiente débito, pudiendo además cobrar los intereses causados, aún cuando el documento no pueda ser devuelto por el banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Endosos. El Banco puede, a su sola opción y discreción, aceptar cualquier ítem endosado para ser depositado en la Cuenta y dicho endoso puede ser realizado manualmente, en imprenta, por sello, o de otra manera; y dicho endoso será considerado como legítimo en todo caso. El pago de un ítem puede ser rechazado a opción y exclusivo criterio de el Banco, si esta endosado en lápiz, o mal realizado, ilegible, o si el ítem contiene doble endoso.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Cheques Postdatados. En relación con cualquier cheque postdatado girado por el Depositante, es el deber del Depositante notificar a el Banco por escrito, dando una completa descripción del ítem, incluyendo el beneficiario, la fecha, el número y su monto; en caso de no existir dicha notificación por escrita, el Banco no será responsable por pagar algún cheque postdatado antes de la fecha escrita en el cheque. Un cargo puede ser cobrado por cada ítem postdatado girado por el Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">F. Cheques Caducos. El Banco no está obligado a pagar un cheque que ha sido girado respecto a la Cuenta con más de tres (3) meses de antelación a la fecha de su presentación para pago al Banco. Sin embargo, el Banco podrá a su opción y exclusivo criterio, atender el pago de tales cheques con un periodo de caducidad mayor a éste.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">G. Día Laboral. Los días y horas laborales del Banco son de lunes a viernes desde las 8:00 a.m. hasta las 3:00 p.m. Los sábados, domingos y días de fiesta no son días laborales. Cheques y otros ítems depositados o recibidos después de las 3:00 p.m. en cualquier día laboral serán registrados el día laboral siguiente.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">H. Reclamos. Si algún reclamo es hecho al Banco para el reembolso de alguna parte de un ítem que fue cobrado (incluyendo cualquier ítem cobrado por cuenta del Depositante) después del pago final de este, por causa que el ítem fue alterado o tenía una firma fraudulenta o no autorizada o no era susceptible de ser pagado en debida forma, el Banco puede retener la cantidad de éste ítem de la Cuenta hasta que se emita una determinación final sobre dicho reclamo.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">I. Actualización. Es obligación del Depositante entregar información veraz y verificable, y actualizar su información por lo menos una vez al año o cuando se produzcan cambios sustanciales en su actividad, nivel de ingresos o transacciones, suministrando la totalidad de los soportes documentales exigidos según la Cuenta. Tal actualización supone el diligenciamiento de los formatos vigentes que el Banco establezca para dicho propósito. El Banco podrá cerrar las Cuenta si Usted desatiende esta obligación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">J. Cierre de Cuenta. El Depositante puede en cualquier momento cerrar alguna de las Cuentas por medio de notificación escrita al Banco. Una vez la notificación haya sido recibida el Banco cerrará la Cuenta inmediatamente. Al cierre de la cuenta Usted se compromete a devolver al Banco los cheques que no hubiere utilizado, y si así no lo hiciere, responderá al Banco de todos los perjuicios que ocasione la utilización indebida de los cheques no devueltos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Teniendo en cuenta lo anterior, el Banco se reserva el derecho de continuar pagando cheques que sigan siendo presentados para su pago contra la Cuenta cerrada. Usted continuará siendo responsable de cualquier cargo por los servicios y transacciones iniciadas antes del cierre de la Cuenta o que se originan por el cierre de la Cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">K. Cuentas Inactivas. Para la clasificación y tratamiento de las cuentas inactivas se estará a lo dispuesto para tal efecto en la legislación panameña. No obstante lo anterior se considerará una Cuenta como inactiva cuando no se realicen sobre la misma, depósitos o retiros por orden del Depositante por un periodo consecutivo de cinco (5) años, y se ignore el paradero del Depositante, luego de haber realizado intentos fehacientes de localizarlo. En el caso de Cuentas de Depósito a Plazo Fijo, se entenderá que existe inactividad cuando la Cuenta haya sido renovada automáticamente por cinco (5) periodos consecutivos, y se ignore el paradero del Depositante, luego de haber realizado intentos fehacientes de localizarlo. Las Cuentas clasificadas como inactivas, estarán sujetas a las comisiones por inactividad vigentes de tiempo en tiempo, además de cualquier otra comisión aplicable a la Cuenta. Las Cuentas clasificadas como inactivas devengarán intereses que correspondan según el tipo de Cuenta de que se trate. De conformidad con la legislación vigente el Banco estar obligado a entregar al Banco Nacional de Panamá o aquella entidad designada por ley de tiempo en tiempo, cualquier fondo mantenido en una Cuenta clasificada como inactiva.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">L. Poder Especial. Usted puede autorizar otra persona por escrito y en una forma aceptable al Banco, para que actúe en su nombre y representación y realice operaciones sobre la Cuenta. Sin limitar la generalidad de lo anterior, el Banco a su sola discreción puede o no aceptar el poder especial que usted pretende utilizar para abrir o cerrar una Cuenta o para depositar o retirar fondos de la Cuenta o para endosar cheques o cualquier otro ítem.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">M. Orden de no Pago. El Banco requiere que todos las órdenes de no pago sean recibidas por el Banco por escrito o por cualquier otro medio autorizado por el Banco, siempre y cuando exista absoluta identidad entre los elementos del cheque y los datos suministrados por Usted; y siempre que reciba la instrucción antes de que el cheque haya sido presentado para su cobro o antes de haberlo certificado, según sea el caso. Todas las órdenes de no pago serán efectivas por un lapso de tres (3) meses, pero en ningún caso serán por más de tres (3) contados a partir de la fecha del cheque. La orden de no pago debe incluir la fecha de la orden, el número del cheque, la fecha del cheque, nombre del beneficiario, nombre del depositante, cantidad, y naturaleza de la orden. Nuestra responsabilidad por aceptar la orden de no pago es limitada a lo que ordena la ley. El Banco atenderá las órdenes de no pago emitidas por autoridad competente. Nosotros no aceptamos una orden de no pago de un cheque que esté siendo procesado al tiempo que la orden de no pago es recibida. Por el hecho de hacer una orden de no pago, usted acuerda a lo siguiente:</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(i) rembolsar al Banco por cualquier pérdida que resulte del no pago de un cheque o de una orden de pago;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(ii) cancelar la orden de no pago prontamente por escrito si el cheque o la orden de pago es destruida o de otra manera esta fuera de circulación;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(iii) notificar al Banco antes que usted emita un cheque u orden de pago de reemplazo;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(iv) escribir en la parte del frente de dicho cheque la palabra “reemplazo” y un número y fecha diferente del cheque emitido originalmente.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Depositante acuerda no hacer responsable a el Banco si un cheque respecto del cual se haya emitido una orden de no pago es pagado o si el cheque emitido en su reemplazo no es pagado debido a mala identificación por parte de Ustedes siempre que el Banco haya seguido sus procedimientos internos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Depositante acuerda que el Banco no aceptará una orden de no pago de un cheque certificado hasta que noventa (90) días hayan pasado desde la fecha de certificación, y sólo si el Depositante entrega una certificación y acuerdo indemnizatorio para efectos que el cheque fue perdido, robado, o que no pudo ser encontrado.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">N. Información Extraña. El Banco puede, en su discreción, desconocer cualquier información en el cheque presentado para ser pagado contra la Cuenta que no sea la firma de los giradores, la identificación del banco pagador, el beneficiario, la cantidad, la fecha e información que aparece en la línea MICR. El Depositante acuerda ser responsable por los daños sufridos por el Banco como resultado de alguna otra información escrita en el frente o al reverso del cheque.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">O. Fondos Insuficientes. Si no hay fondos suficientes en la Cuenta o si los fondos suficientes no están disponibles para retiro cuando un ítem es presentado para ser pagado, el Banco puede, pero no está obligado, a pagar el ítem y crear un sobregiro sin notificarle previamente. Usted acuerda depositar fondos suficientes para cubrir el sobregiro tan pronto como sea posible después que el Banco le informe a usted del sobregiro. Usted acuerda que una comisión le será cobrada, y que el Banco se reserva el derecho a cobrar interés a la tarifa vigente para el servicio de sobregiro hasta que el sobregiro haya sido pagado completamente. En caso que sea necesario para proveer al Banco con los fondos necesarios para pagar el cheque presentado para su pago en alguna Cuenta de ustedes, o fondos para cubrir un sobregiro en una Cuenta de ustedes (y el interés sobre dicho sobregiro), el Banco puede, en su sola discreción, transferir fondos de una Cuenta de ustedes a otra Cuenta de ustedes, sin importar si tales Cuentas están a nombre individual o conjunta, y sin importar si es una cuenta de depósito o de certificado de depósito; sin embargo, si no hay acuerdo específico por escrito, el Banco no tiene obligación de hacer lo anterior.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">P. Estados de Cuenta. El Cliente recibirá estados de cuenta mensuales detallando toda la actividad en la Cuenta. Si el Cliente cree que el estado de cuenta contiene un error o discrepancia, entonces el Cliente debe notificar al Banco por escrito dentro de los treinta (30) días siguientes de la fecha del estado de cuenta que contiene el error o discrepancia; de otra manera, se concluirá que el Cliente está de acuerdo con y acepta el estado de cuenta. En consecuencia, el Cliente no tendrá el derecho de reclamar contra el Banco que la firma no es autorizada o que está alterada en algún ítem que fue pagado por el Banco (y pagado antes que el Banco haya recibido notificación de lo incorrecto), si la persona que hizo la firma no autorizada o alteración también es responsable por la discrepancia y que el Cliente no reportó a tiempo a el Banco. Los estados de cuenta serán enviados a la última dirección conocida por el Banco o a otra dirección que el Cliente haya designado por escrito a el Banco; sin embargo, si algún estado de cuenta es devuelto a el Banco con un sello de no entregado, el Banco puede suspender el envío de los estados de cuenta hasta que el Cliente rectifique la dirección, y su Cuenta puede ser debitada por una comisión por el manejo y conservación de la correspondencia que no ha sido entregada. En esas situaciones, cada estado de cuenta será considerado como disponible y recibido por el Cliente en la fecha que está en el estado de cuenta. Si algún estado de cuenta no ha sido recibido por el Cliente a tiempo, el Cliente debe notificar al Banco de esto tan pronto como sea posible y en ningún caso más tarde de treinta (30) días contados a partir de la fecha que tal estado de cuenta es recibido normalmente por el Cliente (o recibido por su apoderado). El Banco podrá de tiempo en tiempo modificar los estados de cuenta y podrá para estos efectos utilizar cualquier medio tecnológico de información que se implemente para su emisión. Usted podrá solicitar en cualquier momento al Banco un estado de cuenta distinto al estado de cuenta emitido ordinariamente por el Banco. En estos casos el Banco cobrará a Ustedes una comisión por la emisión de dichos estados de cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Q. Orden de Cheques y Comisiones. El Banco suministrará a Usted, previa solicitud escrita, la libreta de cheques que usted requiera para hacer giros contra la Cuenta. Si Usted quisiera confeccionar sus propios cheques deberá obtener la autorización del Banco y suscribir un convenio especial para la utilización de tales cheques. El Banco podrá cobrar una comisión por la impresión de cheques. Igualmente, el Banco queda autorizado para aplicar los cargos por cuenta de terceros que correspondan para el pago del impuesto de timbre aplicable a los cheques, de conformidad con la legislación vigente. Las comisiones y cargos aplicables serán deducidas del balance de la Cuenta. Un recibo de confirmación enviado con la libreta de cheques debe de ser debidamente firmado y devuelto a el Banco. El Banco podrá rehusar el pago de cheques extendidos que no sean de los impresos o autorizados por el Banco. Usted deberá dar aviso al Banco de la pérdida o extravío de sus cheques o libreta de cheques. En caso de omitir este aviso, Usted será responsable de los perjuicios que puedan resultar.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco también se encargará de coordinar la impresión de los comprobantes de depósito, peticiones de órdenes de no pago y otras formas que sean necesarias para la operación de la Cuenta, y el Banco no aceptará ninguna otra forma en relación con la operación de la Cuenta (a menos que el Banco, en su absoluta discreción, haya acordado previamente por escrito con usted una forma diferente).</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">R. Secciones Adicionales Respecto a Cheques y Depósitos. El Banco no será responsable por ningún error, negligencia, falta, mala conducta o insolvencia de parte del agente seleccionado por el Banco, o alguno de los subagentes seleccionados por los agentes, todos los cuales serán considerados como agentes del Depositante. Respecto al cobro de algún cheque o ítem similar, el Banco y cualquier agente de cobro pueden aceptar las notas o créditos de cualquier agencia, banco pagador, o pagador en lugar de dinero en efectivo. Si el pago de algún cheque o ítem similar excede el balance disponible en cualquiera de las Cuentas de usted o excede el sobregiro autorizado, el Banco rechazará tal pago. El Banco no tiene la obligación de aceptar ninguna leyenda que está en algún cheque firmado, aceptado o girado por usted. Usted tiene que ejercer en todo tiempo cuidado razonable para prevenir que libros de cheques o cheques en blanco lleguen a caer en manos de personas no autorizadas por usted y de prevenir alguna orden, cheque o ítem similar de ser alterado, perdido o falsificado. Usted debe inmediatamente reportar a el Banco por escrito, por telefax o correo rápido, el robo, pérdida o alteración de algún cheque o libro de cheques. Usted se compromete a firmar los cheques con autógrafo idéntico al registrado en las tarjetas de firma correspondientes. Para efectos del reconocimiento de autógrafos registrados, en casos de fraude o falsificación, el Banco únicamente será responsable en el evento de que las firmas hubiesen sido tan notoriamente falsificadas que no se requiera de conocimientos especiales para reparar en su falsificación. El Banco podrá cobrar las comisiones vigentes cuando un cheque abonado a la Cuenta sea devuelto o rechazado por el Banco librado.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">S. Servicio de Sucursal Virtual. Podrán utilizar el servicio de sucursal virtual los Clientes que soliciten y se les haya habilitado el canal Sucursal Virtual Personas o Empresas Entidades del Exterior</span></font> <font size="3"><span lang="es-AR"><b>Grupo Acacia</b></span></font><font size="3"><span lang="es-AR">conforme al procedimiento establecido por el Banco. El Depositante, para acceder al Servicio de Sucursal Virtual, deberá identificarse utilizando, además del ingreso del usuario y la clave, las demás seguridades adicionales implementadas por el Banco tales como: teclado virtual y/o, identidad protegida y/o seguridades adicionales que se llegaren a establecer, las cuales son personales e intransferibles y deberán ser utilizadas únicamente por el Cliente. El Cliente acepta y reconoce que el canal Sucursal Virtual Personas o Empresas Entidades del Exterior</span></font> <font size="3"><span lang="es-AR"><b>Grupo Acacia</b></span></font><font size="3"><span lang="es-AR">, le otorgará acceso a la información de sus productos y servicios contratados con todas las entidades afiliadas que pertenecen o llegaren a pertenecer al</span></font> <font size="3"><span lang="es-AR"><b>Grupo Acacia</b></span></font><font size="3"><span lang="es-AR">ubicadas en el exterior.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco provee a sus Clientes el beneficio de acceso virtual a su Cuenta con el Banco. El Cliente puede realizar gestiones, transacciones y/o negocios con el Banco o con cualquiera de sus afiliadas utilizando un nombre de usuario y una clave para tener acceso al servicio de banca sucursal virtual del Banco. La clave es la firma electrónica del Cliente mientras está realizando transacciones electrónicas con el Banco. El Cliente tiene la obligación de mantener su clave en absoluto secreto, previniendo su uso por terceras personas. En consecuencia, el Cliente acuerda mantener al Banco libre de todo reclamo, pérdidas, obligaciones y gastos de cualquier clase, que resulten del uso de la clave por personas no autorizadas. Utilizando la clave según los términos y condiciones de este Contrato, el Cliente tendrá acceso a todas las transacciones electrónicas que el Banco ha puesto a disposición del Cliente como solicitud de balances, transferencia de fondos, realización de pagos, cancelar órdenes, y revisar contra órdenes, entre otros. El Cliente acepta como evidencia válida los registros magnéticos que resultan del uso de su clave para realizar negocios electrónicamente con el Banco. El Cliente aquí acuerda que las fechas de las transacciones electrónicas reportadas en los registros financieros que fueron internamente preparados por el Banco o cualquiera de sus afiliadas son ciertos y correctos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Cliente mantendrá al Banco libre de toda responsabilidad que resulte de fallas ocasionales en el equipo, malas conexiones, problemas técnicos, suspensión del servicio, y en general por cualquier circunstancia que impida al Cliente utilizar el servicio de sucursal virtual del Banco. El Cliente no tendrá derecho a ser compensado por el Banco como resultado de la cancelación o la suspensión del servicio de sucursal virtual del Banco. El Banco puede imponer y deducir automáticamente de la Cuenta del Cliente, tarifas y cualquier otro cargo que resulte de realizar negocios electrónicamente con el Banco, tal como aparece en la Tabla de Productos y Tarifas. Sujeto a los términos del Reglamento Sucursal Virtual aplicable, el Cliente puede autorizar, a su propio riesgo, a otra persona a acceder y a realizar transacciones electrónicas en la Cuenta del Cliente reconociendo el contrato correspondiente y obteniendo otra clave sujeto a los requisitos del Banco. El Cliente aceptará como válidas las operaciones electrónicas realizadas por la persona autorizada bajo la nueva clave. El Cliente puede revocar la autorización concedida a otra persona por medio de notificación escrita al Banco. Dicha revocación tendrá efecto después de 24 horas desde que el Banco reciba la notificación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Si hay algún reclamo en relación con transacciones electrónicas realizadas en su Cuenta, el Cliente deberá mencionar tales reclamos dentro de los treinta (30) días siguientes a la fecha de la transacción cuestionada, a menos que la transacción sea una Orden de Pago sujeta a una fecha específica diferente. Los términos y condiciones establecidos aquí tendrán validez y se harán cumplir siempre y cuando el Cliente realice transacciones electrónicas utilizando su clave. Esta sección no regula los términos específicos del servicio de sucursal virtual. Tales acuerdos, si existen, serán parte de un contrato separado.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">13. TRANSFERENCIAS PROGRAMADAS</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Con la firma y presentación del formato de solicitud de “Transferencias Programadas”, usted acepta los siguientes términos y condiciones para el manejo de dichas transferencias con el Banco. Usted autoriza incondicionalmente al Banco para debitar de su Cuenta Corriente o de Ahorros a través de cualquier otro medio de pago habilitado por el Banco y aceptado por usted, el valor inscrito correspondiente a los pagos periódicos determinados por usted. Usted se compromete a tener los fondos suficientes en sus cuentas o a mantener la disponibilidad de cupo, en cada caso, para cubrir el valor facturado el día de cobro.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco se encuentra autorizado para entregar la suma debitada al destinatario del pago designado por el usuario. El Banco no asume responsabilidad en el evento de que la cuenta sea conjunta “Y” y la solicitud no estuviere suscrita por todos los titulares. El Banco cargará el valor facturado en las cuentas siempre que no se implique rebajar el saldo disponible. Así mismo, el Banco podrá debitar de la cuenta en una fecha diferente a la indicada en aquellos casos en los que el Banco tenga inconveniente de índole técnico u operativo que no permitan debitar de la cuenta oportunamente. Usted acepta como prueba de las operaciones efectuadas los registros, cintas, extractos, o cualquier comprobante que se origine en virtud de las autorizaciones dadas por usted en el Banco o a terceros beneficiarios del recaudo. Usted deberá notificar inmediatamente por escrito al Banco, todo cambio de dirección, teléfono o demás información registrada en la solicitud, así como cualquier novedad, modificación o retiro del servicio, en la oficina del Banco donde haya realizado la inscripción del mismo.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Usted podrá cancelar la autorización de pagos preautorizados mediante comunicación escrita dirigida al Banco, con diez (10) días hábiles de antelación a la fecha en la cual se va a ser efectiva. El Banco no será responsable por el pago automático, si la contraorden no es presentada en la forma indicada. El Banco informará de los valores debitados, a través del extracto de su cuenta y solo atenderá reclamaciones por situaciones imputables a éste, en un plazo máximo de cuarenta y cinco (45) días contados desde la realización del pago o débito. Si usted no dispone de cupo o fondos suficientes para cubrir el valor a debitar, el Banco no cargará el valor facturado, salvo que haya autorizado facilidad de crédito en las tasas de interés, plazo y demás condiciones vigentes al momento de su otorgamiento. El Banco no asumirá ninguna responsabilidad frente a usted ni frente a terceras personas cuando se presenten inconsistencias al cargar la cuenta tales como: cuenta cancelada, cuenta saldada, cuenta en sobregiro, cuenta embargada, saldo en canje, titular fallecido o cualquier otro problema que no permita cargar el valor del Pago Preautorizado. Tampoco será responsable por transacciones que no se puedan efectuar por problemas de línea o de congestión, fuerza mayor, caso fortuito o cualquier otra circunstancia no imputable al Banco. El Banco puede cancelar, limitar o adicionar los presentes términos y condiciones en cualquier momento, mediante aviso a usted dado en tal sentido por cualquier medio. Si anunciada la modificación usted no manifiesta por escrito su decisión de excluirse de este servicio, o continúa ejecutándolo, se entenderá que acepta incondicionalmente las modificaciones introducidas. La suspensión, limitación o cancelación del servicio por parte del Banco no dará lugar a ninguna reclamación de responsabilidad o perjuicio a favor de usted. El presente servicio es de término. El Banco cobrará las comisiones que éste fijare por inscripción del servicio, transacción exitosa, transacción fallida y por cobro del mensaje de la transferencia, las cuales serán informadas a usted por los medios establecidos por el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">14. NO TRANSFERENCIA DE CUENTA; CESIÓN</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Usted no puede transferir la propiedad legal o el beneficio de la Cuenta sin el consentimiento del Banco. Ninguna transferencia o cesión de la Cuenta será válida a menos que exista una notificación por escrito y que sea satisfactoria para el Banco, y sólo entonces en el caso que el Banco haya concedido aprobación por escrito y que haya tenido tiempo razonable para registrar la transferencia o cesión en sus libros y registros. En general, no es la política del Banco permitir la transferencia y cesión de las Cuentas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">15. LIMITACIÓN DE RESPONSABILIDAD; FUERZAMAYOR; FALTADE CULPAE INDEMNIZACIÓN</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Si el Banco recibe notificación de alguna demanda legal, citación, requerimiento, ejecución, embargo, emplazamiento, notificación, o cualquier otro procedimiento legal relacionado con (o que parece estar relacionado con) la Cuenta, (de aquí en adelante el “Proceso”), el Banco puede seguir (y puede confiar totalmente en) el concepto de su asesor legal referente a la respuesta apropiada a dicho Proceso, y no tendrá responsabilidad ni obligación alguna por haber seguido tal concepto, aún si dicho concepto luego es considerado como incorrecto. El Banco puede cobrar a cualquier Cuenta del Depositante (sin importar si es la misma Cuenta respecto a la cual el Proceso se refiere) los gastos, incluyendo gastos de abogado, incurridos por el Banco en responder al Proceso en relación con la Cuenta del Depositante en el Banco, y el Depositante será responsable por el pago de tales gastos. En consecuencia, en el evento de cualquier Proceso, el Banco puede, en su sola discreción, retener en prenda todo o parte de la Cuenta del Depositante para cubrir los gastos esperados del Banco, en dicho caso el Banco puede, sin responsabilidad alguna, devolver los cheques girados sobre la Cuenta o de otra manera rechazar el pago de cualquier retiro de la Cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">En caso de alguna disputa en relación con alguna Cuenta de usted (sin importar si fue iniciada por usted, por el Banco, o por una tercera persona), o en el evento que el Banco reciba órdenes contradictorias, reclamos o demandas relacionadas con dicha Cuenta, el Banco puede tomar cualquier acción que el Banco o su asesor legal consideren recomendable, incluyendo sin limitación abstenerse de ejecutar instrucciones respecto de la Cuenta hasta tanto se determine a satisfacción cuál de los demandantes tiene derecho a recibir los fondos. Todos los costos y gastos que resulten para el Banco, incluyendo sin limitación honorarios legales (incluyendo gastos de abogados) incurridos en el juicio, o en apelación, o gastos incurridos en caso de no haber juicio, deberán ser reembolsados a el Banco por usted una vez hayan sido reclamados (y usted acuerda autorizar a el Banco a debitar alguna o todas de sus Cuentas hasta completar dicha cantidad).</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco no será responsable ante usted por alguna falla, demora, omisión, interrupción o error respecto de la actuación del Banco de alguna de sus obligaciones bajo este Contrato o bajo cualquier documento que se firme con respecto a la relación entre usted y el Banco, si los mismos resultados por cualquier causa más allá del control del Banco, incluyendo sin limitación fallas en la energía, mal funcionamiento de equipos, suspensión en el pago por otras instituciones financieras, disputas laborales, moratoria bancaria, restricciones en la moneda, suspensión en el mercado, actos de Dios, guerras, conmociones civiles, actos de terrorismo, coacción legal, negligencia de otra institución financiera, y cualquier otra acción o restricción de algún gobierno, autoridades monetarias o de supervisión, o cualquier otra tercera persona.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco y sus directores, oficiales, empleados, abogados y agentes (cada uno de los anteriores, incluyendo el Banco, siendo “Parte sin Culpa”) no incurrirán en ningún momento en responsabilidad para con usted (y usted expresamente renuncia y libera algún y todos los reclamos y causas de demandas que usted pueda en algún momento tener contra la Parte sin Culpa) en conexión con algún acto, omisión o circunstancias que resulten en algún momento de este Contrato, o la presentación, pago o no pago de algún ítem girado contra alguna Cuenta de usted, o la aceptación de algún ítem que ha sido depositado en alguna Cuenta, o algún proceso relacionado con (o que parezca estar relacionado) alguna de tales Cuentas, o cualquier otra cosa o transacción contemplada por este Contrato (que no sea ningún acto que sea equivalente a culpa grave o mala conducta intencional proveniente de dicha Parte sin Culpa). Además, el Banco y sus directores, oficiales, empleados, abogados y agentes (cada uno de los anteriores , incluyendo el Banco, siendo una “Parte Indemnizada”) serán en todo momento indemnizados, reembolsados y mantenidos libres de todo daño por usted (y, a petición del Banco, serán defendidos por usted) de y contra alguna y todos los reclamos, demandas, causas de demandas, obligaciones, pérdidas, daños, costos y gastos (incluyendo sin limitación cualquier gasto de abogados, bien sea que hayan sido incurridos en juicio, apelación, o gastos incurridos sin juicio) que pueden ser en cualquier momento impuestos sobre, incurridos o sufridos por, o alegados en contra de dicha Parte Indemnizada en conexión con algún acto, omisión o circunstancias que resulten o estén relacionadas con este Contrato, o cualquier violación de este Contrato por usted, o la presentación, pago o no pago de algún ítem girado sobre alguna Cuenta de usted, o la aceptación de algún ítem para ser depositado en dicha Cuenta, o algún Proceso relacionado con (o que parezca estar relacionado con) cualquiera de dichas Cuentas, o alguna otra cosa o transacción contemplada por este Contrato (que no sea ningún acto u omisión que sea equivalente a culpa grave o mala conducta intencional proveniente de dicha Parte indemnizada).</span></font></p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">16. CONDICIONES APLICABLES ALATRANSFERENCIAELECTRÓNICADE FONDOS</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Las provisiones de esta Sección rigen todos los servicios de transferencia de fondos ofrecidos en conjunto con sus Cuentas con el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">A. Órdenes de Pago. Sujeto a los términos y condiciones establecidos en este Contrato, el Banco está autorizado para aceptar y debitar a alguna de las Cuentas del Depositante en el Banco, sin limitación alguna de la cantidad, cada orden de pagar (cada una la “Orden de Pago”), o hacer que otro banco pague, una suma cierta de dinero (que puede ser en dólares de los Estados Unidos de América o en cualquier otra moneda extranjera) a un beneficiario designado siempre y cuando que la Orden de Pago sea: (i) enviada por una Persona Autorizada, como se define más adelante, o (ii) autorizada por el Depositante según la ley aplicable. El Banco puede de tiempo en tiempo por notificación escrita al Depositante establecer o enmendar reglas administrativas en relación con las Órdenes de Pago y el servicio de transferencia de fondos a ser provistos bajo este Contrato. Nada de lo establecido aquí obligará al Banco a aceptar y ejecutar una Orden de Pago, o la cancelación o enmienda de ésta; y solamente se entenderá que el Banco ha aceptado una Orden de Pago, su cancelación o enmienda, al momento de su ejecución. Usted deberá indemnizar y mantener a el Banco libre de toda responsabilidad, reclamos, pérdidas, costos y gastos (incluyendo gastos de abogado) que resulten de la ejecución por parte de el Banco de cualquier cancelación o enmienda de una Orden de Pago.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">B. Personas Autorizadas. Cualquier persona que tenga firma autorizada en alguna Cuenta será considerada como una Persona Autorizada para efectos de esta Sección. El Depositante será responsable por mantener actualizadas las Personas Autorizadas designadas en su Cuenta. Cualquier cambio en relación con las Personas Autorizadas, y cualesquiera otras órdenes dadas al Banco, puede ser realizada por el Depositante solamente por medio de una notificación escrita a el Banco y dichos cambios serán efectivos no antes de diez (10) días calendarios desde la fecha de la notificación.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">C. Insuficiencia de Fondos. Si el Banco recibe una Orden de Pago y la Cuenta no tiene fondos suficientes para cubrir la Orden de Pago, el Banco puede, en su absoluta discreción, pero no está obligado a aceptar la Orden de Pago: (i) creando un sobregiro en la Cuenta, o (ii) transfiriendo fondos de alguna otra Cuenta del Depositante a la Cuenta sobre la que se emitió la Orden de Pago, en cualquier caso sólo en la medida de los fondos que faltan. El Banco puede debitar la Cuenta por la cantidad de la Orden de Pago (aunque la Orden de Pago puede ser en beneficio de uno de los oficiales del Depositante, agentes, o empleados), más la respectiva comisión. Si la cuenta no tiene fondos suficientes para debitar la comisión establecida por el Banco, éste podrá abstenerse de procesar la Orden de Pago. Si la Orden de Pago genera un sobregiro, el Depositante debe prontamente pagar al Banco la cantidad del sobregiro, junto con la comisión por el sobregiro y el interés sobre el mismo a la tasa de interés anual que cobra el Banco por los sobregiros. Usted acuerda que el Banco puede compensar la cantidad del sobregiro y el interés contra los fondos de alguna otra Cuenta que usted tiene en el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">D. Enmiendas o Cancelación. El Banco no está obligado a aceptar o efectuar cualquier enmienda o cancelación de cualquier Orden de Pago enviada a el Banco, y en cualquier caso podrá condicionar su acción al: (i) recibo de información razonable identificando la Orden de Pago original, (ii) cumplimiento con los procedimientos de seguridad establecidos en la “Solicitud de Producto”, (iii) recibo de un acuerdo de indemnización o caución u otra forma de seguridad aceptable por el Banco, según la cual el Banco será resarcida por todas las pérdidas, gastos (incluyendo gastos de abogado) y otras obligaciones que puedan resultar de la ejecución de la enmienda o cancelación de la Orden de Pago, y (iv) recibo de la petición de la enmienda o cancelación no mas tarde del tiempo de cierre (tal como lo establece el Banco de tiempo en tiempo) del día laboral anterior al día en que se va a ejecutar o pagar la Orden de Pago original. El Depositante estará obligado por la enmienda o cancelación de la Orden de Pago en la misma medida que hubiera estado obligado por el envío de la Orden de Pago bajo esta misma Sección.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">E. Tiempo de Cierre. Órdenes de Pago, enmiendas o cancelaciones deberán ser comunicadas al Banco durante las horas de operación en que el Banco esté abierto para el recibo, procesamiento y transmisión de Órdenes de Pago, enmiendas y cancelaciones de acuerdo con el horario de cierre establecido por el Banco de tiempo en tiempo. Ordenes de Pago, enmiendas o cancelaciones recibidas después de dicho horario de cierre serán consideradas como recibidas el día hábil siguiente para transferencia de fondos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">F. Banco Beneficiario; Banco Intermediario.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(1) Falta de Identificación. Si una Orden de Pago no designa el banco del beneficiario, el Banco en su discreción puede realizar el pago a cualquier agencia en la cual tenga razón para creer que el beneficiario tiene una cuenta o tratar de buscar instrucciones adicionales del Depositante, y en cualquier caso el Banco no será responsable por pérdidas que resulten de la falla del Depositante de identificar apropiadamente el banco donde el beneficiario mantiene una cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(2) Intermediarios. El Depositante puede dar instrucciones al Banco a través del formato “Solicitud de Transferencia” para el envío de Órdenes de Pago a través de corresponsales que considere apropiados después de consultar el manual de referencia del Banco de las relaciones con corresponsales. Al momento de ejecutar una Orden de Pago, el Banco puede utilizar cualquier sistema de transferencia de fondos, sistemas de comunicaciones, y agencias intermediarias designadas por el Depositante, excepto donde el Banco de buena fe concluye que el uso de tal sistema de transferencia de fondos, sistema de comunicaciones, o intermediario no es posible o se demoraría mucho, en tal caso el Banco debería usar el sistema de transferencia de fondos en los cuales el Banco participa (por ejemplo SWIFT), y tales intermediarios, agentes o subagentes que el Banco considere pertinentes para ejecutar la Orden de Pago. En la medida que sea permitido por la ley, (i) cualquier transferencia de fondos o sistema de comunicaciones, intermediarios, agente o subagente serán considerados como agentes del Depositante y el Banco no estará bajo ninguna responsabilidad por cualquier error, negligencia, o falla de alguno de ellos o por alguna falla de identificar el beneficiario o cualquier mal pago por alguno de ellos, y (ii) el Banco no será responsable por ningún error, mutilación, demora, mal entrega o falla en la entrega de la transferencia de alguna Orden de Pago en conexión con dicha transacción o por cualquiera interrupción de cualquier medio de transmisión o por alguna imposición de alguna censura, control de cambios u otra restricción, todos estos riesgos perteneciendo al Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">G. Números de Identificación. Al ejecutar la Orden de Pago, el Banco podrá confiar exclusivamente en el número de identificación de cuenta de un beneficiario, banco del beneficiario o banco intermediario en vez de nombres aún si ambos son identificados. El Banco no tendrá la obligación de detectar alguna inconsistencia entre el nombre y cualquier dicho número incluido en una Orden de Pago. El Depositante será responsable por tales inconsistencias e indemnizará y mantendrá libre al Banco de toda pérdida, obligación, gasto o daño que pueda ocurrir como resultado de tal inconsistencia, incluyendo sin limitación, gastos de abogado y gastos de litigio.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">H. Solicitud de Información. Una vez solicitada, el Depositante proveerá al Banco con toda información de transacciones que sea necesaria para que el Banco pueda manejar las preguntas y rastreos, incluyendo pero sin limitación, cantidades en dólares, cuentas afectadas, fechas, y beneficiarios.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">I. Rechazos. Si el Banco determina no ejecutar una Orden de Pago recibida del Depositante, el Banco deberá notificar al Depositante de tal decisión utilizando la misma forma de comunicación utilizada por el Depositante para transmitir la Orden de Pago a el Banco o por comunicación con el Depositante de acuerdo con los procedimientos para notificaciones contenidas aquí o definidas por el Banco de tiempo en tiempo. El Depositante acuerda que lo anterior constituye una manera comercialmente razonable de dar notificación y acepta que Ordenes de Pago comunicadas a el Banco por una forma que no cumple con esta Sección no puede ser ejecutada por el Banco y el Banco no está obligado de dar la notificación de rechazo al Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">J. Registros. El Banco está autorizado (pero no está obligado) a registrar electrónicamente y a grabar conversaciones telefónicas entre el Depositante y/o Personas Autorizadas y el Banco. La forma como el Banco entienda órdenes verbales será determinante en el evento de una discrepancia, con alguna confirmación por escrito de dicha orden, sin importar si el Banco grabó la conversación o no, o si alguna grabación que está disponible no se entiende.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">K. Depositantes del Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(1) Responsabilidad por Pérdidas Sufridas por el Originador. Si bajo la ley aplicable el Depositante no es considerado como el originador de la transferencia de fondos a la cual la Orden de Pago se refiere, el Depositante acuerda indemnizar y mantener a el Banco libre de cualquier pérdida o responsabilidad para con dicho originador siempre y cuando tal pérdida o responsabilidad no hubiera ocurrido si el Depositante hubiera sido el originador.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(2) Bancos Fuera de Línea. Si el Depositante es un banco fuera de línea, y el Depositante no notifica expresamente al Banco por escrito que mantiene una cuenta para otro banco, el Depositante garantiza al Banco que el Depositante no actúa como un banco intermediario o como banco del beneficiario con respecto a Órdenes de Pago recibidas a través de los sistemas de transferencias de pago por el beneficiario que es una agencia.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">L. Estados de Cuenta y Notificación de Errores. Si el Depositante lo solicita, el Banco deberá proveerle estados de cuenta periódicos o avisos describiendo cada Orden de Pago realizada a nombre del Depositante. Dentro de un término razonable de tiempo que no exceda cinco (5) días laborales después de haber recibido tal información o el día laboral próximo después del recibo de un aviso, el que ocurra primero, el Depositante debe notificar a el Banco de cualquier discrepancia, transacciones no autorizadas u otros errores. Si tal comunicación es notificada verbalmente, deberá ser confirmada por escrito prontamente por el Banco. El Depositante será considerado como si hubiese recibido cualquier información enviada por correo por el Banco cinco (5) días laborales después que dicha información es enviada.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">M. Tarifas. El Banco puede cobrar, y el Depositante debe de pagar prontamente, las comisiones y cargos aplicables por los servicios prestados bajo esta Sección. A menos que se haya estipulado por escrito, el Banco está autorizado para cobrar tales tarifas por medio de débitos a la Cuenta.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">N. Órdenes de Pago que Llegan. Órdenes de Pago aceptadas por el Banco y recibidas como crédito para ser depositadas en las Cuentas del Depositante, a opción de el Banco, serán aceptadas electrónicamente, por correo de primera clase o según se acuerde de otra forma.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">O. Limitación de Responsabilidad - Deber de Cooperar.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(1) El Banco no estará obligado a aceptar, y no será responsable por no aceptar, cualquier Orden de Pago. El Banco no será responsable por fallas, tardanzas, errores, reclamos o daños en la ejecución o cumplimiento de cualquier transferencia ocasionada por falla o negligencia de cualquier otro banco o parte, como tampoco será responsable el Banco por alguna otra causa más allá del control del Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(2) El Banco no será responsable por ningún pago de daños consecuenciales, especiales, indirectos, punitivos o ejemplares, o pérdidas que el depositante pueda incurrir o sufrir por razón de las acciones del Banco u omisión en relación con una transferencia de fondos.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(3) El Depositante reconoce que el Banco está sujeto a leyes y regulaciones y estándares internacionales y acuerda que el Banco puede negarse a cumplir cualquier actividad que esté en conflicto o sea inconsistente con tales leyes o regulaciones o estándares internacionales.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(4) El Banco no será responsable por pérdidas o daños que resultan de su inhabilidad para completar una transferencia u Orden de Pago solicitada por el Depositante debido a actos de fuerza mayor, incendios, inundaciones, huracanes, acción de alguna autoridad gubernamental, mecánico, computadores, telecomunicaciones o fallas eléctricas, mal funcionamiento de equipos, guerras, insurrecciones civiles, actividades terroristas de la guerrilla, huelgas, paros, bloques, o cualquier otra circunstancia similar.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(5) El Depositante confirma a el Banco que ninguna de las provisiones de esta Sección, como tampoco ninguna transacción contemplada bajo esta Sección violará ninguna ley de control de cambios o ninguna otra restricción legal aplicable al Depositante.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(6) El Depositante tendrá que firmar cualquier documento y realizar cualquier acto requerido por el Banco para poder asistirlo en cobrar fondos de o en relación con cualquier otra transacción con cualquier tercera persona o personas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">P. Indemnización. Excepto como esté limitado por la ley, usted acuerda indemnizar a el Banco y mantener a el Banco libre de todo daño en relación con cada uno y todos de los siguientes (las “Obligaciones”):</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(i) cualquier costo o gasto incurrido por el Banco en la ejecución de una Orden de Pago o en cumplimiento con los términos y condiciones de este Contrato;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(ii) todas obligaciones con terceras personas que surgen de, o en relación con, los términos y condiciones de este Contrato y/o la ejecución de una Orden de Pago por parte del Banco;</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">(iii) cualquier y todos los reclamos, demandas, procesos, multas y penalidad que resulten de la ejecución de una Orden de Pago por parte del Banco o de otra manera en cumplimiento de cualquier deber u obligación que resulte de los términos y condiciones de este Contrato; y</span></font></p><p style="margin-bottom: 0.14in"><span lang="es-AR">(iv) cualquier daño, pérdida, costos y gastos (incluyendo gastos de abogado razonables) sufridos o incurridos por</span> <font size="3"><span lang="es-AR">el Banco como resultado de cualquiera de lo anterior o por el incumplimiento de alguna ley o condición por parte de usted. El Banco está aquí autorizado a</span></font> <font size="3"><span lang="es-AR">compensar la cantidad de alguna obligación contra cualquiera de sus Cuentas en el Banco.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Q. Moneda Extranjera. Si el Banco recibe una Orden de Pago de usted en la cual se ordena el pago en una moneda distinta de dólares de los Estados Unidos, el Banco puede proceder a debitar la Cuenta antes de ejecutar la Orden de Pago por el equivalente en dólares de los Estados Unidos de la moneda extranjera a ser pagada, a la tasa de cambio que tenga el Banco. Usted además acuerda que la ejecución de una Orden de Pago la cual requiere pago en una moneda diferente de dólares de los Estados Unidos puede demorarse un tiempo prudencial para permitirle al Banco realizar el cambio de moneda.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">17. ORIGEN DE FONDOS; CUMPLIMIENTO CON LALEY</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Depositante acepta y reconoce que el Banco está obligado bajo la ley aplicable y sus reglamentos y procedimientos internos a tomar medidas para combatir el uso de los productos del Banco, servicios y oficinas para llevar a cabo transacciones de lavado de dinero y otras actividades ilícitas. El Depositante se compromete a entregar al Banco cualquier información, y cumplir con cualquier procedimiento que el Banco razonablemente le solicite, con la finalidad de cumplir con las obligaciones que le sean exigible de conformidad con la legislación aplicable y los estándares internacionales vigentes para combatir el blanqueo de capitales y financiamiento del terrorismo. El Depositante acepta que el incumplimiento de este compromiso, podría resultar en la suspensión de los procesos de vinculación y apertura de Cuenta, la suspensión de la transacción, la devolución de recursos o el cierre de la Cuenta. El Depositante reconoce y acepta que en cumplimiento de dichas leyes y estándares internacionales, el Banco tendrá que divulgar información sobre el Depositante y sus Cuentas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Adicionalmente, el Depositante representa, garantiza y acuerda que todos los fondos existentes y los que serán depositados en la Cuenta tendrán un origen legal, y que el Depositante no efectuará ni iniciará ninguna transacción en o a través de la Cuenta que sea ilegal bajo las leyes de la República de Panamá, o cualquier otra jurisdicción cuyas leyes le sean aplicables a dicha transacción.</span></font></p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in" lang="es-AR"><br/>  </p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">18. CONTRATO COMPLETO; INTERPRETACIÓN DELCONTRATO</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Este Contrato y todos los documentos que gobiernan la relación del Cliente con el Banco, incluyendo la Solicitud de Producto para el producto o servicio particular, constituyen acuerdo entre las partes en relación con los términos y condiciones contenidos en este Contrato. De existir una discrepancia entre los términos de la Solicitud de Producto y este Contrato, prevalecerá lo dispuesto en la Solicitud de Producto. Si alguno de los términos o secciones de este Contrato es declarado inválido, ilegal, o sin validez legal alguna por un tribunal con jurisdicción competente, la validez, legalidad, u obligatoriedad de los términos y Secciones restantes de este Contrato no se verá afectado ni impedido por dicha declaración de ilegalidad. La ambigüedad de algunas de las Secciones de este Contrato no será interpretada en contra del Banco por el hecho que el Banco o su asesor legal fueron los que redactaron dicha Sección. La utilización de subtítulos en este Contrato es solamente por conveniencia; ningún subtitulo es parte de este Contrato o deberá afectar el significado o interpretación de este Contrato.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">19. RENUNCIA A LA INMUNIDAD SOBERANA</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">En la medida que alguno de ustedes tenga o más tarde adquiera inmunidad de la jurisdicción que pueda tener cualquier tribunal o de cualquier proceso legal (sin importar si es por notificación de demanda, vinculación antes de la sentencia, vinculación para facilitar la ejecución de la sentencia, ejecución o de otra forma) con respecto a usted o a sus activos, usted por este Contrato renuncia irrevocablemente a tal inmunidad en relación con sus obligaciones bajo este Contrato y, sin limitar la generalidad de lo anterior, acuerda que usted renuncia a tal inmunidad por este Contrato en la medida que tal renuncia sea permitida por la legislación aplicable.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">20. OBLIGATORIEDAD DEL CONTRATO; RESTRICCIÓN EN LA CESIÓN</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">Este Contrato será obligatorio para los herederos, representantes legales, sucesores y asignatarios. No obstante lo anterior, sus derechos y obligaciones bajo este Contrato no podrá ser cedido por usted sin el consentimiento previo por escrito de el Banco, y cualquier cesión de este sin dicho consentimiento previo por escrito lo hará nulo y sin efecto legal alguno.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">21. SERVICIO DE VALIJA</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">ELBANCO podrá ofrecer eventualmente al cliente, directamente o por medio de sus representantes autorizados en el extranjero, el servicio de correo o de valija para el envío de sus consignaciones con destino a su cuenta. En tal caso, el Depositante acepta que la prestación de este servicio se dará exclusivamente por su cuenta y riesgo, y por lo tanto exonera al BANCO de cualquier responsabilidad por la pérdida o extravío de los cheques o documentos remitidos por consignación; y estará sujeto a las comisiones y cargos por cuenta de terceros aplicables según la Tabla de Productos y Tarifas.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">22. DERECHO A RENUNCIAR DEL BANCO.</span></font></p><p style="margin-bottom: 0.14in"><font size="3"><span lang="es-AR">El Banco puede sin prejuicio a este Contrato en aspecto alguno, renunciar a cualquiera de los términos y provisiones anteriores en un caso en particular, pero dicha renuncia aplica solamente a ese caso específico.</span></font></p>');
 
 -- --------------------------------------------------------
 
@@ -5165,7 +5167,6 @@ INSERT INTO `registration_agreement_logs` (`id`, `member_id`, `registration_agre
 -- Table structure for table `remarks`
 --
 
-DROP TABLE IF EXISTS `remarks`;
 CREATE TABLE IF NOT EXISTS `remarks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -5210,7 +5211,6 @@ INSERT INTO `remarks` (`id`, `subclass`, `subject_id`, `writer_id`, `date`, `com
 -- Table structure for table `scheduled_payments`
 --
 
-DROP TABLE IF EXISTS `scheduled_payments`;
 CREATE TABLE IF NOT EXISTS `scheduled_payments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `from_account_id` int(11) NOT NULL,
@@ -5235,10 +5235,22 @@ CREATE TABLE IF NOT EXISTS `scheduled_payments` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `service_client_permissions`
+--
+
+CREATE TABLE IF NOT EXISTS `service_client_permissions` (
+  `service_client_id` int(11) NOT NULL,
+  `operation` varchar(50) NOT NULL,
+  PRIMARY KEY (`service_client_id`,`operation`),
+  KEY `FK6BF53FDABC65B77D` (`service_client_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `service_clients`
 --
 
-DROP TABLE IF EXISTS `service_clients`;
 CREATE TABLE IF NOT EXISTS `service_clients` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -5262,7 +5274,6 @@ CREATE TABLE IF NOT EXISTS `service_clients` (
 -- Table structure for table `service_clients_chargeback_payment_types`
 --
 
-DROP TABLE IF EXISTS `service_clients_chargeback_payment_types`;
 CREATE TABLE IF NOT EXISTS `service_clients_chargeback_payment_types` (
   `service_client_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -5277,7 +5288,6 @@ CREATE TABLE IF NOT EXISTS `service_clients_chargeback_payment_types` (
 -- Table structure for table `service_clients_do_payment_types`
 --
 
-DROP TABLE IF EXISTS `service_clients_do_payment_types`;
 CREATE TABLE IF NOT EXISTS `service_clients_do_payment_types` (
   `service_client_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -5292,7 +5302,6 @@ CREATE TABLE IF NOT EXISTS `service_clients_do_payment_types` (
 -- Table structure for table `service_clients_manage_groups`
 --
 
-DROP TABLE IF EXISTS `service_clients_manage_groups`;
 CREATE TABLE IF NOT EXISTS `service_clients_manage_groups` (
   `service_client_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -5307,7 +5316,6 @@ CREATE TABLE IF NOT EXISTS `service_clients_manage_groups` (
 -- Table structure for table `service_clients_receive_payment_types`
 --
 
-DROP TABLE IF EXISTS `service_clients_receive_payment_types`;
 CREATE TABLE IF NOT EXISTS `service_clients_receive_payment_types` (
   `service_client_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -5319,24 +5327,9 @@ CREATE TABLE IF NOT EXISTS `service_clients_receive_payment_types` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service_client_permissions`
---
-
-DROP TABLE IF EXISTS `service_client_permissions`;
-CREATE TABLE IF NOT EXISTS `service_client_permissions` (
-  `service_client_id` int(11) NOT NULL,
-  `operation` varchar(50) NOT NULL,
-  PRIMARY KEY (`service_client_id`,`operation`),
-  KEY `FK6BF53FDABC65B77D` (`service_client_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `sessions`
 --
 
-DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE IF NOT EXISTS `sessions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(255) NOT NULL,
@@ -5348,7 +5341,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `identifier` (`identifier`),
   KEY `FK53BFD09DA19267FC` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=48 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=50 ;
 
 -- --------------------------------------------------------
 
@@ -5356,7 +5349,6 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 -- Table structure for table `settings`
 --
 
-DROP TABLE IF EXISTS `settings`;
 CREATE TABLE IF NOT EXISTS `settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` varchar(15) NOT NULL,
@@ -5662,7 +5654,6 @@ INSERT INTO `settings` (`id`, `type`, `name`, `value`) VALUES
 -- Table structure for table `sms_logs`
 --
 
-DROP TABLE IF EXISTS `sms_logs`;
 CREATE TABLE IF NOT EXISTS `sms_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `target_member_id` int(11) NOT NULL,
@@ -5691,7 +5682,6 @@ CREATE TABLE IF NOT EXISTS `sms_logs` (
 -- Table structure for table `sms_mailings`
 --
 
-DROP TABLE IF EXISTS `sms_mailings`;
 CREATE TABLE IF NOT EXISTS `sms_mailings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `by_id` int(11) NOT NULL,
@@ -5712,7 +5702,6 @@ CREATE TABLE IF NOT EXISTS `sms_mailings` (
 -- Table structure for table `sms_mailings_groups`
 --
 
-DROP TABLE IF EXISTS `sms_mailings_groups`;
 CREATE TABLE IF NOT EXISTS `sms_mailings_groups` (
   `sms_mailing_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -5726,7 +5715,6 @@ CREATE TABLE IF NOT EXISTS `sms_mailings_groups` (
 -- Table structure for table `sms_mailings_pending_to_send`
 --
 
-DROP TABLE IF EXISTS `sms_mailings_pending_to_send`;
 CREATE TABLE IF NOT EXISTS `sms_mailings_pending_to_send` (
   `sms_mailing_id` int(11) NOT NULL,
   `member_id` int(11) NOT NULL,
@@ -5740,7 +5728,6 @@ CREATE TABLE IF NOT EXISTS `sms_mailings_pending_to_send` (
 -- Table structure for table `sms_types`
 --
 
-DROP TABLE IF EXISTS `sms_types`;
 CREATE TABLE IF NOT EXISTS `sms_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(100) NOT NULL,
@@ -5773,7 +5760,6 @@ INSERT INTO `sms_types` (`id`, `code`, `order_index`) VALUES
 -- Table structure for table `tickets`
 --
 
-DROP TABLE IF EXISTS `tickets`;
 CREATE TABLE IF NOT EXISTS `tickets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -5810,7 +5796,6 @@ CREATE TABLE IF NOT EXISTS `tickets` (
 -- Table structure for table `trace_numbers`
 --
 
-DROP TABLE IF EXISTS `trace_numbers`;
 CREATE TABLE IF NOT EXISTS `trace_numbers` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -5826,7 +5811,6 @@ CREATE TABLE IF NOT EXISTS `trace_numbers` (
 -- Table structure for table `transaction_fees`
 --
 
-DROP TABLE IF EXISTS `transaction_fees`;
 CREATE TABLE IF NOT EXISTS `transaction_fees` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subclass` varchar(1) NOT NULL,
@@ -5876,86 +5860,9 @@ INSERT INTO `transaction_fees` (`id`, `subclass`, `payer`, `enabled`, `original_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `transfers`
---
-
-DROP TABLE IF EXISTS `transfers`;
-CREATE TABLE IF NOT EXISTS `transfers` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `from_account_id` int(11) NOT NULL,
-  `to_account_id` int(11) NOT NULL,
-  `type_id` int(11) NOT NULL,
-  `date` datetime NOT NULL,
-  `amount` decimal(15,6) NOT NULL,
-  `emission_date` datetime DEFAULT NULL,
-  `expiration_date` datetime DEFAULT NULL,
-  `i_rate` decimal(15,6) DEFAULT NULL,
-  `status` varchar(1) NOT NULL,
-  `process_date` datetime DEFAULT NULL,
-  `feedback_deadline` datetime DEFAULT NULL,
-  `by_id` int(11) DEFAULT NULL,
-  `description` longtext,
-  `parent_id` bigint(20) DEFAULT NULL,
-  `chargedback_by_id` bigint(20) DEFAULT NULL,
-  `chargeback_of_id` bigint(20) DEFAULT NULL,
-  `transaction_fee_id` int(11) DEFAULT NULL,
-  `loan_payment_id` int(11) DEFAULT NULL,
-  `account_fee_log_id` int(11) DEFAULT NULL,
-  `receiver_id` int(11) DEFAULT NULL,
-  `transaction_number` varchar(100) DEFAULT NULL,
-  `trace_number` varchar(100) DEFAULT NULL,
-  `client_id` bigint(20) DEFAULT NULL,
-  `trace_data` varchar(50) DEFAULT NULL,
-  `external_transfer_id` int(11) DEFAULT NULL,
-  `next_authorization_level_id` int(11) DEFAULT NULL,
-  `scheduled_payment_id` int(11) DEFAULT NULL,
-  `broker_commission_contract_id` int(11) DEFAULT NULL,
-  `fee_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `trace_number` (`trace_number`,`client_id`),
-  KEY `FK3EBE45E8B3A79238` (`scheduled_payment_id`),
-  KEY `FK3EBE45E82B1214C2` (`by_id`),
-  KEY `FK3EBE45E8617A8174` (`external_transfer_id`),
-  KEY `FK3EBE45E8E735A8CE` (`loan_payment_id`),
-  KEY `FK3EBE45E84B79F4AC` (`next_authorization_level_id`),
-  KEY `FK3EBE45E88799AF6F` (`from_account_id`),
-  KEY `FK3EBE45E81106EAD7` (`broker_commission_contract_id`),
-  KEY `FK3EBE45E8E969E40E` (`transaction_fee_id`),
-  KEY `FK3EBE45E89D63275E` (`type_id`),
-  KEY `FK3EBE45E86957A5AA` (`account_fee_log_id`),
-  KEY `FK3EBE45E8E846CE9F` (`chargedback_by_id`),
-  KEY `FK3EBE45E8A822302A` (`receiver_id`),
-  KEY `FK3EBE45E8DD5BFBFE` (`to_account_id`),
-  KEY `FK3EBE45E8A899F6A3` (`chargeback_of_id`),
-  KEY `FK3EBE45E8229B7694` (`parent_id`),
-  KEY `FK3EBE45E8CF860F8D` (`fee_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
-
---
--- Dumping data for table `transfers`
---
-
-INSERT INTO `transfers` (`id`, `from_account_id`, `to_account_id`, `type_id`, `date`, `amount`, `emission_date`, `expiration_date`, `i_rate`, `status`, `process_date`, `feedback_deadline`, `by_id`, `description`, `parent_id`, `chargedback_by_id`, `chargeback_of_id`, `transaction_fee_id`, `loan_payment_id`, `account_fee_log_id`, `receiver_id`, `transaction_number`, `trace_number`, `client_id`, `trace_data`, `external_transfer_id`, `next_authorization_level_id`, `scheduled_payment_id`, `broker_commission_contract_id`, `fee_id`) VALUES
-(1, 1, 5, 14, '2013-12-16 00:46:52', 30.000000, NULL, NULL, NULL, 'O', '2013-12-16 00:46:52', NULL, 1, 'some test money', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000001', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 5, 2, 18, '2013-08-16 00:47:49', 5.000000, NULL, NULL, NULL, 'O', '2013-08-16 00:47:49', NULL, 2, 'From member to community account', NULL, NULL, NULL, NULL, NULL, 1, NULL, '0000000002', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(3, 5, 2, 18, '2013-09-16 00:48:24', 5.000000, NULL, NULL, NULL, 'O', '2013-09-16 00:48:24', NULL, 2, 'Paying some back', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000003', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(4, 5, 2, 18, '2013-10-16 00:51:58', 5.000000, NULL, NULL, NULL, 'O', '2013-10-16 00:51:58', NULL, NULL, 'From member to community account', NULL, NULL, NULL, NULL, NULL, 2, NULL, '0000000004', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(5, 5, 7, 30, '2013-12-16 01:20:00', 5.000000, NULL, NULL, NULL, 'P', NULL, NULL, 2, 'Transferring to external account', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000005', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
-(6, 5, 2, 27, '2013-11-16 01:23:40', 1.000000, NULL, NULL, NULL, 'O', '2013-11-16 01:23:40', NULL, NULL, 'Units contribution payment', NULL, NULL, NULL, NULL, NULL, 3, NULL, '0000000006', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(7, 1, 5, 14, '2013-12-16 03:33:35', 200.000000, NULL, NULL, NULL, 'O', '2013-12-16 03:33:35', NULL, 1, 'Sorry some more debt', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000007', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(8, 5, 2, 18, '2013-12-23 05:28:03', 5.000000, NULL, NULL, NULL, 'O', '2013-12-23 05:28:03', NULL, NULL, 'From member to community account', NULL, NULL, NULL, NULL, NULL, 4, NULL, '0000000008', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(9, 1, 2, 1, '2013-12-27 15:10:54', 10000000.000000, NULL, NULL, NULL, 'O', '2013-12-27 15:10:54', NULL, 1, 'Test Amount', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000009', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(10, 2, 8, 15, '2013-12-27 15:12:23', 10000000.000000, NULL, NULL, NULL, 'O', '2013-12-27 15:12:23', NULL, 1, 'Test Amount. Enjoy', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000010', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(11, 5, 3, 19, '2013-12-29 14:40:58', 2.000000, NULL, NULL, NULL, 'O', '2013-12-29 14:40:58', NULL, 2, 'Traveller checks fee', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000011', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(12, 1, 5, 14, '2013-12-29 23:12:57', 0.010000, NULL, NULL, NULL, 'O', '2013-12-29 23:12:57', NULL, 1, 'From debit to member account', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000012', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `transfer_authorizations`
 --
 
-DROP TABLE IF EXISTS `transfer_authorizations`;
 CREATE TABLE IF NOT EXISTS `transfer_authorizations` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `by_id` int(11) DEFAULT NULL,
@@ -5977,7 +5884,6 @@ CREATE TABLE IF NOT EXISTS `transfer_authorizations` (
 -- Table structure for table `transfer_types`
 --
 
-DROP TABLE IF EXISTS `transfer_types`;
 CREATE TABLE IF NOT EXISTS `transfer_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `from_account_type_id` int(11) NOT NULL,
@@ -6075,7 +5981,6 @@ INSERT INTO `transfer_types` (`id`, `from_account_type_id`, `to_account_type_id`
 -- Table structure for table `transfer_types_channels`
 --
 
-DROP TABLE IF EXISTS `transfer_types_channels`;
 CREATE TABLE IF NOT EXISTS `transfer_types_channels` (
   `transfer_type_id` int(11) NOT NULL,
   `channel_id` int(11) NOT NULL,
@@ -6109,7 +6014,6 @@ INSERT INTO `transfer_types_channels` (`transfer_type_id`, `channel_id`) VALUES
 -- Table structure for table `transfer_types_linked_custom_fields`
 --
 
-DROP TABLE IF EXISTS `transfer_types_linked_custom_fields`;
 CREATE TABLE IF NOT EXISTS `transfer_types_linked_custom_fields` (
   `field_id` int(11) NOT NULL,
   `transfer_type_id` int(11) NOT NULL,
@@ -6123,7 +6027,6 @@ CREATE TABLE IF NOT EXISTS `transfer_types_linked_custom_fields` (
 -- Table structure for table `transfer_types_payment_filters`
 --
 
-DROP TABLE IF EXISTS `transfer_types_payment_filters`;
 CREATE TABLE IF NOT EXISTS `transfer_types_payment_filters` (
   `transfer_type_id` int(11) NOT NULL,
   `payment_filter_id` int(11) NOT NULL,
@@ -6192,10 +6095,84 @@ INSERT INTO `transfer_types_payment_filters` (`transfer_type_id`, `payment_filte
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `transfers`
+--
+
+CREATE TABLE IF NOT EXISTS `transfers` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `from_account_id` int(11) NOT NULL,
+  `to_account_id` int(11) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `date` datetime NOT NULL,
+  `amount` decimal(15,6) NOT NULL,
+  `emission_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
+  `i_rate` decimal(15,6) DEFAULT NULL,
+  `status` varchar(1) NOT NULL,
+  `process_date` datetime DEFAULT NULL,
+  `feedback_deadline` datetime DEFAULT NULL,
+  `by_id` int(11) DEFAULT NULL,
+  `description` longtext,
+  `parent_id` bigint(20) DEFAULT NULL,
+  `chargedback_by_id` bigint(20) DEFAULT NULL,
+  `chargeback_of_id` bigint(20) DEFAULT NULL,
+  `transaction_fee_id` int(11) DEFAULT NULL,
+  `loan_payment_id` int(11) DEFAULT NULL,
+  `account_fee_log_id` int(11) DEFAULT NULL,
+  `receiver_id` int(11) DEFAULT NULL,
+  `transaction_number` varchar(100) DEFAULT NULL,
+  `trace_number` varchar(100) DEFAULT NULL,
+  `client_id` bigint(20) DEFAULT NULL,
+  `trace_data` varchar(50) DEFAULT NULL,
+  `external_transfer_id` int(11) DEFAULT NULL,
+  `next_authorization_level_id` int(11) DEFAULT NULL,
+  `scheduled_payment_id` int(11) DEFAULT NULL,
+  `broker_commission_contract_id` int(11) DEFAULT NULL,
+  `fee_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `trace_number` (`trace_number`,`client_id`),
+  KEY `FK3EBE45E8B3A79238` (`scheduled_payment_id`),
+  KEY `FK3EBE45E82B1214C2` (`by_id`),
+  KEY `FK3EBE45E8617A8174` (`external_transfer_id`),
+  KEY `FK3EBE45E8E735A8CE` (`loan_payment_id`),
+  KEY `FK3EBE45E84B79F4AC` (`next_authorization_level_id`),
+  KEY `FK3EBE45E88799AF6F` (`from_account_id`),
+  KEY `FK3EBE45E81106EAD7` (`broker_commission_contract_id`),
+  KEY `FK3EBE45E8E969E40E` (`transaction_fee_id`),
+  KEY `FK3EBE45E89D63275E` (`type_id`),
+  KEY `FK3EBE45E86957A5AA` (`account_fee_log_id`),
+  KEY `FK3EBE45E8E846CE9F` (`chargedback_by_id`),
+  KEY `FK3EBE45E8A822302A` (`receiver_id`),
+  KEY `FK3EBE45E8DD5BFBFE` (`to_account_id`),
+  KEY `FK3EBE45E8A899F6A3` (`chargeback_of_id`),
+  KEY `FK3EBE45E8229B7694` (`parent_id`),
+  KEY `FK3EBE45E8CF860F8D` (`fee_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+
+--
+-- Dumping data for table `transfers`
+--
+
+INSERT INTO `transfers` (`id`, `from_account_id`, `to_account_id`, `type_id`, `date`, `amount`, `emission_date`, `expiration_date`, `i_rate`, `status`, `process_date`, `feedback_deadline`, `by_id`, `description`, `parent_id`, `chargedback_by_id`, `chargeback_of_id`, `transaction_fee_id`, `loan_payment_id`, `account_fee_log_id`, `receiver_id`, `transaction_number`, `trace_number`, `client_id`, `trace_data`, `external_transfer_id`, `next_authorization_level_id`, `scheduled_payment_id`, `broker_commission_contract_id`, `fee_id`) VALUES
+(1, 1, 5, 14, '2013-12-16 00:46:52', 30.000000, NULL, NULL, NULL, 'O', '2013-12-16 00:46:52', NULL, 1, 'some test money', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000001', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 5, 2, 18, '2013-08-16 00:47:49', 5.000000, NULL, NULL, NULL, 'O', '2013-08-16 00:47:49', NULL, 2, 'From member to community account', NULL, NULL, NULL, NULL, NULL, 1, NULL, '0000000002', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 5, 2, 18, '2013-09-16 00:48:24', 5.000000, NULL, NULL, NULL, 'O', '2013-09-16 00:48:24', NULL, 2, 'Paying some back', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000003', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 5, 2, 18, '2013-10-16 00:51:58', 5.000000, NULL, NULL, NULL, 'O', '2013-10-16 00:51:58', NULL, NULL, 'From member to community account', NULL, NULL, NULL, NULL, NULL, 2, NULL, '0000000004', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, 5, 7, 30, '2013-12-16 01:20:00', 5.000000, NULL, NULL, NULL, 'P', NULL, NULL, 2, 'Transferring to external account', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000005', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(6, 5, 2, 27, '2013-11-16 01:23:40', 1.000000, NULL, NULL, NULL, 'O', '2013-11-16 01:23:40', NULL, NULL, 'Units contribution payment', NULL, NULL, NULL, NULL, NULL, 3, NULL, '0000000006', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 1, 5, 14, '2013-12-16 03:33:35', 200.000000, NULL, NULL, NULL, 'O', '2013-12-16 03:33:35', NULL, 1, 'Sorry some more debt', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000007', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 5, 2, 18, '2013-12-23 05:28:03', 5.000000, NULL, NULL, NULL, 'O', '2013-12-23 05:28:03', NULL, NULL, 'From member to community account', NULL, NULL, NULL, NULL, NULL, 4, NULL, '0000000008', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(9, 1, 2, 1, '2013-12-27 15:10:54', 10000000.000000, NULL, NULL, NULL, 'O', '2013-12-27 15:10:54', NULL, 1, 'Test Amount', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000009', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(10, 2, 8, 15, '2013-12-27 15:12:23', 10000000.000000, NULL, NULL, NULL, 'O', '2013-12-27 15:12:23', NULL, 1, 'Test Amount. Enjoy', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000010', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(11, 5, 3, 19, '2013-12-29 14:40:58', 2.000000, NULL, NULL, NULL, 'O', '2013-12-29 14:40:58', NULL, 2, 'Traveller checks fee', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000011', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(12, 1, 5, 14, '2013-12-29 23:12:57', 0.010000, NULL, NULL, NULL, 'O', '2013-12-29 23:12:57', NULL, 1, 'From debit to member account', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000000012', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `translation_messages`
 --
 
-DROP TABLE IF EXISTS `translation_messages`;
 CREATE TABLE IF NOT EXISTS `translation_messages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `msg_key` varchar(100) NOT NULL,
@@ -11028,4825 +11005,6 @@ INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
 (38896, 'guarantee.expiresFrom', 'Início do vencimento', 'pt_BR'),
 (38897, 'paymentObligation.status.ACCEPTED', 'Aceita', 'pt_BR'),
 (38898, 'customField.error.removing', 'O campo customizado não pôde ser removido porque já está em uso', 'pt_BR'),
-(47090, 'pt_BR:receipt.transfer.transactionNumber', 'No de transação: {0}', ''),
-(47091, 'pt_BR:group.title.settings.loans', 'Configurações de empréstimos', ''),
-(47092, 'pt_BR:guaranteeType.transferTypes', 'Tipos de pagamento', ''),
-(47093, 'pt_BR:paymentObligation.requestGuaranteeOk', 'A garantia foi gerada com sucesso, e possui estado {0}', ''),
-(47094, 'pt_BR:reports.members_reports.incoming_transactions', 'Transações de crédito', ''),
-(47095, 'pt_BR:account.aRate', 'Índice-A', ''),
-(47096, 'pt_BR:help.title.bookkeeping', 'Contabilidade', ''),
-(47097, 'pt_BR:reports.members_reports.system_invoices', 'Faturas eletrônicas de sistema', ''),
-(47098, 'pt_BR:message.type.ACCOUNT', 'Eventos gerais de conta', ''),
-(47099, 'pt_BR:transactionFee.title.simple.list', 'Taxas de transação', ''),
-(47100, 'pt_BR:memberImport.title.details.success', 'Membros importados com sucesso', ''),
-(47101, 'pt_BR:customField.payment.enabled', 'Habilitado', ''),
-(47102, 'pt_BR:reports.error.formDisplayError', 'Erro ao exibir o formulário', ''),
-(47103, 'pt_BR:alert.member.NEGATIVE_VIRTUAL_RATED_BALANCE', 'Um balanço negativo virtual de indices foi encontrado.', ''),
-(47104, 'pt_BR:customField.possibleValue.multipleValues', 'Você pode digitar vários valores, um por linha', ''),
-(47105, 'pt_BR:permission.adminMemberLoans.viewAuthorized', 'Ver empréstimos autorizados', ''),
-(47106, 'pt_BR:global.show', 'Exibir', ''),
-(47107, 'pt_BR:guarantee.title.authorizeGuarantee', 'Autorizar garantia', ''),
-(47108, 'pt_BR:externalAccount.removeConfirmation', 'Remover essa conta externa?', ''),
-(47109, 'pt_BR:createMember.title.public', 'Cadastro de membro', ''),
-(47110, 'pt_BR:permission.systemReports.dRateConfigSimulation', 'Simulação da configuração do índice-D', ''),
-(47111, 'pt_BR:externalTransferImport.error.importing.invalidMemberField', 'Campo personalizado inválido ({0}): {1}', ''),
-(47112, 'pt_BR:guarantee.buyerName', 'Nome do comprador', ''),
-(47113, 'pt_BR:help.title.operators', 'Operadores', ''),
-(47114, 'pt_BR:scheduledPayments.title.list.of', 'Pagamentos agendados de {0}', ''),
-(47115, 'pt_BR:help.title.alerts_logs', 'Alertas e registros', ''),
-(47116, 'pt_BR:group.settings.possibleInitialGroups', 'Grupos iniciais possíveis', ''),
-(47117, 'pt_BR:profile.action.invoiceAsMemberToMember', 'Fatura de membro para membro', ''),
-(47118, 'pt_BR:transferType.description', 'Descrição', ''),
-(47119, 'pt_BR:settings.local.language.ITALIAN', 'Italiano', ''),
-(47120, 'pt_BR:mobile.home.title', 'Cyclos', ''),
-(47121, 'pt_BR:group.settings.emailValidation', 'Validação do e-mail', ''),
-(47122, 'pt_BR:customField.type.BOOLEAN', 'Booleano', ''),
-(47123, 'pt_BR:transactionFee.subject.DESTINATION', 'Membro que está recebendo (destino)', ''),
-(47124, 'pt_BR:transfer.schedulingDetails', '{0} de {1}, total de {2}', ''),
-(47125, 'pt_BR:pos.discarded', 'O POS foi descartado', ''),
-(47126, 'pt_BR:conversionSimulation.date', 'Data de conversão', ''),
-(47127, 'pt_BR:group.settings.maxPinWrongTries', 'No. máx. de tentativas de PIN', ''),
-(47128, 'pt_BR:transferType.availability', 'Disponibilidade', ''),
-(47129, 'pt_BR:transactionFee.receiver', 'Quem irá receber', ''),
-(47130, 'pt_BR:accountFee.chargeMode.VOLUME_PERCENTAGE', 'Percentual sobre volume positivo', ''),
-(47131, 'pt_BR:group.settings.passwordPolicy.AVOID_OBVIOUS', 'Proibir senhas óbvias', ''),
-(47132, 'pt_BR:reports.stats.general.graph', 'Gráfico', ''),
-(47133, 'pt_BR:pendingMember.validationKey', 'Código de validação', ''),
-(47134, 'pt_BR:invoice.title.system', 'Faturas eletrônicas de sistema', ''),
-(47135, 'pt_BR:memberImport.status.UNKNOWN_ERROR', 'Erro desconhecido: {0}', ''),
-(47136, 'pt_BR:global.month.OCTOBER', 'Outubro', ''),
-(47137, 'pt_BR:fieldMapping.title.order.description', 'Arraste os campos para alterar a ordem', ''),
-(47138, 'pt_BR:memberImport.initialDebitTransferType', 'Tipo de pagamento para saldos negativos', ''),
-(47139, 'pt_BR:webshop.confirm.text', 'Por favor, confira os dados acima e confirme a operação', ''),
-(47140, 'pt_BR:serviceClient.password', 'Senha HTTP', ''),
-(47141, 'pt_BR:image.details.hint', 'Preencha a legenda da imagem', ''),
-(47142, 'pt_BR:sms.type.OPERATION_CONFIRMATION.description', 'Confirmação de operação', ''),
-(47143, 'pt_BR:defaultBrokerCommission.defaultCommissionAmount', 'Valor padrão da comissão', ''),
-(47144, 'pt_BR:home.admin.status.systemAlerts', 'Número de avisos de sistema', ''),
-(47145, 'pt_BR:permission.adminMemberRecords', 'Registros de membro', ''),
-(47146, 'pt_BR:quickAccess.title', 'Acesso rápido', ''),
-(47147, 'pt_BR:accountType.nature', 'Tipo', ''),
-(47148, 'pt_BR:reports.members.ads.scheduled', 'Agendado', ''),
-(47149, 'pt_BR:groupFilter.inserted', 'Filtro de grupos inserido', ''),
-(47150, 'pt_BR:translationMessage.import.type', 'O que fazer', ''),
-(47151, 'pt_BR:accountType.title.modify.member', 'Modificar tipo de conta de membro', ''),
-(47152, 'pt_BR:customImage.size', 'Tamanho', ''),
-(47153, 'pt_BR:accountFee.chargeMode.NEGATIVE_BALANCE_PERCENTAGE', 'Percentual sobre saldo negativo', ''),
-(47154, 'pt_BR:permission.systemSettings.manageMail', 'Gerenciar configurações de e-mail', ''),
-(47155, 'pt_BR:accountFee.modified', 'A taxa de conta foi modificada', ''),
-(47156, 'pt_BR:currency.dRate.initDate', 'Data de início para o índice-D', ''),
-(47157, 'pt_BR:reports.stats.keydevelopments.transactionAmount.yAxis', 'Valor/transação (unidades)', ''),
-(47158, 'pt_BR:settings.local.csv.useHeader', 'Exibir cabeçalho', ''),
-(47159, 'pt_BR:reports.current.references.total', 'Quantidade total de referências dadas', ''),
-(47160, 'pt_BR:memberImport.sendActivationMail', 'Enviar o e-mail de ativação', ''),
-(47161, 'pt_BR:paymentFilter.title', 'Filtro de pagamentos', ''),
-(47162, 'pt_BR:invoice.destination', 'Destino', ''),
-(47163, 'pt_BR:externalTransferType.title.insert', 'Inserir tipo de pagamento', ''),
-(47164, 'pt_BR:errors.numeric', '{0} deve conter apenas números', ''),
-(47165, 'pt_BR:reports.stats.activity.histogram.grossProduct.xAxis', 'Produto bruto', ''),
-(47166, 'pt_BR:profile.action.scheduledPayments', 'Ver pagamentos agendados', ''),
-(47167, 'pt_BR:customField.orderModified', 'A ordem dos campos foi modificada', ''),
-(47168, 'pt_BR:accountFee.day', 'Dia', ''),
-(47169, 'pt_BR:brokering.status.ACTIVE', 'Ativo', ''),
-(47170, 'pt_BR:card.manage', 'Gerenciar cartão', ''),
-(47171, 'pt_BR:loanPayment.search.discardedAmount', 'Descartado', ''),
-(47172, 'pt_BR:permission.memberGuarantees.issueCertifications', 'Emitir certificações', ''),
-(47173, 'pt_BR:brokerCommissionContract.action.new', 'Novo contrato', ''),
-(47174, 'pt_BR:receiptPrinterSettings.name', 'Nome de exibição', ''),
-(47175, 'pt_BR:guaranteeType.fee.value', 'Valor', ''),
-(47176, 'pt_BR:permission.systemExternalAccounts.view', 'Visualizar', ''),
-(47177, 'pt_BR:authorizationLevel.error.removing', 'Não é possível remover este nível de autorização pois há pagamentos dependentes dele', ''),
-(47178, 'pt_BR:settings.local.csv.stringQuote.DOUBLE_QUOTE', 'Aspas duplas', ''),
-(47179, 'pt_BR:global.selectNone', 'Nenhum', ''),
-(47180, 'pt_BR:permission.brokerLoanGroups.view', 'Ver', ''),
-(47181, 'pt_BR:sms.type.ACCOUNT_DETAILS_ERROR.description', 'Erro dos detalhes da conta', ''),
-(47182, 'pt_BR:menu.admin.contentManagement.manageThemes', 'Temas', ''),
-(47183, 'pt_BR:accountFee.invoiceMode.NEVER', 'Nunca (o saldo da conta do membro pode ficar negativo)', ''),
-(47184, 'pt_BR:changeGroup.old', 'Grupo anterior', ''),
-(47185, 'pt_BR:reports.stats.error.initialAndFinalYearsRequired', 'É obrigatório informar os anos inicial e final', ''),
-(47186, 'pt_BR:profile.error.changeEmailValidationFailed', 'Você tentou alterar o e-mail, mas o e-mail de verificação não pôde ser enviado', ''),
-(47187, 'pt_BR:alert.system.nullIrate', 'Indice I tem um valor nulo inesperado para a conta {0}. Você pode querer reinicializar o indice I.', ''),
-(47188, 'pt_BR:errors.periodExpired', 'O período completo de {0} deve ser após a data de hoje', ''),
-(47189, 'pt_BR:posweb.searchTransactions.title.transactions', 'Pagamentos processados', ''),
-(47190, 'pt_BR:guarantee.error.changeStatus', 'Não foi possível alterar o estado da garantia para {0}', ''),
-(47191, 'pt_BR:group.title.modify.member', 'Configurações de grupo de membros', ''),
-(47192, 'pt_BR:group.settings.maxImagesPerMember', 'No. máx. de imagens de perfil por membro', ''),
-(47193, 'pt_BR:payment.statusGroup.CLOSED_WITH_ERRORS', 'Fechado (parcial)', ''),
-(47194, 'pt_BR:permission.systemTasks', 'Tarefas administrativas', ''),
-(47195, 'pt_BR:reports.current.invoices.MEMBER.amount', 'Soma total de faturas eletrônicas de membro', ''),
-(47196, 'pt_BR:guaranteeType.error.removing', 'Erro ao excluir o tipo de garantia. Possivelmente exista alguma garantia ou certificação utilizando-o', ''),
-(47197, 'pt_BR:reports.stats.general.period', 'Período', ''),
-(47198, 'pt_BR:help.title.reports', 'Relatórios', ''),
-(47199, 'pt_BR:reference.removed', 'Referência removida', ''),
-(47200, 'pt_BR:settings.local.decimalInputMethod.RTL', 'Direita para a esquerda (somente números são digitados)', ''),
-(47201, 'pt_BR:group.account.pendingAccounts', 'Existem {0} contas em ativação', ''),
-(47202, 'pt_BR:registrationAgreement.title.insert', 'Novo termo de adesão', ''),
-(47203, 'pt_BR:externalAccount.tooltip.import', 'Importações de arquivos de transações', ''),
-(47204, 'pt_BR:menu.operator.personal.profile', 'Perfil', ''),
-(47205, 'pt_BR:adminTasks.indexes.rebuildAll', 'Reconstruir todos', ''),
-(47206, 'pt_BR:reports.members_reports.credits', 'Créditos', ''),
-(47207, 'pt_BR:global.change', 'Alterar', ''),
-(47208, 'pt_BR:loan.repaidAmount', 'Valor pago', ''),
-(47209, 'pt_BR:transfer.dRate', 'índice-D', ''),
-(47210, 'pt_BR:memberRecordType.showMenuItem', 'Exibir item de menu', ''),
-(47211, 'pt_BR:scheduledPayments.totalPaid', 'Total pago', ''),
-(47212, 'pt_BR:customImage.system.active', 'Ícone ativo', ''),
-(47213, 'pt_BR:pendingMember.title.print', 'Resultado da busca de membros pendentes', ''),
-(47214, 'pt_BR:reports.stats.activity.comparePeriods.grossProduct.row2', 'Produto bruto sobre todos membros', ''),
-(47215, 'pt_BR:settings.mail.activation', 'E-mail de ativação', ''),
-(47216, 'pt_BR:reports.stats.activity.comparePeriods.grossProduct.row1', 'Produto bruto por membro com entradas', ''),
-(47217, 'pt_BR:transactionFee.generatedTransferType', 'Tipo de transação gerado', ''),
-(47218, 'pt_BR:cardLog.date', 'Data', ''),
-(47219, 'pt_BR:brokerCommissionContract.brokerCommission', 'Tipo de comissão', ''),
-(47220, 'pt_BR:profile.action.invoices', 'Ver faturas eletrônicas', ''),
-(47221, 'pt_BR:accountType.limitType.LIMITED', 'Limitado', ''),
-(47222, 'pt_BR:paymentObligation.error.maxPublicationDateAfterExpirationDate', 'A data limite de publicação não pode ser posterior à data de vencimento', ''),
-(47223, 'pt_BR:global.tooltip.view', 'Visualizar', ''),
-(47224, 'pt_BR:permission.brokerInvoices.sendAsMemberToSystem', 'Enviar como membro para sistema', ''),
-(47225, 'pt_BR:permission.adminMemberPayments.paymentAsMemberToMember', 'Pagamentos de membros para membros', ''),
-(47226, 'pt_BR:permission.systemServiceClients.view', 'Ver', ''),
-(47227, 'pt_BR:customImage.system.conciliated', 'Pagamento externo conciliado', ''),
-(47228, 'pt_BR:translationMessage.inserted', 'A chave de tradução foi inserida', ''),
-(47229, 'pt_BR:reports.stats.general.nodata', 'Poucos dados (ou nenhum dado) disponível para este item.', ''),
-(47230, 'pt_BR:card.status.PENDING', 'Pendente', ''),
-(47231, 'pt_BR:reports.stats.activity.title', 'Estatísticas de atividades', ''),
-(47232, 'pt_BR:menu.admin.customFields.loanGroupFields', 'Grupo de empréstimos', ''),
-(47233, 'pt_BR:changeBroker.noBroker', 'Nenhum', ''),
-(47234, 'pt_BR:conversionSimulation.dRate', 'Índice-D', ''),
-(47235, 'pt_BR:reports.stats.choose.keydevelopments', 'Progressos-chave', ''),
-(47236, 'pt_BR:reports.stats.activity.comparePeriods.numberTransactions.yAxis', 'no. transações', ''),
-(47237, 'pt_BR:permission.adminMemberPreferences.manageNotifications', 'Gerenciar notificações', ''),
-(47238, 'pt_BR:reference.title.references.of', 'Referências de {0}', ''),
-(47239, 'pt_BR:loan.monthlyInterestRepaymentType', 'Tipo de pagamento para juros mensais', ''),
-(47240, 'pt_BR:customField.action.new', 'Novo campo customizado', ''),
-(47241, 'pt_BR:permission.adminAdminRecords', 'Registros de administradores', ''),
-(47242, 'pt_BR:settings.title.translations.file', 'Importar / exportar traduções de notificação e de e-mail', ''),
-(47243, 'pt_BR:payment.error.maxAmountOnDayExceeded.at', 'Você já excedeu o valor máximo para esse tipo de pagamento ({0}) no dia {1}', ''),
-(47244, 'pt_BR:group.account.title', 'Contas de grupo', ''),
-(47245, 'pt_BR:payment.denied', 'O pagamento foi negado', ''),
-(47246, 'pt_BR:general.error.csv.unknownColumn', 'Coluna inválida no arquivo CSV: {0}', ''),
-(47247, 'pt_BR:menu.admin.accounts.manage', 'Gerenciar contas', ''),
-(47248, 'pt_BR:transfer.Conciliated', 'Conciliado', ''),
-(47249, 'pt_BR:guarantee.amount', 'Valor', ''),
-(47250, 'pt_BR:settings.message.certificationIssued', 'Certificação emitida', ''),
-(47251, 'pt_BR:operator.action.create', 'Criar um novo operador', ''),
-(47252, 'pt_BR:reports.stats.keydevelopments.numberOfMembers', 'Número de membros', ''),
-(47253, 'pt_BR:settings.mail.message', 'Mensagem', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(47254, 'pt_BR:reports.current.n_expads', 'Número de anúncios vencidos', ''),
-(47255, 'pt_BR:reports.stats.activity.singlePeriod.percentageNoTrade.row1', '% de membros que não transacionam', ''),
-(47256, 'pt_BR:message.title.view', 'Detalhes da mensagem', ''),
-(47257, 'pt_BR:reports.stats.keydevelopments.numberOfTransactions.yAxis', 'Número', ''),
-(47258, 'pt_BR:reports.stats.activity.topten.grossProduct.col1', 'Produto bruto', ''),
-(47259, 'pt_BR:group.settings.smsCustomContextInvalid', 'A classe customizada para o contexto SMS é inválida', ''),
-(47260, 'pt_BR:transactionFee.when.DAYS', 'Dias', ''),
-(47261, 'pt_BR:settings.alert.modified', 'Configurações de alerta modificadas', ''),
-(47262, 'pt_BR:pos.actions.unblockPin', 'Desbloquear Pin', ''),
-(47263, 'pt_BR:brokerCommissionContract.title.modify', 'Modificar contrato de comissão de corretor', ''),
-(47264, 'pt_BR:reports.stats.activity.throughTime.nTraders', 'no. Membros negociando', ''),
-(47265, 'pt_BR:group.containerUrl', 'URL da página container', ''),
-(47266, 'pt_BR:permission.adminMemberInvoices.manage', 'Gerenciar faturas eletrônicas de membro', ''),
-(47267, 'pt_BR:activities.rates.asFeePercentage', 'Resultando na presente taxa de conversão:', ''),
-(47268, 'pt_BR:alert.member.GIVEN_VERY_BAD_REFS', 'O membro deu muitas referências de valor ''muito ruim''', ''),
-(47269, 'pt_BR:profile.member.hide', 'Ocultar', ''),
-(47270, 'pt_BR:group.customizedFiles.modified', 'O arquivo foi modificado para esse grupo', ''),
-(47271, 'pt_BR:transferType.confirmationMessage', 'Mensagem de confirmação', ''),
-(47272, 'pt_BR:brokerCommission.removeConfirmation', 'Remover essa comissão de corretor?', ''),
-(47273, 'pt_BR:smsLog.type.NOTIFICATION', 'Notificação', ''),
-(47274, 'pt_BR:changeGroup.member.title', 'Alterar grupo do membro {0}', ''),
-(47275, 'pt_BR:externalAccountHistory.title.summary', 'Sumário das transações', ''),
-(47276, 'pt_BR:createAdmin.created', 'O administrador foi criado', ''),
-(47277, 'pt_BR:adImport.totalAds', 'Número total de anúncios', ''),
-(47278, 'pt_BR:guarantee.buyerUsername', 'Usuário do comprador', ''),
-(47279, 'pt_BR:cardType.cardSecurityCodeLength', 'Comprimento do código de segurança', ''),
-(47280, 'pt_BR:menu.admin.alerts', 'Alertas', ''),
-(47281, 'pt_BR:transactionPassword.generated', 'Sua senha de transação é:', ''),
-(47282, 'pt_BR:reports.stats.taxes.paid.notPaidLimit', 'Limitar para "não pagas"', ''),
-(47283, 'pt_BR:message.link.label', 'Clique aqui', ''),
-(47284, 'pt_BR:account.owner', 'Proprietário', ''),
-(47285, 'pt_BR:conversionSimulation.dRate.present', 'Índice-D atual', ''),
-(47286, 'pt_BR:home.admin.status.openInvoices', 'Faturas abertas para sistema', ''),
-(47287, 'pt_BR:card.securityCodeUnblocked', 'Código de segurança desbloqueado', ''),
-(47288, 'pt_BR:reports.stats.finances.ComparePeriods.income.yAxis', 'Entrada', ''),
-(47289, 'pt_BR:permission.systemPayments.blockScheduled', 'Bloquear pagamento agendado', ''),
-(47290, 'pt_BR:customField.member.loanSearchAccess', 'Busca por empréstimo', ''),
-(47291, 'pt_BR:reports.stats.activity.throughTime.numberTransactions.yAxis', 'Número de transações', ''),
-(47292, 'pt_BR:reports.stats.activity.singlePeriod.grossProduct.title', 'Produto bruto por membro (período simples)', ''),
-(47293, 'pt_BR:payment.recipient', 'Destinatário', ''),
-(47294, 'pt_BR:guaranteeType.authorizedBy.ADMIN', 'Administração', ''),
-(47295, 'pt_BR:reports.stats.taxes.paid.paid', 'Pagas', ''),
-(47296, 'pt_BR:permission.systemPayments.authorize', 'Autorizar', ''),
-(47297, 'pt_BR:paymentFilter.inserted', 'O filtro de pagamentos foi inserido', ''),
-(47298, 'pt_BR:reference.action.remove', 'Remover', ''),
-(47299, 'pt_BR:accountFeeLog.date', 'Data', ''),
-(47300, 'pt_BR:paymentObligation.conceal', 'Conciliar', ''),
-(47301, 'pt_BR:settings.local.applicationName', 'Nome do aplicativo', ''),
-(47302, 'pt_BR:contact.modified', 'O contato foi modificado', ''),
-(47303, 'pt_BR:alert.title.member', 'Avisos de membros', ''),
-(47304, 'pt_BR:adCategory.insertMultiple', 'Você pode digitar várias categorias, uma por linha', ''),
-(47305, 'pt_BR:permission.systemExternalAccounts', 'Contas externas', ''),
-(47306, 'pt_BR:adminTasks.indexes.type.Ad', 'Anúncios', ''),
-(47307, 'pt_BR:menu.member.personal.references', 'Referências', ''),
-(47308, 'pt_BR:smsMailing.recipients', 'Destinatários', ''),
-(47309, 'pt_BR:settings.local.csv.recordSeparator.LF', 'Unix (char 13)', ''),
-(47310, 'pt_BR:groupFilter.customizedFiles.removed', 'O arquivo não está mais customizado para este filtro de grupos', ''),
-(47311, 'pt_BR:customField.title.insert.payment', 'Novo campo de {0}', ''),
-(47312, 'pt_BR:reports.stats.general.allPaymentTypes', 'Todos os pagamento', ''),
-(47313, 'pt_BR:permission.operatorAccount.authorizedInformation', 'Ver pagamentos autorizados', ''),
-(47314, 'pt_BR:pos.pinUnblocked', 'O pin foi desbloqueado', ''),
-(47315, 'pt_BR:loanPayment.status.UNRECOVERABLE', 'Irrecuperável', ''),
-(47316, 'pt_BR:paymentFilter.transferTypes', 'Tipos de transação', ''),
-(47317, 'pt_BR:transactionFee.fromFixedMember.name', 'Nome completo de origem', ''),
-(47318, 'pt_BR:memberImport.status.INVALID_CUSTOM_FIELD', '{0} é inválido: {1}', ''),
-(47319, 'pt_BR:group.settings.maxSchedulingPeriod', 'Máx. de tempo para agendamento', ''),
-(47320, 'pt_BR:accountHistory.conciliation.conciliationStatus', 'Estado conciliação', ''),
-(47321, 'pt_BR:reference.title.new.transactionFeedback', 'Qualificar transação', ''),
-(47322, 'pt_BR:connectedUsers.nature.select', 'Por favor, selecione o tipo de usuário', ''),
-(47323, 'pt_BR:accountHistory.creditsDebitsBalance.amount', 'Balanço de transações', ''),
-(47324, 'pt_BR:transferType.maxAmountPerDay', 'Valor máximo por dia', ''),
-(47325, 'pt_BR:customField.size.TINY', 'Muito Pequeno', ''),
-(47326, 'pt_BR:document.nature.MEMBER', 'Membro', ''),
-(47327, 'pt_BR:reports.stats.general.table', 'Tabela', ''),
-(47328, 'pt_BR:settings.message.adminSystemAlert', 'Alertas de sistema', ''),
-(47329, 'pt_BR:menu.admin.settings.message', 'Config. de mensagem', ''),
-(47330, 'pt_BR:reference.level.GOOD', 'Bom', ''),
-(47331, 'pt_BR:message.date', 'Data', ''),
-(47332, 'pt_BR:externalAccountHistory.search.noResults', 'Você não tem transações para os filtros indicados', ''),
-(47333, 'pt_BR:menu.admin.accounts.invoices', 'Gerenciar faturas', ''),
-(47334, 'pt_BR:image.removed', 'Imagem removida', ''),
-(47335, 'pt_BR:changeGroup.error.remove.activeMember', 'Um membro ativo não pode ser removido.\nTente movê-lo para um group do tipo REMOVIDO', ''),
-(47336, 'pt_BR:paymentObligation.reject', 'Rejeitar', ''),
-(47337, 'pt_BR:rates.error.pendingRateExists', 'Você tentou inicializar um indice, mas uma inicialização de indice já esta pendente.\nVocê pode executar apenas uma de cada vez.', ''),
-(47338, 'pt_BR:transfer.type', 'Tipo de transação', ''),
-(47339, 'pt_BR:adImport.status.INVALID_COLUMN', 'Coluna inválida: {0}', ''),
-(47340, 'pt_BR:member.loanGroups', 'Grupos de empréstimos', ''),
-(47341, 'pt_BR:brokering.loans.count', 'Empréstimos em aberto', ''),
-(47342, 'pt_BR:reports.stats.finances.ComparePeriods.expenditure.yAxis', 'Saídas', ''),
-(47343, 'pt_BR:invoice.search.direction.INCOMING', 'Entrada', ''),
-(47344, 'pt_BR:payment.statusGroup.CLOSED_WITHOUT_ERRORS', 'Fechado (completo)', ''),
-(47345, 'pt_BR:permission.adminMemberAccess.changePin', 'Alterar senha externa', ''),
-(47346, 'pt_BR:alert.system.NEW_VERSION_OF_HELP_FILE', 'Nova versão de arquivo de ajuda', ''),
-(47347, 'pt_BR:externalAccount.action.new', 'Inserir nova conta externa', ''),
-(47348, 'pt_BR:externalTransferType.code', 'Código', ''),
-(47349, 'pt_BR:theme.import.successful', 'O tema foi importado com sucesso', ''),
-(47350, 'pt_BR:transferType.title.insert', 'Inserir tipo de transação', ''),
-(47351, 'pt_BR:customField.member.access.OTHER', 'Outros membros', ''),
-(47352, 'pt_BR:creditLimit.normal', 'Inferior', ''),
-(47353, 'pt_BR:help.title.custom_fields', 'Campos customizados', ''),
-(47354, 'pt_BR:menu.member.account.simulateConversion', 'Simular conversão', ''),
-(47355, 'pt_BR:loan.repayment.transactionPassword.discardOnly', 'Para descartar esta parcela de empréstimo, você deve fornecer sua senha de transação', ''),
-(47356, 'pt_BR:accountHistory.initialBalance', 'Saldo inicial', ''),
-(47357, 'pt_BR:permission.adminAdminAccess.disconnect', 'Desconectar', ''),
-(47358, 'pt_BR:permission.brokerCards.generate', 'Gerar', ''),
-(47359, 'pt_BR:paymentObligation.modified', 'A obrigação de pagamento foi alterada com sucesso', ''),
-(47360, 'pt_BR:quickAccess.makePayment', 'Pagamento', ''),
-(47361, 'pt_BR:mobile.viewPayments.related', 'Usuário', ''),
-(47362, 'pt_BR:global.confirm', 'Confirmar', ''),
-(47363, 'pt_BR:externalAccountHistory.amountRange.begin', 'Apartir de', ''),
-(47364, 'pt_BR:permission.adminMemberReports.amounts', 'Exibir valores', ''),
-(47365, 'pt_BR:reports.members_reports.details_level', 'Nível de detalhamento', ''),
-(47366, 'pt_BR:receipt.transfer.status', 'Status: {0}', ''),
-(47367, 'pt_BR:memberImport.title.summary', 'Sumário da importação de membros', ''),
-(47368, 'pt_BR:group.settings.passwordPolicy.AVOID_OBVIOUS_LETTERS_NUMBERS_SPECIAL', 'Requerer letras, números e especiais', ''),
-(47369, 'pt_BR:errorLog.parameters', 'Parâmetros requeridos', ''),
-(47370, 'pt_BR:remark.inserted', 'A observação foi inserida', ''),
-(47371, 'pt_BR:home.admin.status.errors', 'Erros do aplicativo', ''),
-(47372, 'pt_BR:quickAccess.contacts', 'Contatos', ''),
-(47373, 'pt_BR:loan.repayment.confirmationMessage', 'Você tem certeza de que quer pagar {0}?\n\nPor favor, clique em OK para prosseguir', ''),
-(47374, 'pt_BR:groupFilter.title.modify', 'Modificar filtro de grupos', ''),
-(47375, 'pt_BR:groupFilter.modified', 'Filtro de grupos modificado', ''),
-(47376, 'pt_BR:customField.size.FULL', 'Completo', ''),
-(47377, 'pt_BR:accountOverview.title.system', 'Contas de sistema', ''),
-(47378, 'pt_BR:memberImport.status.INVALID_COLUMN', 'Coluna inválida: {0}', ''),
-(47379, 'pt_BR:alert.system.ACCOUNT_FEE_RUNNING', 'Taxa de conta iniciada', ''),
-(47380, 'pt_BR:permission.adminMemberCards', 'Cartões', ''),
-(47381, 'pt_BR:serviceClient.member', 'Restrito ao membro', ''),
-(47382, 'pt_BR:ad.tradeType.OFFER', 'Oferta', ''),
-(47383, 'pt_BR:externalTransferType.removed', 'Remover tipo de pagamento?', ''),
-(47384, 'pt_BR:reference.title.summary.transactionFeedbacks.of', 'Qualificações de transações de {0}', ''),
-(47385, 'pt_BR:loan.repayment.transactionPassword.repayOrDiscard', 'Para pagar ou descartar esta parcela de empréstimo, você deve fornecer sua senha de transação', ''),
-(47386, 'pt_BR:reports.stats.activity.topten.member', 'Membro', ''),
-(47387, 'pt_BR:settings.action.IMPORT', 'Importar', ''),
-(47388, 'pt_BR:accountOverview.title.of', 'Contas de {0}', ''),
-(47389, 'pt_BR:translationMessage.title.importExport', 'Importar / exportar chaves de tradução', ''),
-(47390, 'pt_BR:help.title.account_management', 'Gerência de contas', ''),
-(47391, 'pt_BR:profile.modified', 'Perfil modificado', ''),
-(47392, 'pt_BR:menu.member.broker.messageToMembers', 'Mensagem para membros', ''),
-(47393, 'pt_BR:payment.title.memberToMember', 'Pagamento para membro', ''),
-(47394, 'pt_BR:conversionSimulation.dRate.targeted', 'Índice-D desejado', ''),
-(47395, 'pt_BR:customField.memberRecord.showInSearch', 'Exibir em buscas', ''),
-(47396, 'pt_BR:permission.memberCards.activate', 'Ativar', ''),
-(47397, 'pt_BR:customImage.system.mobileSplash_small', 'Mobile: Imagem inicial pequena', ''),
-(47398, 'pt_BR:mobile.welcomeMessage', 'Por favor altere a seguinte chave de tradução (Na sessão de administração: Tradução - Aplicação): mobile.welcomeMessage', ''),
-(47399, 'pt_BR:admin.search.noResults', 'Nenhum administrador foi encontrado', ''),
-(47400, 'pt_BR:channel.internalNameAlreadyInUse', 'O nome interno já esta em uso', ''),
-(47401, 'pt_BR:certification.issuerUsername', 'Usuário do emissor', ''),
-(47402, 'pt_BR:loan.status.OPEN', 'Aberto', ''),
-(47403, 'pt_BR:accountOverview.title.my', 'Minhas contas', ''),
-(47404, 'pt_BR:memberRecordType.title.list', 'Tipos de registro de membro', ''),
-(47405, 'pt_BR:menu.operator.account.scheduledPayments', 'Pagamentos agendados', ''),
-(47406, 'pt_BR:permission.systemAlerts.manageMemberAlerts', 'Gerenciar avisos de membro', ''),
-(47407, 'pt_BR:category.status', 'Estado', ''),
-(47408, 'pt_BR:settings.local.csv.recordSeparator.CR', 'Macintosh (char 10)', ''),
-(47409, 'pt_BR:permission.adminMemberLoans.view', 'Ver empréstimos de membros', ''),
-(47410, 'pt_BR:loan.queryStatus.AUTHORIZATION_DENIED', 'Autorização negada', ''),
-(47411, 'pt_BR:permission.brokerPos.manage', 'Gerenciar', ''),
-(47412, 'pt_BR:menu.admin.home', 'Página principal', ''),
-(47413, 'pt_BR:receiptPrinter.error.noConfiguration', 'A configuração de impressora de recibos não foi encontrada', ''),
-(47414, 'pt_BR:member.search.selectGroups', 'Selecione os grupos', ''),
-(47415, 'pt_BR:loanPayment.status.DISCARDED', 'Descartado', ''),
-(47416, 'pt_BR:message.action.confirmDelete', 'Confirma a remoção permanente da mensagem?', ''),
-(47417, 'pt_BR:permission.memberPayments.chargeback', 'Estornar pagamento recebido', ''),
-(47418, 'pt_BR:changeChannels.invalidChannelsSelection', 'Por favor verifique os canais selecionados. Existe um canal selecionado para ser ativado e desativado ao mesmo tempo: {0}.', ''),
-(47419, 'pt_BR:permission.operatorGuarantees', 'Garantias', ''),
-(47420, 'pt_BR:payment.confirmation.header.withAuthorization', 'Você está prestes a submeter o seguinte pagamento para posterior autorização:', ''),
-(47421, 'pt_BR:settings.local.decimalInputMethod', 'Método de digitação de números decimais', ''),
-(47422, 'pt_BR:customImage.system.systemLogo', 'Logotipo do sistema', ''),
-(47423, 'pt_BR:member.bulkActions.channelsChanged', 'As alterações foram aplicadas a {0} membros. {1} membros não foram modificados.', ''),
-(47424, 'pt_BR:paymentObligation.pack.paymentObligationPeriod', 'Período máximo entre os vencimentos das obrigações de pagamento:', ''),
-(47425, 'pt_BR:account.status.INACTIVE', 'Inativa', ''),
-(47426, 'pt_BR:accountFee.chargeMode.BALANCE_PERCENTAGE', 'Percentual sobre saldo positivo', ''),
-(47427, 'pt_BR:pos.status.DISCARDED', 'Descartado', ''),
-(47428, 'pt_BR:customField.size.LARGE', 'Grande', ''),
-(47429, 'pt_BR:activities.invoices.incoming.count', 'No. de entradas', ''),
-(47430, 'pt_BR:loan.summary.amount', 'Valor total', ''),
-(47431, 'pt_BR:loan.queryStatus.CLOSED', 'Fechado / quitado', ''),
-(47432, 'pt_BR:permission.memberInvoices.sendToSystem', 'Enviar para sistema', ''),
-(47433, 'pt_BR:menu.admin.translation', 'Tradução', ''),
-(47434, 'pt_BR:permission.brokerReferences.manage', 'Gerenciar', ''),
-(47435, 'pt_BR:settings.local.language.JAPANESE', 'Japonês', ''),
-(47436, 'pt_BR:guaranteeType.inserted', 'O tipo de garantia foi inserido com sucesso', ''),
-(47437, 'pt_BR:permission.brokerMemberSms.view', 'Ver', ''),
-(47438, 'pt_BR:category.status.INACTIVE', 'Inativa', ''),
-(47439, 'pt_BR:accountFee.title.history', 'Histórico da taxa de conta', ''),
-(47440, 'pt_BR:theme.error.notSelected', 'Nenhum tema selecionado', ''),
-(47441, 'pt_BR:document.nature.STATIC', 'Estático', ''),
-(47442, 'pt_BR:externalTransferImport.error.importing.comments', 'O campo {0} (coluna {1}) possui valor inválido: {2}', ''),
-(47443, 'pt_BR:guaranteeType.creditFee', 'Taxa de crédito', ''),
-(47444, 'pt_BR:accountFee.enabled', 'Habilitada', ''),
-(47445, 'pt_BR:reports.simulations.aRateConfigSimulation.title', 'Simulação da configuração do índice-A', ''),
-(47446, 'pt_BR:adImport.status.MAX_PUBLICATION_EXCEEDED', 'Período máximo de publicação excedido', ''),
-(47447, 'pt_BR:memberPos.changePin.notEqual', 'PIN não são iguais', ''),
-(47448, 'pt_BR:transfer.scheduling', 'Agendamento', ''),
-(47449, 'pt_BR:payment.confirmation.block', 'Você está prestes a bloquear este pagamento.\n\nPor favor, clique em OK para confirmar', ''),
-(47450, 'pt_BR:customImage.system.quickAccess_accountInfo', 'Acesso rápido: informações de conta', ''),
-(47451, 'pt_BR:menu.member.preferences.adInterests', 'Interesse em anúncios', ''),
-(47452, 'pt_BR:serviceOperation.MANAGE_MEMBERS', 'Gerenciar membros', ''),
-(47453, 'pt_BR:ad.status.PERMANENT', 'Permanente', ''),
-(47454, 'pt_BR:reports.members.presentation.list.result', 'Resultado da lista de membros', ''),
-(47455, 'pt_BR:permission.systemAccountFees.charge', 'Cobrar', ''),
-(47456, 'pt_BR:settings.message.paymentReceived', 'Pagamento recebido', ''),
-(47457, 'pt_BR:alert.system.indexRebuildEnd', 'A reconstrução dos índices de busca para {0} foi concluída em {1}', ''),
-(47458, 'pt_BR:ad.addPicture', 'Adicionar imagem', ''),
-(47459, 'pt_BR:customImage.system.quickAccess_updateProfile', 'Acesso rápido: atualizar perfil', ''),
-(47460, 'pt_BR:memberRecordType.layout', 'Layout do resultado da busca', ''),
-(47461, 'pt_BR:adInterest.title.list', 'Lista de interesses em anúncios', ''),
-(47462, 'pt_BR:group.settings.initialGroupForRegisteredMembers', 'Grupo inicial para usuários registrados', ''),
-(47463, 'pt_BR:reports.stats.paymentFilters.nothingSelected', 'Erro: Nenhum filtro de pagamentos selecionado\n\nVocê deve selecionar pelo menos um filtro de pagamentos.', ''),
-(47464, 'pt_BR:createMember.created', 'O membro foi criado', ''),
-(47465, 'pt_BR:reports.members_reports.outgoing_transactions', 'Transações de débito', ''),
-(47466, 'pt_BR:reports.stats.general.selectAny', 'Selecione nenhum, um ou mais', ''),
-(47467, 'pt_BR:mobile.viewPayments.noPayment', 'Você não tem pagamentos', ''),
-(47468, 'pt_BR:memberImport.status.INVALID_RECORD_TYPE', 'O tipo registro é inválido: {0}', ''),
-(47469, 'pt_BR:creditLimit.current', 'Atual', ''),
-(47470, 'pt_BR:loan.repaymentDays', 'Dias de pagamento padrão', ''),
-(47471, 'pt_BR:customField.title.insert.ad', 'Novo campo customizado de anúncio', ''),
-(47472, 'pt_BR:card.action.unblockSecurityCode', 'Desbloquear código de segurança', ''),
-(47473, 'pt_BR:cardType.name', 'Nome', ''),
-(47474, 'pt_BR:ad.error.maxAds', 'O membro {0} excedeu o número máximo de anúncios', ''),
-(47475, 'pt_BR:loan.search.status', 'Filtro', ''),
-(47476, 'pt_BR:customField.possibleValue.title', 'Lista de valores', ''),
-(47477, 'pt_BR:card.number', 'Número', ''),
-(47478, 'pt_BR:permission.adminMemberSms.view', 'Ver', ''),
-(47479, 'pt_BR:pendingMember.updated', 'O membro pendente foi atualizado', ''),
-(47480, 'pt_BR:sms.type.OPERATION_CONFIRMATION', 'Confirmação de operação', ''),
-(47481, 'pt_BR:permission.brokerPos.changePin', 'Alterar senha externa', ''),
-(47482, 'pt_BR:paymentObligation.buyer', 'Comprador', ''),
-(47483, 'pt_BR:alert.member.EXPIRED_LOAN', 'Empréstimo expirado', ''),
-(47484, 'pt_BR:group.title.settings.advertisements', 'Configurações de anúncios', ''),
-(47485, 'pt_BR:reports.stats.keydevelopments.numberOfTransactions', 'Número de transações', ''),
-(47486, 'pt_BR:changePassword.error.alreadyUsed', 'A senha informada já foi utilizada no passado', ''),
-(47487, 'pt_BR:permission.adminMemberTransactionFeedbacks.view', 'Ver', ''),
-(47488, 'pt_BR:customField.payment.type.OWNED', 'Próprio', ''),
-(47489, 'pt_BR:permission.brokerPos.changeParameters', 'Alterar parâmetros', ''),
-(47490, 'pt_BR:registrationAgreement.inserted', 'O termo de adesão foi inserido', ''),
-(47491, 'pt_BR:rates.message.initializationAlreadyRunning', 'Uma tarefa de inicialização de indices esta sendo executada nesta moeda.\n Isto significa que a moeda não pode ser modificada.\nObserver os alertas de sistema para ver quando a tarefa estiver concluida.', ''),
-(47492, 'pt_BR:top.message', 'Sistema de código aberto para comércio bancário', ''),
-(47493, 'pt_BR:profile.action.viewAds', 'Ver anúncios', ''),
-(47494, 'pt_BR:paymentObligation.status.REGISTERED', 'Nova', ''),
-(47495, 'pt_BR:reports.current.member_group_information', 'Informações do grupo do membro', ''),
-(47496, 'pt_BR:loan.repayment.discard.payment', 'Pagamento de descarte', ''),
-(47497, 'pt_BR:smsMailing.sent', 'A mensagem de difusão está sendo enviada', ''),
-(47498, 'pt_BR:paymentFilter.modified', 'O filtro de pagamentos foi modificado', ''),
-(47499, 'pt_BR:ad.units', 'Unidades', ''),
-(47500, 'pt_BR:pos.actions.changeParameters', 'Alterar parâmetros', ''),
-(47501, 'pt_BR:brokering.list.status', 'Estado', ''),
-(47502, 'pt_BR:mobile.viewPayments.title', 'Ver Pagamentos', ''),
-(47503, 'pt_BR:reports.simulations.aRate.config.graph', 'Porcentagem da taxa vs índice-A', ''),
-(47504, 'pt_BR:permission.systemStatus.viewConnectedMembers', 'Ver membros conectados', ''),
-(47505, 'pt_BR:transferType.fields.action.link', 'Relacionar campo existente', ''),
-(47506, 'pt_BR:transactionFee.invalidChargeValue', ' {0} (Valor da taxa)', ''),
-(47507, 'pt_BR:guaranteeType.authorizedBy', 'Autorizada por', ''),
-(47508, 'pt_BR:group.invalidNature', 'Tipo de grupo inválido', ''),
-(47509, 'pt_BR:accountFee.lastExecution', 'Última execução', ''),
-(47510, 'pt_BR:reports.stats.keydevelopments.numberOfAds.yAxis', 'Número', ''),
-(47511, 'pt_BR:errorLog.search.date.end', 'Até', ''),
-(47512, 'pt_BR:card.canceled', 'Cartão cancelado', ''),
-(47513, 'pt_BR:profile.action.remarks', 'Observações', ''),
-(47514, 'pt_BR:paymentFilter.title.modify', 'Modificar filtro de pagamentos para {0}', ''),
-(47515, 'pt_BR:customImage.error.wrongType', '{0} deve ser do tipo {1}', ''),
-(47516, 'pt_BR:mailPreferences.systemAlert', 'Alertas de sistema', ''),
-(47517, 'pt_BR:image.details', 'Detalhes', ''),
-(47518, 'pt_BR:customizedFile.resolveConflict', 'Resolver conflitos', ''),
-(47519, 'pt_BR:reports.transactions_report.member_to_system_invoices', '{0} faturas eletrônicas de membro para sistema', ''),
-(47520, 'pt_BR:fileMapping.removed', 'Mapeamento de arquivo removido', ''),
-(47521, 'pt_BR:changePassword.error.incorrect', 'Senha incorreta', ''),
-(47522, 'pt_BR:reference.action.paymentsAwaitingFeedback', 'Ver pagamentos aguardando qualificação', ''),
-(47523, 'pt_BR:reports.stats.activity.singlePeriod.grossProduct.row2', 'Produto bruto sobre todos membros', ''),
-(47524, 'pt_BR:invoice.amount', 'Valor', ''),
-(47525, 'pt_BR:reports.stats.activity.singlePeriod.grossProduct.row1', 'Produto bruto por membro com rendimentos', ''),
-(47526, 'pt_BR:member.activationDate', 'Data de ativação', ''),
-(47527, 'pt_BR:permission.systemCustomFields', 'Campos customizados', ''),
-(47528, 'pt_BR:brokerCommissionContract.startDate.to', 'até', ''),
-(47529, 'pt_BR:global.datePattern.month', 'mm', ''),
-(47530, 'pt_BR:group.settings.defaultAdPublicationTime', 'Tempo de publicação padrão do anúncio', ''),
-(47531, 'pt_BR:activities.ads', 'Produtos e serviços', ''),
-(47532, 'pt_BR:group.settings.pinBlockTimeAfterMaxTries.number', 'Tempo de bloqueio do PIN após tentativas inválidas', ''),
-(47533, 'pt_BR:admin.lastLogin', 'Último acesso', ''),
-(47534, 'pt_BR:permission.systemCardTypes.view', 'Ver tipos de cartão', ''),
-(47535, 'pt_BR:login.username', 'Nome de usuário', ''),
-(47536, 'pt_BR:loan.repaymentDate', 'Data do pagamento', ''),
-(47537, 'pt_BR:permission.adminAdmins.changeProfile', 'Alterar perfil', ''),
-(47538, 'pt_BR:memberImport.lineNumber', 'Nº linha', ''),
-(47539, 'pt_BR:reference.title.details.general', 'Detalhes da referência', ''),
-(47540, 'pt_BR:smsMailing.type', 'Tipo', ''),
-(47541, 'pt_BR:settings.message.subject', 'Assunto', ''),
-(47542, 'pt_BR:menu.member.guarantees.searchCertifications', 'Certificações', ''),
-(47543, 'pt_BR:settings.access.numericPassword', 'Senha numérica', ''),
-(47544, 'pt_BR:createMember.assignPassword', 'Atribuir senha', ''),
-(47545, 'pt_BR:guarantee.issuer', 'Emissor', ''),
-(47546, 'pt_BR:card.updateCard.error.userBlocked', 'Você excedeu o máximo de tentativas da senha de login e sua sessão está bloqueada agora', ''),
-(47547, 'pt_BR:receipt.posweb.transactions.scheduledPayments', 'Pagamentos agendados', ''),
-(47548, 'pt_BR:profile.action.transferAuthorizations', 'Ver autorizações de pagamentos', ''),
-(47549, 'pt_BR:permission.systemPayments.payment', 'Pagamento de sistema', ''),
-(47550, 'pt_BR:customField.title.insert.loanGroup', 'Novo campo customizado de grupo de empréstimos', ''),
-(47551, 'pt_BR:reports.members.members', 'Membros', ''),
-(47552, 'pt_BR:certification.expires', 'Vencimento', ''),
-(47553, 'pt_BR:brokerCommissionContract.inserted', 'O contrato de comissão de corretor foi inserido', ''),
-(47554, 'pt_BR:currency.action.new', 'Nova moeda', ''),
-(47555, 'pt_BR:authorizationLevel.inserted', 'Nível de autorização inserido', ''),
-(47556, 'pt_BR:brokering.status.PENDING', 'Aguardando ativação', ''),
-(47557, 'pt_BR:messageCategory.title.modify', 'Modificar a categoria de mensagem', ''),
-(47558, 'pt_BR:document.title.list', 'Lista de documentos customizados', ''),
-(47559, 'pt_BR:settings.local.sms.enable', 'Habilitado', ''),
-(47560, 'pt_BR:fieldMapping.removed', 'Mapeamento de campo removido', ''),
-(47561, 'pt_BR:customField.member.access.REGISTRATION', 'Cadastro pelo membro', ''),
-(47562, 'pt_BR:pos.status.PIN_BLOCKED', 'PIN bloqueado', ''),
-(47563, 'pt_BR:permission.modified', 'As permissões foram modificadas', ''),
-(47564, 'pt_BR:permission.brokerAds', 'Produtos e serviços', ''),
-(47565, 'pt_BR:ad.view.categories', 'Ver categorias', ''),
-(47566, 'pt_BR:paymentObligation.usedAmount', 'Valor utilizado', ''),
-(47567, 'pt_BR:reports.members.presentation.list', 'Lista de membros', ''),
-(47568, 'pt_BR:loanPayment.expirationDate', 'Vencimento', ''),
-(47569, 'pt_BR:pendingMember.removeConfirmation', 'Confirma a remoção deste cadastro pendente?\n\nOs cadastros pendentes são removidos automaticamente após {0}', ''),
-(47570, 'pt_BR:guarantee.currentIssueFeeValue', 'Taxa de emissão cobrada', ''),
-(47571, 'pt_BR:customField.title.insert.member', 'Novo campo customizado de membro', ''),
-(47572, 'pt_BR:loanPayment.summary.paymentsToReceive', 'Parcelas a receber', ''),
-(47573, 'pt_BR:adInterest.keywords', 'Palavras-chave', ''),
-(47574, 'pt_BR:permission.systemAdminGroups.manageAdminCustomizedFiles', 'Gerenciar arquivos customizados', ''),
-(47575, 'pt_BR:serviceOperation.RECEIVE_PAYMENT', 'Receber pagamentos', ''),
-(47576, 'pt_BR:group.settings.emailValidation.USER', 'Cadastro público ou usuário editando seu perfil', ''),
-(47577, 'pt_BR:transactionFee.chargeType.PERCENTAGE', 'Porcentagem', ''),
-(47578, 'pt_BR:adminTasks.indexes.type.Administrator', 'Administradores', ''),
-(47579, 'pt_BR:payment.recipientUsername', 'Nome de usuário (destinatário)', ''),
-(47580, 'pt_BR:currency.dRate.interest', 'Taxa de juros', ''),
-(47581, 'pt_BR:payment.nextAuthorizationLevel', 'O pagamento foi submetido para um nível de autorização superior', ''),
-(47582, 'pt_BR:reports.stats.activity.throughTime.grossProduct.title', 'Produto bruto por membro ao longo do tempo', ''),
-(47583, 'pt_BR:permission.memberAccess.changeChannelsAccess', 'Alterar acesso a canais', ''),
-(47584, 'pt_BR:permission.memberPreferences.manageNotifications', 'Gerenciar notificações', ''),
-(47585, 'pt_BR:settings.local.limits', 'Limites', ''),
-(47586, 'pt_BR:customField.payment.access.TO_ACCOUNT', 'Somente na conta de destino', ''),
-(47587, 'pt_BR:reports.stats.activity.singlePeriod.numberTransactions.row1.short', 'membros que transacionam', ''),
-(47588, 'pt_BR:sms.type.ACCOUNT_DETAILS.description', 'Detalhes da conta', ''),
-(47589, 'pt_BR:customImage.system.message_replied', 'Ícone de mensagem respondida', ''),
-(47590, 'pt_BR:createMember.registrationAgreementNotice', 'Ao clicar no botão abaixo, você concorda com os termos de adesão', ''),
-(47591, 'pt_BR:settings.message.sms', 'Mensagem SMS', ''),
-(47592, 'pt_BR:permission.brokerRemarks', 'Observações', ''),
-(47593, 'pt_BR:loanPayment.summary.unrecoverablePayments', 'Parcelas irrecuperáveis', ''),
-(47594, 'pt_BR:guaranteeType.enabledGuaranteeType', 'Ativar', ''),
-(47595, 'pt_BR:reports.members.ads.permanent', 'Permanente', ''),
-(47596, 'pt_BR:card.changeSecurityCode.confirmation', 'Desbloquear código de segurança?', ''),
-(47597, 'pt_BR:changePin.error.obvious', 'A senha externa (PIN) é muito simples. Ela não pode ser sequencial ou igual a qualquer campo do perfil', ''),
-(47598, 'pt_BR:mobile.payment.error.noTransferType', 'Não há um tipo de transação para pagamentos móveis.\nPor favor, contate a administração', ''),
-(47599, 'pt_BR:customField.description', 'Descrição', ''),
-(47600, 'pt_BR:reports.stats.keydevelopments.throughTime.QUARTER', 'Cada trimestre', ''),
-(47601, 'pt_BR:alert.system.newVersionOfHelpFile', 'Existe uma nova versão do arquivo de ajuda {0}, que foi customizado.\nPor favor, verifique para resolver possíveis conflitos', ''),
-(47602, 'pt_BR:fieldMapping.inserted', 'Mapeamento de campo inserido', ''),
-(47603, 'pt_BR:transactionFee.allowAnyAccount', 'Permitir qualquer conta', ''),
-(47604, 'pt_BR:guarantee.error.invalidGuarantee', 'O valor total de todas as taxas deve ser menor do que o da garantia', ''),
-(47605, 'pt_BR:permission.systemExternalAccounts.manage', 'Gerenciar', ''),
-(47606, 'pt_BR:customImage.system.permissions_gray', 'Ícone de permissões desabilitado', ''),
-(47607, 'pt_BR:brokerCommissionContract.status.ACTIVE', 'Ativo', ''),
-(47608, 'pt_BR:profile.action.accountInformation', 'Informações de conta', ''),
-(47609, 'pt_BR:home.admin.status.refresh', 'Atualizar', ''),
-(47610, 'pt_BR:translationMessage.import.error.reading', 'Erro durante a leitura do arquivo de propriedades', ''),
-(47611, 'pt_BR:guarantee.status.PENDING_ADMIN', 'Pendente pela administração', ''),
-(47612, 'pt_BR:menu.member.personal.documents', 'Documentos', ''),
-(47613, 'pt_BR:permission.operatorContacts.view', 'Ver', ''),
-(47614, 'pt_BR:fileMapping.nature', 'Tipo', ''),
-(47615, 'pt_BR:group.settings.sendPasswordByEmail', 'Enviar senha por e-mail', ''),
-(47616, 'pt_BR:notificationPreferences.costPerAdditionalMessages', '{0} mensagens adicionais custam {1}', ''),
-(47617, 'pt_BR:accountFee.firstPeriodAfter', 'Inicio cobranza', ''),
-(47618, 'pt_BR:payment.confirmation.other', 'Você irá pagar {0} para {2}.{3}\n\nPor favor, clique em OK para confirmar', ''),
-(47619, 'pt_BR:accountType.error.removing', 'A conta não pode ser removida porque ela tem ao menos uma transação', ''),
-(47620, 'pt_BR:help.title.preferences', 'Preferências', ''),
-(47621, 'pt_BR:transferType.loanParameters', 'Parâmetros do empréstimo', ''),
-(47622, 'pt_BR:accountFeeLog.fee', 'Taxa de conta', ''),
-(47623, 'pt_BR:member.brokerUsername', 'Nome de usuário do corretor', ''),
-(47624, 'pt_BR:transfer.ticket', 'Ticket', ''),
-(47625, 'pt_BR:permission.brokerMemberPayments.paymentAsMemberToSelf', 'Member self payment', ''),
-(47626, 'pt_BR:permission.brokerDocuments.manageMember', 'Gerenciar documentos individuais de membro', ''),
-(47627, 'pt_BR:transferType.feedbackReplyExpirationTime', 'Tempo limite para réplica de qualificação', ''),
-(47628, 'pt_BR:card.updateCard.cardCodesAreNotEqual', 'As senhas do cartão não são idênticas', ''),
-(47629, 'pt_BR:menu.admin.usersGroups.pendingMembers', 'Membros pendentes', ''),
-(47630, 'pt_BR:reports.current.presentation.result', 'Relatório do estado atual: Resultados', ''),
-(47631, 'pt_BR:scheduledPayments.searchType', 'Tipo de procura', ''),
-(47632, 'pt_BR:login.operator.form.text', 'Se você é um operador cadastrado, pode acessar o sistema com seu nome de usuário e senha.', ''),
-(47633, 'pt_BR:permission.adminMembers.changeUsername', 'Alterar o nome de usuário', ''),
-(47634, 'pt_BR:externalTransferProcess.confirmation', 'Você está a ponto de processar os pagamentos selecionados.\n\nDeseja continuar?', ''),
-(47635, 'pt_BR:fileMapping.columnSeparator', 'Separador de colunas', ''),
-(47636, 'pt_BR:group.customizedFiles.action.new', 'Personalizar novo arquivo', ''),
-(47637, 'pt_BR:group.settings.maxSchedulingPayments', 'Máx. de parcelas agendadas', ''),
-(47638, 'pt_BR:infoText.enabled', 'Habilitado', ''),
-(47639, 'pt_BR:permission.brokerCards.unblock', 'Desbloquear', ''),
-(47640, 'pt_BR:paymentFilter.removed', 'O filtro de pagamentos foi removido', ''),
-(47641, 'pt_BR:memberPos.maxSchedulingPayments', 'Agendamento máximo para pagamento', ''),
-(47642, 'pt_BR:customField.title.insert.loan', 'Novo campo customizado de empréstimo', ''),
-(47643, 'pt_BR:reports.members_reports.outgoing', 'De saída', ''),
-(47644, 'pt_BR:guarantee.description', 'Descrição', ''),
-(47645, 'pt_BR:paymentObligation.currency', 'Moeda', ''),
-(47646, 'pt_BR:global.weekDay.short.MONDAY', 'Seg', ''),
-(47647, 'pt_BR:changeGroup.new', 'Novo grupo', ''),
-(47648, 'pt_BR:createMember.error.usernameAlreadyInUse', 'O nome de usuário escolhido ({0}) já existe', ''),
-(47649, 'pt_BR:reports.stats.activity.comparePeriods.percentageNoTrade.title', 'Percentual de membros que não realizam transações (comparando dois períodos)', ''),
-(47650, 'pt_BR:manual.title.admin', 'Manual de administração do Cyclos', ''),
-(47651, 'pt_BR:receiptPrinterSettings.modified', 'O método de impressão local foi modificado', ''),
-(47652, 'pt_BR:brokerCommissionContract.status.EXPIRED', 'Expirado', ''),
-(47653, 'pt_BR:payment.action.chargeback', 'Estornar', ''),
-(47654, 'pt_BR:settings.error.noFile', 'Por favor, selecione um arquivo para importar as configurações', ''),
-(47655, 'pt_BR:adImport.adsWithErrors', 'Anúncios com erro', ''),
-(47656, 'pt_BR:transferAuthorization.comments', 'Comentários', ''),
-(47657, 'pt_BR:menu.admin.accounts.transfersAwaitingAuthorization', 'Aguardando autorização', ''),
-(47658, 'pt_BR:menu.member.search', 'Procurar', ''),
-(47659, 'pt_BR:alert.type.SYSTEM', 'Sistema', ''),
-(47660, 'pt_BR:sms.type.PAYMENT_ERROR', 'Erro no pagamento direto', ''),
-(47661, 'pt_BR:group.settings.smsCustomContext', 'Classe customizada para o contexto SMS', ''),
-(47662, 'pt_BR:profile.action.paymentFromSystem', 'Pagamento de sistema para membro', ''),
-(47663, 'pt_BR:transactionFee.amount', 'Valor', ''),
-(47664, 'pt_BR:profile.action.references', 'Ver e dar referências', ''),
-(47665, 'pt_BR:pos.status.UNASSIGNED', 'Não atribuído', ''),
-(47666, 'pt_BR:settings.message.invoiceCancelled', 'Fatura eletrônica cancelada', ''),
-(47667, 'pt_BR:settings.local.sms', 'SMS', ''),
-(47668, 'pt_BR:message.subject', 'Assunto', ''),
-(47669, 'pt_BR:permission.brokerMembers.register', 'Cadastrar', ''),
-(47670, 'pt_BR:adCategory.navigator.root', 'Principal', ''),
-(47671, 'pt_BR:guarantee.status.REJECTED', 'Rejeitada', ''),
-(47672, 'pt_BR:alert.system.RATE_INITIALIZATION_FAILED', 'tarefa de inicialização de indice {0} falhou devido a uma exceção encontrada.', ''),
-(47673, 'pt_BR:paymentFilter.groups', 'Visibilidade de grupo', ''),
-(47674, 'pt_BR:memberImport.invalidFormat', 'Formato inválido de arquivo', ''),
-(47675, 'pt_BR:payment.confirmation.header', 'Você está prestes a realizar o seguinte pagamento:', ''),
-(47676, 'pt_BR:permission.systemAccounts.authorizedInformation', 'Ver pagamentos autorizados', ''),
-(47677, 'pt_BR:permission.systemInvoices', 'Faturas eletrônicas', ''),
-(47678, 'pt_BR:transactionFee.originalTransferType', 'Tipo de transação original', ''),
-(47679, 'pt_BR:settings.message.adInterest', 'Interesse em anúncio', ''),
-(47680, 'pt_BR:permission.memberPreferences.manageReceiptPrinterSettings', 'Gerenciar impressoras de recibo', ''),
-(47681, 'pt_BR:memberImport.status.MISSING_USERNAME', 'O nome de usuário está faltando', ''),
-(47682, 'pt_BR:currency.enableARate', 'Ativar índice-A', ''),
-(47683, 'pt_BR:transactionFee.payer', 'Quem irá pagar', ''),
-(47684, 'pt_BR:errors.periodBeginRequired', 'A data de início de {0} é obrigatória', ''),
-(47685, 'pt_BR:customField.payment.access.NONE', 'Não exibir', ''),
-(47686, 'pt_BR:settings.message.adminPaymentFromSystemToMember', 'Pagamentos de sistema para membros', ''),
-(47687, 'pt_BR:order.save', 'Salvar', ''),
-(47688, 'pt_BR:contact.notes', 'Notas', ''),
-(47689, 'pt_BR:memberRecord.error.removing', 'Erro ao remover registro de {0}', ''),
-(47690, 'pt_BR:reports.members.references.given', 'Referências dadas', ''),
-(47691, 'pt_BR:memberImport.status.USERNAME_ALREADY_IN_USE', 'O nome de usuário já está em uso: {0}', ''),
-(47692, 'pt_BR:payment.action.payNow', 'Pagar agora', ''),
-(47693, 'pt_BR:externalTransferType.action.GENERATE_SYSTEM_PAYMENT', 'Gerar pagamento para o sistema', ''),
-(47694, 'pt_BR:authorizationLevel.level', 'Nível', ''),
-(47695, 'pt_BR:transactionFee.value', 'Cobrar valor', ''),
-(47696, 'pt_BR:reports.stats.error.finalDateLesserThanInitialDate', 'Data inicial maior do que a data final!', ''),
-(47697, 'pt_BR:reports.stats.activity.throughTime.grossProduct', 'Produto bruto por membro', ''),
-(47698, 'pt_BR:ad.print.since', 'Publicado desde', ''),
-(47699, 'pt_BR:guaranteeType.creditFee.readonly', 'Somente leitura', ''),
-(47700, 'pt_BR:help.title.access_devices', 'Access devices', ''),
-(47701, 'pt_BR:menu.member.personal', 'Pessoal', ''),
-(47702, 'pt_BR:permission.memberPayments', 'Pagamentos', ''),
-(47703, 'pt_BR:permission.operatorPayments.request', 'Solicitar pagmentos de outros canais', ''),
-(47704, 'pt_BR:memberRecord.action.newBasedOnThis', 'Criar novo registro de {0} baseado neste', ''),
-(47705, 'pt_BR:adImport.currency', 'Moeda dos anúncios', ''),
-(47706, 'pt_BR:permission.memberPayments.authorize', 'Autorizar pagamento', ''),
-(47707, 'pt_BR:message.fromTo', 'De / Para', ''),
-(47708, 'pt_BR:contactUs.title', 'Contate-nos', ''),
-(47709, 'pt_BR:menu.admin.ads.categories', 'Gerenciar categorias', ''),
-(47710, 'pt_BR:menu.admin.reports', 'Relatórios', ''),
-(47711, 'pt_BR:permission.brokerCards.unblockSecurityCode', 'Desbloquear código de segurança', ''),
-(47712, 'pt_BR:reports.transactions_report.transactions', '{0}: {1} de {2} transações', ''),
-(47713, 'pt_BR:changeBroker.current', 'Corretor atual', ''),
-(47714, 'pt_BR:menu.member.search.members', 'Membros', ''),
-(47715, 'pt_BR:guaranteeType.error.invalidAuthorizedBy', 'O autorizador é inválido para o modelo selecionado. Somente Emissor ou Ambos são permitidos', ''),
-(47716, 'pt_BR:theme.description', 'Descrição', ''),
-(47717, 'pt_BR:transactionPassword.title.manage', 'Gerenciar senha de transação de {0}', ''),
-(47718, 'pt_BR:settings.local.extraFunctions', 'Funções adicionais', ''),
-(47719, 'pt_BR:guarantee.automaticLoanAuthorization', 'Autorizar o empréstimo automaticamente', ''),
-(47720, 'pt_BR:registrationAgreement.modified', 'O termo de adesão foi modificado', ''),
-(47721, 'pt_BR:menu.contact', 'Contato', ''),
-(47722, 'pt_BR:error.session.timeout', 'A sua sessão expirou!\nPor favor faça um novo login.', ''),
-(47723, 'pt_BR:brokerCommission.action.suspend', 'Suspender', ''),
-(47724, 'pt_BR:channel.principals', 'Identificação do usuário', ''),
-(47725, 'pt_BR:pos.discardPos.confirmation', 'Descartar POS?', ''),
-(47726, 'pt_BR:memberRecord.inserted', 'O registro de membro foi inserido', ''),
-(47727, 'pt_BR:group.title.search', 'Buscar grupos de permissão', ''),
-(47728, 'pt_BR:accountFee.action.cancel', 'Cancelar', ''),
-(47729, 'pt_BR:certification.inserted', 'A certificação foi criada com sucesso', ''),
-(47730, 'pt_BR:profile.pendingEmail.confirmed', 'A mudança de e-mail para {0} foi confirmada', ''),
-(47731, 'pt_BR:group.account.removed', 'A conta do grupo foi removida', ''),
-(47732, 'pt_BR:loanGroup.title.of', 'Grupos de empréstimos de {0}', ''),
-(47733, 'pt_BR:accountFee.removed', 'A taxa de conta foi removida', ''),
-(47734, 'pt_BR:paymentFilter.name', 'Nome', ''),
-(47735, 'pt_BR:guarantee.title.guaranteeList', 'Lista de garantias', ''),
-(47736, 'pt_BR:alert.removeOne.confirm', 'Remover aviso?', ''),
-(47737, 'pt_BR:settings.message.pinBlocked', 'Senha externa (PIN) bloqueada por excesso de tentativas inválidas', ''),
-(47738, 'pt_BR:certification.starts', 'Início', ''),
-(47739, 'pt_BR:home.status.paymentsToAuthorize', 'Existem {0} pagamentos aguardando sua autorização', ''),
-(47740, 'pt_BR:permission.brokerInvoices.view', 'Ver', ''),
-(47741, 'pt_BR:reports.stats.finances.singlePeriod.income.title', 'Entrada conta de sistema', ''),
-(47742, 'pt_BR:menu.admin.accessDevices', 'Dispositivos de acesso', ''),
-(47743, 'pt_BR:transferAuthorization.authorizerAdmin', 'Autorizador', ''),
-(47744, 'pt_BR:customField.title.insert.admin', 'Novo campo customizado de administrador', ''),
-(47745, 'pt_BR:mobile.error.noDefaultAccount', 'Você não pode entrar porque o grupo {0} não tem uma conta padrão', ''),
-(47746, 'pt_BR:adInterest.adFields', 'Monitorar os seguintes campos do anúncio', ''),
-(47747, 'pt_BR:memberRecord.removed', 'O registro de {0} foi removido', ''),
-(47748, 'pt_BR:customImage.title.system.update', 'Atualizar imagem de sistema', ''),
-(47749, 'pt_BR:card.status.CANCELED', 'Cancelado', ''),
-(47750, 'pt_BR:accountFeeLog.totalInvoices', 'Faturas totais', ''),
-(47751, 'pt_BR:reports.current.presentation.result.at', 'Relatório de estado: Resultados em', ''),
-(47752, 'pt_BR:profile.action.paymentAsMemberToSystem', 'Pagamento de membro para sistema', ''),
-(47753, 'pt_BR:loanPayment.amount', 'Valor', ''),
-(47754, 'pt_BR:loanGroup.title.my', 'Meus grupos de empréstimos', ''),
-(47755, 'pt_BR:smsMailing.sentSms', 'Mensagens enviadas', ''),
-(47756, 'pt_BR:cardType.ignoreDayInExpirationDate', 'Ignorar o dia na expiração', ''),
-(47757, 'pt_BR:changeGroup.admin.title', 'Alterar o grupo do administrador {0}', ''),
-(47758, 'pt_BR:global.tooltip.preview', 'Pré-visualizar', ''),
-(47759, 'pt_BR:group.error.passwordPolicyNumeric', '{0} não pode obrigar letras ou caracteres especiais porque as configurações de acesso definem a senha como numérica', ''),
-(47760, 'pt_BR:contact.removeConfirmation', 'Remover contato?', ''),
-(47761, 'pt_BR:transferType.channels', 'Canais', ''),
-(47762, 'pt_BR:reports.current.references', 'Referências', ''),
-(47763, 'pt_BR:reference.to', 'Para', ''),
-(47764, 'pt_BR:transactionFee.fromGroups', 'Dos grupos', ''),
-(47765, 'pt_BR:changeGroup.operator.permanentlyRemovedMessage', 'O membro foi removido permanentemente', ''),
-(47766, 'pt_BR:permission.brokerMemberPayments.paymentAsMemberToMember', 'Pagamento como membro para membro', ''),
-(47767, 'pt_BR:permission.adminMemberReferences.view', 'Ver', ''),
-(47768, 'pt_BR:permission.adminMemberPayments.paymentAsMemberToSelf', 'Member self payment', ''),
-(47769, 'pt_BR:connectedUsers.nature', 'Exibir', ''),
-(47770, 'pt_BR:posweb.action.receivePayment', 'Receber pagamento (F2)', ''),
-(47771, 'pt_BR:card.status.BLOCKED', 'Bloqueado', ''),
-(47772, 'pt_BR:profile.action.grantLoan', 'Conceder empréstimo', ''),
-(47773, 'pt_BR:guarantee.title.guaranteeDetails', 'Detalhes da garantia', ''),
-(47774, 'pt_BR:customField.ad.visibility.WEB_SERVICE', 'Corretores e clientes de serviço web', ''),
-(47775, 'pt_BR:message.type.PAYMENT', 'Pagamentos recebidos', ''),
-(47776, 'pt_BR:changePassword.resetAndSent', 'A senha foi reiniciada e enviada para o membro', ''),
-(47777, 'pt_BR:brokerCommission.inserted', 'A comissão de corretor foi inserida', ''),
-(47778, 'pt_BR:permission.systemSettings.view', 'Ver configurações', ''),
-(47779, 'pt_BR:changePassword.resetAndSend', 'Reiniciar senha e enviar por e-mail', ''),
-(47780, 'pt_BR:memberImport.accountType.empty', 'Não importar contas', ''),
-(47781, 'pt_BR:transferAuthorization.title.list.of', 'Ações sobre transações autorizadas de {0}', ''),
-(47782, 'pt_BR:brokerCommissionContract.modified', 'O contrato de comissão de corretor foi modificado', ''),
-(47783, 'pt_BR:settings.log.traceLevel.ERRORS', 'Apenas erros', ''),
-(47784, 'pt_BR:brokering.status.COMMISSION_COMPLETE', 'Comissões encerradas', ''),
-(47785, 'pt_BR:profile.action.sendInvoice', 'Enviar fatura eletrônica', ''),
-(47786, 'pt_BR:permission.adminMemberPos.assign', 'Atribuir', ''),
-(47787, 'pt_BR:changePin.error.blockedTransactionPassword', 'Senha de transação bloqueada', ''),
-(47788, 'pt_BR:global.add', 'Adicionar', ''),
-(47789, 'pt_BR:adImport.status.INVALID_PUBLICATION_END', 'A data de fim de publicação é inválida: {0}', ''),
-(47790, 'pt_BR:menu.member.account.invoices', 'Faturas eletrônicas', ''),
-(47791, 'pt_BR:help.title.groups', 'Grupos', ''),
-(47792, 'pt_BR:posweb.error.channelDisabled', 'O membro especificado não pode acessar o canal POS-Web', ''),
-(47793, 'pt_BR:webshop.payment.headerText', 'Um pagamento de {0} foi solicitado por {1} ({2})', ''),
-(47794, 'pt_BR:reports.stats.paymentFilters.noOverlap', 'Erro: Filtros de pagamentos sobrepostos\n\nPor favor selecione outro conjunto de filtros de pagamentos.\n\nPara mais detalhes, consulte a ajuda na janela dos filtros.', ''),
-(47795, 'pt_BR:customizedFile.originalContents', 'Conteúdo original', ''),
-(47796, 'pt_BR:reports.stats.keydevelopments.numberOfAds.scheduled', 'Anúncios agendados', ''),
-(47797, 'pt_BR:guarantee.status.WITHOUT_ACTION', 'Vencida', ''),
-(47798, 'pt_BR:accountType.all', 'Todas', ''),
-(47799, 'pt_BR:fieldMapping.title.new', 'Novo mapeamento de campo', ''),
-(47800, 'pt_BR:generateCard.generateForMemberWithPendingCard', 'Gerar para membros com cartão pendente?', ''),
-(47801, 'pt_BR:guaranteeType.forwardTransferType', 'Tipo de pagamento de encaminhamento', ''),
-(47802, 'pt_BR:reports.stats.taxes.medianPerMember', 'Quantidade por membro', ''),
-(47803, 'pt_BR:message.type.INVOICE', 'Eventos de ordens de pagamento', ''),
-(47804, 'pt_BR:loan.granted', 'O empréstimo foi concedido com sucesso', ''),
-(47805, 'pt_BR:permission.systemTranslation.manage', 'Gerenciar', ''),
-(47806, 'pt_BR:reports.stats.keydevelopments.transactionAmount.title', 'Progressos em valores por transação', ''),
-(47807, 'pt_BR:transactionFee.when', 'Quando a comissão é paga', ''),
-(47808, 'pt_BR:global.pagination.various.pages', '{0} resultados. Pular para a página:', ''),
-(47809, 'pt_BR:permission.memberMessages.manage', 'Gerenciar', ''),
-(47810, 'pt_BR:transfer.fromOrTo', 'De / para', ''),
-(47811, 'pt_BR:group.customizedFiles.customized', 'Agora o arquivo está customizado para o grupo', ''),
-(47812, 'pt_BR:permission.systemReports.smsLogs', 'Mensagens SMS enviadas', ''),
-(47813, 'pt_BR:menu.admin.accounts', 'Contas', ''),
-(47814, 'pt_BR:notificationPreferences.selectNone', 'Nenhum', ''),
-(47815, 'pt_BR:pos.actions.assign', 'Atribuir', ''),
-(47816, 'pt_BR:groupFilter.removed', 'Filtro de grupos removido', ''),
-(47817, 'pt_BR:profile.pendingEmailLastSent', 'Último e-mail enviado em {0}', ''),
-(47818, 'pt_BR:menu.admin.accounts.memberPayment', 'Pagamento para membro', ''),
-(47819, 'pt_BR:messageCategory.all', 'Todas categorias', ''),
-(47820, 'pt_BR:errorLog.removeSelected.confirm', 'Remover os logs de erros selecionados?', ''),
-(47821, 'pt_BR:accountType.nature.MEMBER', 'Membro', ''),
-(47822, 'pt_BR:group.registrationAgreement.explanation', 'Para prosseguir e poder utilizar o sistema, você deve primeiro concordar com o seguite termo de adesão:', ''),
-(47823, 'pt_BR:externalTransfer.action.choose', 'Executar ação com as transferências selecionadas', ''),
-(47824, 'pt_BR:reports.current.invoices.SYSTEM_OUTGOING.amount', 'Soma de faturas eletrônicas de saída do sistema', ''),
-(47825, 'pt_BR:registrationAgreement.name', 'Nome', ''),
-(47826, 'pt_BR:payment.error.invalidTransferType', 'Tipo de transação inválido', ''),
-(47827, 'pt_BR:changePassword.resetAndSend.confirmation', 'Você tem certeza de que deseja reiniciar a senha do membro?', ''),
-(47828, 'pt_BR:settings.alert.receivedVeryBadRefs', 'Referências "Péssimo" recebidas', ''),
-(47829, 'pt_BR:menu.admin.cards', 'Cartões', ''),
-(47830, 'pt_BR:brokering.error.circularBrokering', 'Corretagem circular', ''),
-(47831, 'pt_BR:reports.members.print_btn', 'Imprimir relatório', ''),
-(47832, 'pt_BR:infoText.end', 'Expiração', ''),
-(47833, 'pt_BR:invoice.scheduledFor', 'Agendado para', ''),
-(47834, 'pt_BR:group.settings.passwordTries.maximum', 'No. máx. de tentativas de senha', ''),
-(47835, 'pt_BR:brokerCommissionContract.error.conflictingContract', 'Já existe um contrato ativo ou pendente cujo período é conflitante com o período desse contrato', ''),
-(47836, 'pt_BR:global.uploadLimit', 'máx', ''),
-(47837, 'pt_BR:permission.brokerAccounts.brokerSimulateConversion', 'Simular conversão para membro', ''),
-(47838, 'pt_BR:global.timePeriod.DAYS', 'Dia(s)', ''),
-(47839, 'pt_BR:reports.stats.keydevelopments.transactionAmount.median', 'Médiano', ''),
-(47840, 'pt_BR:permission.systemStatus.viewConnectedBrokers', 'Ver corretores conectados', ''),
-(47841, 'pt_BR:reports.stats.keydevelopments.throughTime.quarters.title', 'Progresso ao longo do tempo', ''),
-(47842, 'pt_BR:createMember.error.noPossibleGroup', 'Não há grupo inicial possivel', ''),
-(47843, 'pt_BR:customField.size.SMALL', 'Pequeno', ''),
-(47844, 'pt_BR:permission.memberProfile', 'Perfil de membro', ''),
-(47845, 'pt_BR:settings.local.numberLocale', 'Formato de número', ''),
-(47846, 'pt_BR:reference.direction.general.GIVEN', 'Referências dadas', ''),
-(47847, 'pt_BR:errors.lessThan', '{0} deve ser menor que {1}', ''),
-(47848, 'pt_BR:settings.message.brokeringExpiration', 'Vencimento da corretagem', ''),
-(47849, 'pt_BR:settings.access.usernameLength', 'Tamanho do nome de usuário manual', ''),
-(47850, 'pt_BR:loan.queryStatus.EXPIRED', 'Vencido', ''),
-(47851, 'pt_BR:menu.admin.accounts.memberInvoice', 'Enviar fatura para membro', ''),
-(47852, 'pt_BR:creditLimit.new', 'Novo', ''),
-(47853, 'pt_BR:account.creditLimit', 'Limite de crédito inferior', ''),
-(47854, 'pt_BR:group.customizedFiles.title.new', 'Personalizar novo arquivo para {0}', ''),
-(47855, 'pt_BR:createMember.captcha', 'Por favor, digite os caracteres da imagem abaixo', ''),
-(47856, 'pt_BR:help.title.help_howto', 'HOWTOs de ajudas', ''),
-(47857, 'pt_BR:settings.log.maxLengthPerFile', 'Tamanho máx. do arquivo', ''),
-(47858, 'pt_BR:transactionPassword.action.block', 'Bloquear senha de transação', ''),
-(47859, 'pt_BR:settings.mail.invitation', 'E-mail de convite', ''),
-(47860, 'pt_BR:accountFee.chargeMode', 'Modo de cobrança', ''),
-(47861, 'pt_BR:createMember.error.mailSending', 'Ocorreu um erro ao enviar o email de validação.\n O membro não foi criado.', ''),
-(47862, 'pt_BR:settings.message.setting', 'Nome da configuração', ''),
-(47863, 'pt_BR:paymentObligation.pack.totalAmount', 'Valor total:1', ''),
-(47864, 'pt_BR:permission.brokerCards.view', 'Ver', ''),
-(47865, 'pt_BR:customField.title.modify.payment', 'Modificar campo de {0}', ''),
-(47866, 'pt_BR:defaultBrokerCommission.status', 'Estado', ''),
-(47867, 'pt_BR:rates.error.initializationAlreadyRunning', 'Você tentou iniciar uma tarefa de inicialização de indice enquanto já existe uma sendo executada.', ''),
-(47868, 'pt_BR:adInterest.priceRange', 'Intervalo de preço', ''),
-(47869, 'pt_BR:rates.i', 'Indice-I', ''),
-(47870, 'pt_BR:permission.brokerMemberAccess.changePassword', 'Alterar senha', ''),
-(47871, 'pt_BR:settings.message.removedFromBrokerGroup', 'Removido do grupo de corretores', ''),
-(47872, 'pt_BR:rates.d', 'Indice-D', ''),
-(47873, 'pt_BR:reports.stats.activity.comparePeriods.grossProduct.row1.short', 'com entradas', ''),
-(47874, 'pt_BR:group.error.removing', 'O grupo não pode ser removido.\nCertifique-se de que não há usuários nele', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(47875, 'pt_BR:rates.a', 'Indice-A', ''),
-(47876, 'pt_BR:group.customizedFiles.title', 'Arquivos customizados', ''),
-(47877, 'pt_BR:payment.action.authorize', 'Autorizar', ''),
-(47878, 'pt_BR:alert.system.APPLICATION_RESTARTED', 'Aplicação reiniciada', ''),
-(47879, 'pt_BR:permission.adminMemberInvoices.sendAsMemberToMember', 'Enviar como membro para membro', ''),
-(47880, 'pt_BR:permission.systemChannels', 'Canais', ''),
-(47881, 'pt_BR:reports.stats.activity.comparePeriods.numberTransactions.title', 'Número de transações por membro (comparando dois períodos)', ''),
-(47882, 'pt_BR:remark.writer', 'Alterada por', ''),
-(47883, 'pt_BR:manual.action.printSection', 'Imprimir a seção atual', ''),
-(47884, 'pt_BR:menu.admin.customFields', 'Campos customizados', ''),
-(47885, 'pt_BR:settings.log.traceLevel.SIMPLE', 'Rastreamento simples (sem parâmetros)', ''),
-(47886, 'pt_BR:externalTransfer.action.MARK_AS_UNCHECKED', 'Marcar como não conferido', ''),
-(47887, 'pt_BR:group.settings.externalAdPublication', 'Publicação externa de anúncios', ''),
-(47888, 'pt_BR:global.quarter.FOURTH', 'Quarto trimestre', ''),
-(47889, 'pt_BR:loan.expirationDate', 'Vencimento', ''),
-(47890, 'pt_BR:customField.control', 'Tipo de campo', ''),
-(47891, 'pt_BR:cardType.title.insert', 'Novo tipo de cartão', ''),
-(47892, 'pt_BR:guaranteeType.model.WITH_BUYER_AND_SELLER', 'Com comprador e vendedor', ''),
-(47893, 'pt_BR:paymentRequest.search.empty', 'Nenhuma solicitação de pagamento para os filtros selecionados', ''),
-(47894, 'pt_BR:brokerCommissionContract.action.selectBrokerCommission', 'Selecione o tipo de comissão', ''),
-(47895, 'pt_BR:group.isRemoved', 'Removido', ''),
-(47896, 'pt_BR:scheduledPayments.totalRemaining', 'Total restante', ''),
-(47897, 'pt_BR:document.currentFileLink', '{0} ({1})', ''),
-(47898, 'pt_BR:reports.stats.finances.ThroughTime.income.yAxis', 'Entrada', ''),
-(47899, 'pt_BR:reports.stats.keydevelopments.numberOfTransactions.title', 'Avanços no número de transações', ''),
-(47900, 'pt_BR:transactionFee.gFIsZero', 'alcança 0% após x % da garantia passar', ''),
-(47901, 'pt_BR:menu.member.operators', 'Operadores', ''),
-(47902, 'pt_BR:theme.message.export', 'Exportar tema para um arquivo', ''),
-(47903, 'pt_BR:pos.createAndAssign', 'O POS não existe. Deseja criá-lo e associar ao membro?', ''),
-(47904, 'pt_BR:pos.pinChanged', 'O pin foi alterado', ''),
-(47905, 'pt_BR:settings.message.title.edit', 'Editar notificação', ''),
-(47906, 'pt_BR:paymentRequest.title.new', 'Solicitar pagamento', ''),
-(47907, 'pt_BR:infoText.removed', 'Mensagem informativa removida.', ''),
-(47908, 'pt_BR:menu.member.guarantees.searchPaymentObligations', 'Obrigações de pagamento', ''),
-(47909, 'pt_BR:permission.adminMemberReferences.manage', 'Gerenciar', ''),
-(47910, 'pt_BR:permission.admin.managesGroups', 'Gerenciar grupos', ''),
-(47911, 'pt_BR:transferAuthorization.action.AUTHORIZE', 'Autorizado', ''),
-(47912, 'pt_BR:cardLog.title', 'Log do cartão', ''),
-(47913, 'pt_BR:transactionPassword.block.confirmMessage', 'Você tem certeza de que deseja bloquear a senha de transação do membro?', ''),
-(47914, 'pt_BR:reports.stats.finances.ComparePeriods.income.title', 'Entradas (comparação de períodos)', ''),
-(47915, 'pt_BR:permission.systemMemberPermissions.manage', 'Gerenciar', ''),
-(47916, 'pt_BR:customField.removed', 'O campo customizado foi removido', ''),
-(47917, 'pt_BR:reports.stats.activity.throughTime.numberTransactions.title', 'Número de transações por membro ao longo do tempo', ''),
-(47918, 'pt_BR:permission.adminMemberInvoices.acceptAsMemberFromMember', 'Aceitar fatura eletrônica de membro como membro', ''),
-(47919, 'pt_BR:mobile.home.balance', 'Saldo: {0}', ''),
-(47920, 'pt_BR:settings.message.expiredCertification', 'Certificação expirada', ''),
-(47921, 'pt_BR:payment.status.FAILED', 'Falhado', ''),
-(47922, 'pt_BR:guarantee.paymentObligationList', 'Obrigações de pagamento', ''),
-(47923, 'pt_BR:permission.basic.login', 'Acesso', ''),
-(47924, 'pt_BR:externalTransfer.action.DELETE', 'Apagar', ''),
-(47925, 'pt_BR:customField.title.list.admin', 'Campos customizados de administrador', ''),
-(47926, 'pt_BR:guaranteeType.error.creditFeeTransferType', 'O tipo de pagamento para a taxa de crédito é obrigatório', ''),
-(47927, 'pt_BR:registrationAgreement.error.removing', 'Erro ao removed o termo de adesão.\n\nEle pode estar em uso por algum grupo ou já ter sido aceito no passado', ''),
-(47928, 'pt_BR:settings.access.error.numericPassword.groupsRequireLetters', '{0} não pode ser ativado pois existe ao menos um grupo de membros que obriga letras na senha', ''),
-(47929, 'pt_BR:brokering.change.confirmation', 'Você deseja definir {0} como corretor de {1}?', ''),
-(47930, 'pt_BR:memberRecord.modified', 'O registro de membro foi modificado', ''),
-(47931, 'pt_BR:menu.member.connectedOperators', 'Operadores conectados', ''),
-(47932, 'pt_BR:externalTransferType.action.new', 'Inserir novo tipo de pagamento', ''),
-(47933, 'pt_BR:settings.mail.smtpUsername', 'Nome de usuário', ''),
-(47934, 'pt_BR:mobile.payment.description', 'Descrição', ''),
-(47935, 'pt_BR:alert.system.accountFeeFinishedWithErrors', 'Taxa de conta {0} concluída com {1} erros', ''),
-(47936, 'pt_BR:customField.title.list.operator', 'Campos customizados de operador', ''),
-(47937, 'pt_BR:translationMessage.removeSelected.confirm', 'Deseja realmente remover a(s) chave(s) de tradução selecionada(s)?', ''),
-(47938, 'pt_BR:loan.grantFee', 'Taxa de concessão', ''),
-(47939, 'pt_BR:groupFilter.customizedFiles.title.modify', 'Modificar arquivo customizado para {0}', ''),
-(47940, 'pt_BR:guarantee.model', 'Modelo', ''),
-(47941, 'pt_BR:document.title.form', 'Parâmetros para {0}', ''),
-(47942, 'pt_BR:receipt.transfer.header', '{0}: recibo de pagamento', ''),
-(47943, 'pt_BR:paymentObligation.status', 'Estado', ''),
-(47944, 'pt_BR:transactionFee.aRateRelation.ASYMPTOTICAL', 'Assimptótica', ''),
-(47945, 'pt_BR:memberRecord.modifiedBy', 'Modificado por', ''),
-(47946, 'pt_BR:virtualKeyboard.contrast', 'Contraste', ''),
-(47947, 'pt_BR:mobile.viewPayments.description', 'Desc.', ''),
-(47948, 'pt_BR:error.iRateParameters.notOffLine', 'O indice-I não foi ativado, o sistema deve ser definido como indisponivel,\n pois pode ser uma tarefa pesada em banco de dados grandes.\n\n Você pode definir o sistema como indisponivel através do menu: configurações > tarefas de sistema.', ''),
-(47949, 'pt_BR:transfer.title.authorizations', 'Ações de autorização', ''),
-(47950, 'pt_BR:fieldMapping.removeConfirmation', 'Remover este mapeamento de campo?', ''),
-(47951, 'pt_BR:profile.action.loansActions', 'Empréstimos', ''),
-(47952, 'pt_BR:reports.stats.keydevelopments.throughTime.quarters.xAxis', 'Trimestres', ''),
-(47953, 'pt_BR:receiptPrinterSettings.removed', 'A configuração de impressora de recibos foi removida', ''),
-(47954, 'pt_BR:pos.actions', 'Ações', ''),
-(47955, 'pt_BR:webshop.payment.enterPinText', 'Senha externa (PIN)', ''),
-(47956, 'pt_BR:group.settings.groupAfterExpiration', 'Grupo após a expiração', ''),
-(47957, 'pt_BR:fileMapping.fields.title', 'Campos de arquivos mapeados', ''),
-(47958, 'pt_BR:translationMessage.modified', 'A chave de tradução foi modificada', ''),
-(47959, 'pt_BR:adCategory.new', 'Inserir nova categoria', ''),
-(47960, 'pt_BR:customizedFile.type.HELP', 'Ajuda', ''),
-(47961, 'pt_BR:fileMapping.headerLines', 'Linhas do cabeçalho', ''),
-(47962, 'pt_BR:loan.repayment.repaidAmount', 'Pago', ''),
-(47963, 'pt_BR:alert.member.BLOCKED_POS_USED', 'Tentativa de utilizar um dispositivo POS marcado como bloqueado', ''),
-(47964, 'pt_BR:createAdmin.password', 'Senha', ''),
-(47965, 'pt_BR:fieldMapping.memberField', 'Campo de membro', ''),
-(47966, 'pt_BR:document.title.select.of', 'Imprimir documento para {0}', ''),
-(47967, 'pt_BR:brokering.memberAdded', 'O membro foi adicionado', ''),
-(47968, 'pt_BR:card.activateCard.confirmation', 'Ativar cartão?', ''),
-(47969, 'pt_BR:group.settings.cardType', 'Tipo de cartão', ''),
-(47970, 'pt_BR:help.title.loans', 'Empréstimos', ''),
-(47971, 'pt_BR:reports.stats.finances.ComparePeriods.expenditure.title', 'Saída Comparação de Períodos', ''),
-(47972, 'pt_BR:transfer.chargeback', 'Estornado em', ''),
-(47973, 'pt_BR:customField.control.MEMBER_AUTOCOMPLETE', 'Auto-completar de membro', ''),
-(47974, 'pt_BR:pendingMember.title.search', 'Membros pendentes', ''),
-(47975, 'pt_BR:permission.adminMemberGuarantees.acceptGuaranteesAsMember', 'Aceitar garantias', ''),
-(47976, 'pt_BR:reference.inserted', 'Referência inserida', ''),
-(47977, 'pt_BR:reference.title.new.general', 'Definir referência', ''),
-(47978, 'pt_BR:loanGroup.description', 'Descrição', ''),
-(47979, 'pt_BR:smsMailing.sendType.group', 'Para grupo', ''),
-(47980, 'pt_BR:loanGroup.removeFromMemberConfirmation', 'Remover o membro deste grupo de empréstimos?', ''),
-(47981, 'pt_BR:accountFee.title.insert', 'Inserir taxa de conta', ''),
-(47982, 'pt_BR:member.action.create', 'Criar membro', ''),
-(47983, 'pt_BR:settings.local.schedulingHour', 'Hora das tarefas agendadas', ''),
-(47984, 'pt_BR:loan.grant.error.invalidAmount', 'O valor dos pagamentos do empréstimo difere do valor total', ''),
-(47985, 'pt_BR:cardType.removed', 'O tipo de cartão foi removido', ''),
-(47986, 'pt_BR:ad.status.EXPIRED', 'Vencido', ''),
-(47987, 'pt_BR:channel.action.new', 'Inserir um novo canal', ''),
-(47988, 'pt_BR:brokerCommission.chargeStatus', 'Estado de cobrança das comissões', ''),
-(47989, 'pt_BR:document.title.select.my', 'Imprimir documento', ''),
-(47990, 'pt_BR:brokerCommission.modified', 'A comissão de corretor foi modificada', ''),
-(47991, 'pt_BR:reports.stats.general.number', 'Número', ''),
-(47992, 'pt_BR:settings.local.memberSortOrder.CHRONOLOGICAL', 'Cronologico (data de criação)', ''),
-(47993, 'pt_BR:customField.member.showInPrint', 'Exibir na impressão do membro', ''),
-(47994, 'pt_BR:customField.type.ENUMERATED', 'Enumerado', ''),
-(47995, 'pt_BR:serviceClient.error.empty.usernameOrPassword', 'Ambos usuário e senha HTTP devem ser preenchidos ou vazios', ''),
-(47996, 'pt_BR:permission.adminMemberBrokerings.manageCommissions', 'Gerenciar comissões', ''),
-(47997, 'pt_BR:permission.brokerAccounts.authorizedInformation', 'Ver pagamentos autorizados', ''),
-(47998, 'pt_BR:currency.description', 'Descrição', ''),
-(47999, 'pt_BR:invoice.totalAmount', 'Valor total', ''),
-(48000, 'pt_BR:alert.system.indexRebuildStart', 'A reconstrução dos índices de busca para {0} foi iniciada em {1}', ''),
-(48001, 'pt_BR:adminTasks.onlineState.title', 'Disponibilidade do sistema', ''),
-(48002, 'pt_BR:sms.type.GENERAL', 'Geral', ''),
-(48003, 'pt_BR:notificationPreferences.hasntEmail', 'Você não tem e-mail configurado.', ''),
-(48004, 'pt_BR:accountFeeLog.processedMembers', 'Membros processados', ''),
-(48005, 'pt_BR:customField.title.order.member', 'Ajustar ordem de campo customizado de membro', ''),
-(48006, 'pt_BR:menu.admin.contentManagement.helpFiles', 'Arquivos de ajuda', ''),
-(48007, 'pt_BR:global.min', 'Mín.', ''),
-(48008, 'pt_BR:channel.credentials.PIN', 'Senha externa (PIN)', ''),
-(48009, 'pt_BR:settings.local.timeZone.none', 'Não utilizar fuso horário', ''),
-(48010, 'pt_BR:group.settings.passwordTries.deactivationTime.field', 'Tempo de desativação (unid.) após no. máx. de tentativas de senha', ''),
-(48011, 'pt_BR:alert.system.MAX_INCORRECT_LOGIN_ATTEMPTS', 'Máximo de tentativas de login com usuário inválido', ''),
-(48012, 'pt_BR:permission.adminMemberAccess.enableLogin', 'Permitir automaticamente o acesso de membros desativados (por tentativas de senha)', ''),
-(48013, 'pt_BR:group.loginPageName', 'Nome na página de login', ''),
-(48014, 'pt_BR:fieldMapping.field.NEGATE_AMOUNT', 'Indicador de valor negativo', ''),
-(48015, 'pt_BR:home.admin.status.title', 'Estado do sistema', ''),
-(48016, 'pt_BR:permission.systemExternalAccounts.process', 'Processar Pagamentos', ''),
-(48017, 'pt_BR:fileMapping.numberFormat.FIXED_POSITION', 'Posição fixa', ''),
-(48018, 'pt_BR:login.form.text', 'Se você é um usuário cadastrado, pode acessar o sistema com seu nome de usuário e senha.', ''),
-(48019, 'pt_BR:sms.type.INFO_TEXT', 'Mensagem informativa', ''),
-(48020, 'pt_BR:card.changeCardCode.confirmation', 'Alterar senha do cartão?', ''),
-(48021, 'pt_BR:posweb.client.name', 'Nome do cliente', ''),
-(48022, 'pt_BR:profile.operator.title.of', 'Perfil de {0}', ''),
-(48023, 'pt_BR:permission.memberCards.block', 'Bloquear', ''),
-(48024, 'pt_BR:reports.stats.finances.ComparePeriods.expenditure', 'Saída', ''),
-(48025, 'pt_BR:reports.stats.paymentFilters.maxItemsExceded', 'Muitos filtros de pagamentos selecionados.\nO número máximo é {0}', ''),
-(48026, 'pt_BR:loanGroup.title.addMember', 'Adicionar {0} ao grupo de empréstimos', ''),
-(48027, 'pt_BR:loan.type.MULTI_PAYMENT', 'Pagamentos múltiplos', ''),
-(48028, 'pt_BR:permission.adminMemberRecords.delete', 'Apagar', ''),
-(48029, 'pt_BR:groupFilter.customizedFiles.title.new', 'Personalizar novo arquivo para {0}', ''),
-(48030, 'pt_BR:payment.title.systemMemberToMember', 'Pagamento do membro {0} para outro membro', ''),
-(48031, 'pt_BR:notificationPreferences.freeSmsUsed', 'Você utilizou {0} de {1} mensagens SMS gratuitas este mês', ''),
-(48032, 'pt_BR:accountHistory.debits.count', 'Nº de débitos', ''),
-(48033, 'pt_BR:settings.access.allowOperatorLogin', 'Permitir acesso de operadores', ''),
-(48034, 'pt_BR:customizedFile.title.preview', 'Pré-visualização de {0}', ''),
-(48035, 'pt_BR:card.expirationDate', 'Data de expiração', ''),
-(48036, 'pt_BR:transfer.firstPaymentDate', 'Data da 1ª parcela', ''),
-(48037, 'pt_BR:group.settings.externalAdPublication.ENABLED', 'Habilidata', ''),
-(48038, 'pt_BR:reference.paymentDatails', 'Detalhes do pagamento', ''),
-(48039, 'pt_BR:groupFilter.customizedFiles.removeConfirmation', 'Deixar de customizar esse arquivo?', ''),
-(48040, 'pt_BR:adInterest.inserted', 'Interesse em anúncios inserido', ''),
-(48041, 'pt_BR:customField.size.MEDIUM', 'Médio', ''),
-(48042, 'pt_BR:errors.greaterEquals', '{0} deve ser maior ou igual a {1}', ''),
-(48043, 'pt_BR:groupFilter.title.list', 'Filtros de grupos', ''),
-(48044, 'pt_BR:profile.operator.title.my', 'Meu perfil', ''),
-(48045, 'pt_BR:menu.operator.personal.changePassword', 'Alterar Senha', ''),
-(48046, 'pt_BR:permission.adminMemberInvoices.denyAsMember', 'Rejeitar fatura eletrônica como membro', ''),
-(48047, 'pt_BR:guarantee.listGuaranteeTypes', 'Tipos de garantia', ''),
-(48048, 'pt_BR:group.nature.OPERATOR', 'Operador', ''),
-(48049, 'pt_BR:authorizationLevel.authorizer.level', 'Nível', ''),
-(48050, 'pt_BR:selectChannels.title.of', 'Mudar acesso de {0} aos canais', ''),
-(48051, 'pt_BR:editCard.error.transactionPasswordPending', 'Para editar seu cartão, é necessária a senha de transação, que pode ser gerada na <a class="default" href="{0}">página inicial</a>', ''),
-(48052, 'pt_BR:certification.status.EXPIRED', 'Vencida', ''),
-(48053, 'pt_BR:paymentObligationLog.status', 'Estado', ''),
-(48054, 'pt_BR:customField.member.memberSearchAccess', 'Busca por membros', ''),
-(48055, 'pt_BR:brokerCommissionContract.action.cancel', 'Cancelar', ''),
-(48056, 'pt_BR:settings.error.importing', 'Erro ao importar o arquivo de configuração', ''),
-(48057, 'pt_BR:menu.member.personal.brokerCommissionContracts', 'Contratos de comissão', ''),
-(48058, 'pt_BR:profile.action.title', 'Ações para {0}', ''),
-(48059, 'pt_BR:card.updateCard.error.invalidTransactionPassword', 'Senha de transação incorreta', ''),
-(48060, 'pt_BR:permission.adminMemberAds.manage', 'Gerenciar', ''),
-(48061, 'pt_BR:global.month.MAY', 'Maio', ''),
-(48062, 'pt_BR:accountHistory.title.print', 'Transações de {0}', ''),
-(48063, 'pt_BR:selectChannels.title.my', 'Mudar o meu acesso aos canais', ''),
-(48064, 'pt_BR:adCategory.title.insert', 'Nova categoria de anúncio', ''),
-(48065, 'pt_BR:memberRecordType.name', 'Nome', ''),
-(48066, 'pt_BR:permission.brokerMemberAccess', 'Acesso', ''),
-(48067, 'pt_BR:theme.style.MOBILE', 'Dispositivo móvel', ''),
-(48068, 'pt_BR:reference.adminComments', 'Comentários da administração', ''),
-(48069, 'pt_BR:permission.operatorMessages.manage', 'Gerenciar', ''),
-(48070, 'pt_BR:login.accessUsing', 'Acessar usando {0}', ''),
-(48071, 'pt_BR:externalTransfer.status.PENDING', 'Pendente', ''),
-(48072, 'pt_BR:transactionPassword.error.generating', 'Ocorreu um erro durante a geração da senha de transação.\nPor favor, tente novamente mais tarde.', ''),
-(48073, 'pt_BR:settings.message.messageMailSubjectPrefix', 'Prefixo para o assunto', ''),
-(48074, 'pt_BR:reports.stats.taxes.numberOfMembers', 'Por número de membros', ''),
-(48075, 'pt_BR:reports.stats.keydevelopments.transactionAmount.highest', 'Mais alta', ''),
-(48076, 'pt_BR:menu.admin.usersGroups.loanGroups', 'Grupos de empréstimo', ''),
-(48077, 'pt_BR:global.search.all.male', 'Todos', ''),
-(48078, 'pt_BR:brokerCommissionContract.error.notPendingStatus', 'Só é possível salvar contratos pendentes', ''),
-(48079, 'pt_BR:menu.admin.bookkeeping.overview', 'Contas externas', ''),
-(48080, 'pt_BR:invoice.invalid.paymentDates', 'As datas das parcelas devem estar ordenadas e devem ser em datas futuras', ''),
-(48081, 'pt_BR:message.type.FROM_ADMIN_TO_MEMBER', 'Mensagens da administração', ''),
-(48082, 'pt_BR:group.account.error.removing', 'A conta não pôde ser removida do grupo, porque ela tem pelo menos uma transação ou fatura eletrônica em aberto', ''),
-(48083, 'pt_BR:menu.operator.guarantees', 'Garantias', ''),
-(48084, 'pt_BR:transactionFee.deductAmount', 'Dedução', ''),
-(48085, 'pt_BR:invoice.payments', 'Parcelas', ''),
-(48086, 'pt_BR:reference.level.NEUTRAL', 'Neutro', ''),
-(48087, 'pt_BR:help.title.transaction_feedback', 'Qualificação de transações', ''),
-(48088, 'pt_BR:ad.removed', 'Anúncio removido', ''),
-(48089, 'pt_BR:sms.type.PAYMENT_ERROR.description', 'Erro no pagamento direto', ''),
-(48090, 'pt_BR:profile.action.brokeringActions', 'Corretagem', ''),
-(48091, 'pt_BR:alert.member.receivedVeryBadRefs', 'O membro recebeu {0} referências "Péssimo"', ''),
-(48092, 'pt_BR:infoText.validity', 'Validade', ''),
-(48093, 'pt_BR:adCategory.name', 'Nome', ''),
-(48094, 'pt_BR:scheduledPayment.totalAmount', 'Valor total', ''),
-(48095, 'pt_BR:reports.stats.activity.singlePeriod.numberTransactions.row2', 'Número de transações sobre todos os membros', ''),
-(48096, 'pt_BR:reports.simulations.aRateConfigSimulation.startA', 'Iniciar a partir de A =', ''),
-(48097, 'pt_BR:menu.admin.customFields.adFields', 'Anúncio', ''),
-(48098, 'pt_BR:reports.stats.activity.singlePeriod.numberTransactions.row1', 'Número de transações por membro que transaciona', ''),
-(48099, 'pt_BR:permission.adminMembers.register', 'Cadastrar', ''),
-(48100, 'pt_BR:permission.brokerMemberSms', 'Registros de SMS', ''),
-(48101, 'pt_BR:permission.operatorAccount.accountInformation', 'Ver informações de conta', ''),
-(48102, 'pt_BR:theme.select.confirmationMessage', 'Você está a ponto de selecionar um tema.\nIsto pode substituir customizações em arquivos de estilo e / ou imagens.\nVocê deseja continuar?', ''),
-(48103, 'pt_BR:settings.log.transactionLevel.DETAILED', 'Detalhado', ''),
-(48104, 'pt_BR:mobile.error.inactiveUser', 'Você ainda não foi ativado, contate a administração', ''),
-(48105, 'pt_BR:serviceOperation.INFO_TEXTS', 'Obter mensagens infomativas', ''),
-(48106, 'pt_BR:permission.adminMemberSms', 'Registros de SMS', ''),
-(48107, 'pt_BR:document.visibility', 'Visibilidade', ''),
-(48108, 'pt_BR:fileMapping.dateFormat', 'Formato da data', ''),
-(48109, 'pt_BR:global.max', 'Máx.', ''),
-(48110, 'pt_BR:transactionPassword.action.reset', 'Limpar senha de transação', ''),
-(48111, 'pt_BR:pos.updated', 'O POS foi atualizado', ''),
-(48112, 'pt_BR:permission.adminMemberPayments.payment', 'Pagamento de sistema para membros', ''),
-(48113, 'pt_BR:transferType.reserveTotalAmountOnScheduling', 'Reservar valor total em pagamentos agendados', ''),
-(48114, 'pt_BR:menu.member.broker', 'Corretagem', ''),
-(48115, 'pt_BR:permission.systemExternalAccounts.managePayment', 'Gerenciar pagamentos', ''),
-(48116, 'pt_BR:reports.transactions_report.amount', 'Valor total', ''),
-(48117, 'pt_BR:menu.admin.personal.profile', 'Perfil', ''),
-(48118, 'pt_BR:serviceClient.title.list', 'Clientes de serviços web', ''),
-(48119, 'pt_BR:memberPos.name', 'Nome POS', ''),
-(48120, 'pt_BR:adCategory.title.export', 'Exportar categorias de anúncio', ''),
-(48121, 'pt_BR:member.groupFilters', 'Comunidades', ''),
-(48122, 'pt_BR:reports.members.accounts', 'Contas', ''),
-(48123, 'pt_BR:settings.message.modified', 'As configurações de mensagem foram modificadas', ''),
-(48124, 'pt_BR:reports.members_reports.member_groups', 'Grupos de membros', ''),
-(48125, 'pt_BR:global.timePeriod.invalid', 'Data final deve ser após a data inicial.', ''),
-(48126, 'pt_BR:settings.local.maxThumbnailHeight', '', ''),
-(48127, 'pt_BR:fieldMapping.field.IGNORED', 'Ignorar', ''),
-(48128, 'pt_BR:global.quarter.SECOND', 'Segundo trimestre', ''),
-(48129, 'pt_BR:menu.admin.alerts.errorLog', 'Erros de aplicação', ''),
-(48130, 'pt_BR:menu.admin.settings.alert', 'Config. de alertas', ''),
-(48131, 'pt_BR:permission.operatorReferences.manageMemberTransactionFeedbacks', 'Gerenciar minhas qualificações de transação', ''),
-(48132, 'pt_BR:accountFee.invoiceMode.NOT_ENOUGH_CREDITS', 'Apenas quando o membro não possui créditos suficientes', ''),
-(48133, 'pt_BR:settings.message.adminPendingGuarantee', 'Garantia pendente de autorização do administrador', ''),
-(48134, 'pt_BR:alert.system.ADMIN_LOGIN_BLOCKED_BY_TRIES', 'Máximo de tentativas de login de administrador', ''),
-(48135, 'pt_BR:groupFilter.removeConfirmation', 'Remover filtro de grupos?', ''),
-(48136, 'pt_BR:translationMessage.import.file', 'Arquivo de propriedades', ''),
-(48137, 'pt_BR:paymentObligation.error.certificationValidityExceeded', 'Algumas das obrigações de pagamento selecionadas possuem data de vencimento posterior à validade da certificação ({0} - {1}).', ''),
-(48138, 'pt_BR:menu.member.broker.smsMailings', 'SMS de difusão', ''),
-(48139, 'pt_BR:group.defaultAllowChargingSms', 'Permitir cobrar por mensagens por padrão', ''),
-(48140, 'pt_BR:mobile.payment.username', 'Usuário', ''),
-(48141, 'pt_BR:permission.brokerMemberAccess.resetPassword', 'Reiniciar senha', ''),
-(48142, 'pt_BR:paymentFilter.removeConfirmation', 'Remover o filtro de pagamentos', ''),
-(48143, 'pt_BR:group.registrationAgreement.none', 'Não utilizado', ''),
-(48144, 'pt_BR:permission.adminMemberSmsMailings.paidSmsMailings', 'Enviar mensagens pagas', ''),
-(48145, 'pt_BR:translationMessage.import.confirmation', 'Você tem certeza de que deseja importar as chaves do arquivo selecionado?', ''),
-(48146, 'pt_BR:image.details.error', 'Os detalhes da imagem não puderam ser salvos', ''),
-(48147, 'pt_BR:transactionPassword.error.blockedByTrials', 'Agora a sua senha de transação está bloqueada.\nPor favor, contate a administração', ''),
-(48148, 'pt_BR:changeGroup.title.history', 'Histórico', ''),
-(48149, 'pt_BR:reports.stats.activity.throughTime.loginTimes', 'Acessos por membro', ''),
-(48150, 'pt_BR:group.title.settings.externalAccess', 'Configurações de acesso externo', ''),
-(48151, 'pt_BR:memberImport.status.INVALID_CREATION_DATE', 'A data de criação é inválida: {0}', ''),
-(48152, 'pt_BR:settings.log.traceLevel.OFF', 'Desligado', ''),
-(48153, 'pt_BR:reports.stats.activity.comparePeriods.loginTimes', 'Acessos por membro', ''),
-(48154, 'pt_BR:activities.brokering', 'Corretagem', ''),
-(48155, 'pt_BR:brokerCommission.action.stop', 'Interromper', ''),
-(48156, 'pt_BR:memberRecord.title.search.global', 'Busca de {0}', ''),
-(48157, 'pt_BR:brokerCommission.chargeStatus.noComissions', 'Não há comissões aplicáveis ao membro', ''),
-(48158, 'pt_BR:serviceOperation.MEMBERS', 'Busca de membros', ''),
-(48159, 'pt_BR:scheduledPayments.title.print', 'Pagamentos agendados', ''),
-(48160, 'pt_BR:accountHistory.conciliation.notConciliated', 'Não conciliado', ''),
-(48161, 'pt_BR:permission.adminMemberDocuments.details', 'Ver documentos', ''),
-(48162, 'pt_BR:message.category.noCategory', 'Nenhuma categoria', ''),
-(48163, 'pt_BR:permission.operatorGuarantees.buyWithPaymentObligations', 'Comprar com obrigações de pagamento', ''),
-(48164, 'pt_BR:pos.title.search', 'Busca de POS', ''),
-(48165, 'pt_BR:permission.adminMembers.changeEmail', 'Alterar o e-mail', ''),
-(48166, 'pt_BR:transferType.name', 'Nome', ''),
-(48167, 'pt_BR:reports.stats.keydevelopments.numberOfAds.title', 'Avanços no número de anúncios', ''),
-(48168, 'pt_BR:permission.adminMemberPos.discard', 'Descartar', ''),
-(48169, 'pt_BR:certificationLog.by', 'Alterado por', ''),
-(48170, 'pt_BR:permission.adminAdminAccess', 'Acesso', ''),
-(48171, 'pt_BR:global.month.DECEMBER', 'Dezembro', ''),
-(48172, 'pt_BR:menu.admin.contentManagement.translation', 'Tradução do sistema', ''),
-(48173, 'pt_BR:sms.type.HELP_ERROR', 'Erro na ajuda', ''),
-(48174, 'pt_BR:reference.summary.positivePercentage', '% Positivo', ''),
-(48175, 'pt_BR:customField.removeConfirmation', 'Remover esse campo customizado?', ''),
-(48176, 'pt_BR:payment.confirmation.transactionPassword', 'Para confirmar este pagamento, você deve fornecer sua senha de transação', ''),
-(48177, 'pt_BR:remark.writer.administration', 'Administração', ''),
-(48178, 'pt_BR:accountFee.runMode.SCHEDULED', 'Agendado', ''),
-(48179, 'pt_BR:permission.memberAccount', 'Conta', ''),
-(48180, 'pt_BR:permission.systemReports.current', 'Estado atual', ''),
-(48181, 'pt_BR:menu.admin.settings.serviceClients', 'Clientes de serviços', ''),
-(48182, 'pt_BR:brokerCommission.error.removing', 'A comissão de corretor não pôde ser removida porque ela já foi cobrada ou já foi customizada por um corretor', ''),
-(48183, 'pt_BR:cardType.cardSecurityCodeLength.min', 'Tamanho mínimo do código de segurança', ''),
-(48184, 'pt_BR:rates.error.notOnlineWhileRateInitsPending', 'O sistema não pode ser definido como disponivel enquanto uma moeda ainda possuir uma tarefa de inicialização de indice pendente.\nObserver os alertas de sistema para ver quando a tarefa estiver concluida.', ''),
-(48185, 'pt_BR:scheduledPayments.searchType.OUTGOING', 'Saída', ''),
-(48186, 'pt_BR:guaranteeType.expireTodayMessage', '0 vencimento no mesmo dia', ''),
-(48187, 'pt_BR:permission.memberReferences', 'Referências', ''),
-(48188, 'pt_BR:reference.summary.total', 'Total', ''),
-(48189, 'pt_BR:remark.comments', 'Comentários', ''),
-(48190, 'pt_BR:permission.systemMemberRecordTypes', 'Tipos de registro de membro', ''),
-(48191, 'pt_BR:ad.error.maxPublicationTimeExceeded', 'O tempo máximo de publicação foi excedido', ''),
-(48192, 'pt_BR:admin.username', 'Nome de usuário', ''),
-(48193, 'pt_BR:settings.local.csv.valueSeparator.SEMICOLON', 'Ponto-e-vírgula', ''),
-(48194, 'pt_BR:customField.name', 'Nome', ''),
-(48195, 'pt_BR:reference.direction.general.RECEIVED', 'Referências recebidas', ''),
-(48196, 'pt_BR:permission.memberMessages.sendToAdministration', 'Enviar para a administração', ''),
-(48197, 'pt_BR:permission.brokerPreferences.manageNotifications', 'Administrar notificações', ''),
-(48198, 'pt_BR:createAdmin.title', 'Cadastrar novo administrador', ''),
-(48199, 'pt_BR:card.action.block', 'Bloquear', ''),
-(48200, 'pt_BR:invoice.sent', 'A fatura eletrônica foi enviada', ''),
-(48201, 'pt_BR:reports.stats.keydevelopments.throughTime.years', 'Ao longo dos anos', ''),
-(48202, 'pt_BR:reports.stats.general.singlePeriod', 'Um período', ''),
-(48203, 'pt_BR:posweb.action.printSettings', 'Preferências de impressão', ''),
-(48204, 'pt_BR:payment.title.asMemberToSelf', 'Transferência entre contas de {0}', ''),
-(48205, 'pt_BR:permission.memberSms.view', 'Ver', ''),
-(48206, 'pt_BR:permission.systemErrorLog', 'Erros de aplicação', ''),
-(48207, 'pt_BR:memberImport.status.INVALID_RECORD_TYPE_FIELD', 'O campo do tipo de registro {0} é inválido: {1}', ''),
-(48208, 'pt_BR:group.title.settings.notifications', 'Configurações de notificação', ''),
-(48209, 'pt_BR:permission.module.type.ADMIN_SYSTEM', 'Permissões de administração de sistema de {0}', ''),
-(48210, 'pt_BR:document.visibility.BROKER', 'Corretor', ''),
-(48211, 'pt_BR:transactionFee.whichBroker.SOURCE', 'Corretor do membro que está pagando', ''),
-(48212, 'pt_BR:customField.valuesMoved', 'Um total de {0} ocorrências foram substituídas de {1} para {2}', ''),
-(48213, 'pt_BR:guarantee.issuerUsername', 'Usuário do emissor', ''),
-(48214, 'pt_BR:help.title.connected_users', 'Usuários conectados', ''),
-(48215, 'pt_BR:permission.adminMemberMessages.sendToMember', 'Enviar para membro', ''),
-(48216, 'pt_BR:conversionSimulation.result.input.arate', 'ìndice-A aplicado', ''),
-(48217, 'pt_BR:menu.admin.contentManagement.documents', 'Documentos', ''),
-(48218, 'pt_BR:help.title.quickstart', 'Início rápido', ''),
-(48219, 'pt_BR:infotext.subject', 'Texto', ''),
-(48220, 'pt_BR:alert.system.negativeVirtualRatedBalance', 'Um balanço negativo virtual de indices foi encontrado na conta de sistema {0}.\nO balanço de indices virtuais foi definido para 0, mas a causa para este erro deve ser verificada.', ''),
-(48221, 'pt_BR:transfer.submitDate', 'Submetido em', ''),
-(48222, 'pt_BR:pos.title.modify', 'Modify POS', ''),
-(48223, 'pt_BR:paymentObligation.selectPaymentObligations', 'Selecionar obrigações de pagamento', ''),
-(48224, 'pt_BR:reports.print.limitation', 'O relatório esta sendo limitado em {0} linhas.', ''),
-(48225, 'pt_BR:global.amount.type.PERCENTAGE', 'Porcentagem', ''),
-(48226, 'pt_BR:permission.brokerMemberPayments.cancelAuthorizedAsMember', 'Cancelar pagamento autorizado como membro', ''),
-(48227, 'pt_BR:customImage.system.help', 'Ícone de ajuda', ''),
-(48228, 'pt_BR:loanPayment.summary.receivedPayments', 'Parcelas recebidos', ''),
-(48229, 'pt_BR:loan.awaitingAuthorization', 'O empréstimo foi submetido para posterior autorização', ''),
-(48230, 'pt_BR:reports.stats.activity.singlePeriod.percentageNoTrade', 'Percentual de membros que não transacionam', ''),
-(48231, 'pt_BR:permission.systemGroups', 'Grupos de permissão', ''),
-(48232, 'pt_BR:guaranteeType.paymentObligationPeriod.tooltip', 'Representa o período máximo de tempo entre a obrigação de pagamento mais recente e a mais antiga', ''),
-(48233, 'pt_BR:customField.payment.type.LINKED', 'Relacionado de {0}', ''),
-(48234, 'pt_BR:smsLog.smsType', 'Razão', ''),
-(48235, 'pt_BR:memberImport.status', 'Estado', ''),
-(48236, 'pt_BR:permission.operatorGuarantees.issueCertifications', 'Emitir certificações', ''),
-(48237, 'pt_BR:accountFeeLog.status.PROCESSED', 'Processado', ''),
-(48238, 'pt_BR:customField.member.access.WEB_SERVICE', 'Web services', ''),
-(48239, 'pt_BR:paymentObligation.error.changeStatus', 'Não foi possível alterar o estado da obrigação de pagamento para: {0}', ''),
-(48240, 'pt_BR:permission.operatorPayments', 'Pagamentos', ''),
-(48241, 'pt_BR:changePassword.error.obvious', 'A senha é muito simples. Ela não pode ser sequencial ou igual a qualquer campo do perfil', ''),
-(48242, 'pt_BR:alert.system.NEW_VERSION_OF_STATIC_FILE', 'Nova versão de arquivo estático', ''),
-(48243, 'pt_BR:changePassword.error.mustIncludeLettersNumbers', 'A senha deve conter letras e números', ''),
-(48244, 'pt_BR:account.initialCredit', 'Crédito inicial', ''),
-(48245, 'pt_BR:transferType.removeConfirmation', 'Remover esse tipo de transação?', ''),
-(48246, 'pt_BR:payment.title.sucessfulPayment', 'Pagamento bem sucedido', ''),
-(48247, 'pt_BR:memberRecord.removeConfirmation', 'Remover este registro de {0}?', ''),
-(48248, 'pt_BR:mailPreferences.newPendingPayments', 'Novo pagamento aguardando autorização', ''),
-(48249, 'pt_BR:createMember.public.awaitingActivation', 'Obrigado por cadastrar-se!\n\nSua conta foi criada e precisa\nser ativada pela administração', ''),
-(48250, 'pt_BR:permission.memberAccount.simulateConversion', 'Simular conversão', ''),
-(48251, 'pt_BR:cardType.maxSecurityCodeTries', 'No. máx. de tentativas do código de segurança', ''),
-(48252, 'pt_BR:permission.adminMemberInvoices.cancel', 'Cancelar fatura eletrônica', ''),
-(48253, 'pt_BR:transfer.amount', 'Valor', ''),
-(48254, 'pt_BR:global.quarter.THIRD', 'Terceiro trimestre', ''),
-(48255, 'pt_BR:pos.action.unassign', 'Desatribuir', ''),
-(48256, 'pt_BR:transactionPassword.MANUAL', 'Manualmente', ''),
-(48257, 'pt_BR:global.send', 'Enviar', ''),
-(48258, 'pt_BR:adInterest.modified', 'Interesse em anúncios modificado', ''),
-(48259, 'pt_BR:loan.amount', 'Valor', ''),
-(48260, 'pt_BR:customField.member.memberCanHide', 'O membro pode ocultar', ''),
-(48261, 'pt_BR:permission.brokerCards.activate', 'Ativar', ''),
-(48262, 'pt_BR:currency.removeConfirmation', 'Você está prestes a remover esta moeda.\nVocê tem certeza?', ''),
-(48263, 'pt_BR:brokerCommissionContract.denyConfirmation', 'Negar este contrato de comissão de corretor?', ''),
-(48264, 'pt_BR:certification.removeConfirmation', 'Você tem certeza que deseja excluir esta certificação?', ''),
-(48265, 'pt_BR:ad.price', 'Preço', ''),
-(48266, 'pt_BR:permission.systemTranslation', 'Tradução', ''),
-(48267, 'pt_BR:notificationPreferences.smsHeading', 'Mensagens SMS', ''),
-(48268, 'pt_BR:alert.system.APPLICATION_SHUTDOWN', 'Aplicação finalizada', ''),
-(48269, 'pt_BR:settings.message.smsMessagePrefix', 'Prefixo das mensagens SMS', ''),
-(48270, 'pt_BR:reports.stats.general.graph.selectAll', 'Selecionar todos os gráficos', ''),
-(48271, 'pt_BR:loanPayment.title', 'Pagamentos', ''),
-(48272, 'pt_BR:reports.stats.activity.topten.login.col1', 'Acessos', ''),
-(48273, 'pt_BR:cardType.cardSecurityCodeLength.max', 'Tamanho máxido do código de segurança', ''),
-(48274, 'pt_BR:alert.member.nullIRate', 'Indice-I possui valor nulo inesperado para a conta {1}. Você pode querer reinicializar o índice-I', ''),
-(48275, 'pt_BR:infotext.body', 'Descrição', ''),
-(48276, 'pt_BR:reference.from', 'De', ''),
-(48277, 'pt_BR:permission.memberLoans.repay', 'Pagar', ''),
-(48278, 'pt_BR:reports.stats.activity.topten.numberTransactions', 'Número de transações', ''),
-(48279, 'pt_BR:reports.stats.period.name', 'Nome', ''),
-(48280, 'pt_BR:smsMailing.sendType.member', 'Para membro', ''),
-(48281, 'pt_BR:translationMessage.removeOne.confirm', 'Você tem certeza de que deseja remover essa chave de tradução?', ''),
-(48282, 'pt_BR:fileMapping.resetConfirmation', 'Reiniciar mapeamento de arquivo?', ''),
-(48283, 'pt_BR:admin.creationDate', 'Data de criação', ''),
-(48284, 'pt_BR:group.settings.defaultAdPublicationTime.field', 'Tempo de publicação padrão do anúncio (unid.)', ''),
-(48285, 'pt_BR:permission.operatorInvoices.manage', 'Gerenciar', ''),
-(48286, 'pt_BR:group.settings.hideCurrencyOnPayments', 'Ocultar moeda (mostrar somente os tipos de pagamento)', ''),
-(48287, 'pt_BR:brokerCommissionContract.status.PENDING', 'Pendente', ''),
-(48288, 'pt_BR:authorizationLevel.authorizer.RECEIVER', 'Vendedor', ''),
-(48289, 'pt_BR:loan.queryStatus.RECOVERED', 'Recuperado', ''),
-(48290, 'pt_BR:paymentObligation.sellerUsername', 'Usuário do comprador', ''),
-(48291, 'pt_BR:permission.systemAdminPermissions.view', 'Ver', ''),
-(48292, 'pt_BR:customField.moveValue.confirmation', 'Você está prestes a substituir as ocorrências de {0} por {1}.\n\nPor favor, clique em OK para confirmar', ''),
-(48293, 'pt_BR:login.redirectFromMessage', 'Para continuar, por favor faça um novo login.', ''),
-(48294, 'pt_BR:currency.dRate.creationValue', 'Índice-D na criação da unidade', ''),
-(48295, 'pt_BR:adInterest.removeSelected.confirm', 'Remover interesse em anúncios selecionados?', ''),
-(48296, 'pt_BR:permission.adminMemberGuarantees', 'Garantias', ''),
-(48297, 'pt_BR:paymentObligation.pack.details.title', 'Detalhes', ''),
-(48298, 'pt_BR:paymentFilter.selectPaymentFilters', 'Selecione os filtros de pagamento', ''),
-(48299, 'pt_BR:operator.noGroup', 'Para poder criar um operador, você deve primeiro criar ao menos um grupo de operadores', ''),
-(48300, 'pt_BR:global.reset', 'Reiniciar', ''),
-(48301, 'pt_BR:global.loadingSystem', 'Carregando a aplicação. Por favor, aguarde...', ''),
-(48302, 'pt_BR:customizedFile.customized', 'O arquivo foi customizado', ''),
-(48303, 'pt_BR:permission.systemPayments.chargeback', 'Estornar pagamento para o sistema', ''),
-(48304, 'pt_BR:transactionFee.error.samePayerAndReceiver', 'Pagador e recebedor não podem ser iguais', ''),
-(48305, 'pt_BR:groupFilter.viewableBy', 'Visualizável por', ''),
-(48306, 'pt_BR:activities.references.given', 'Dada', ''),
-(48307, 'pt_BR:permission.adminMemberLoanGroups.view', 'Ver', ''),
-(48308, 'pt_BR:reports.stats.activity.topten.andMore', '(... e mais {0} membros com os mesmos pontos...)', ''),
-(48309, 'pt_BR:reference.direction.transactionFeedback.GIVEN', 'Qualificações dadas', ''),
-(48310, 'pt_BR:reports.simulations.aRate.config.graph.yAxis', 'Taxa', ''),
-(48311, 'pt_BR:authorizationLevel.modified', 'Nível de autorização modificado', ''),
-(48312, 'pt_BR:settings.message.body', 'Corpo', ''),
-(48313, 'pt_BR:guarantee.status', 'Estado', ''),
-(48314, 'pt_BR:reports.stats.activity.topten.numberTransactions.col1', 'Número de transações', ''),
-(48315, 'pt_BR:brokerCommissionContract.title.insert', 'Inserir contrato de comisão de corretor', ''),
-(48316, 'pt_BR:reports.members.references', 'Referências', ''),
-(48317, 'pt_BR:permission.adminMemberRecords.modify', 'Modificar', ''),
-(48318, 'pt_BR:permission.brokerPos.block', 'Bloquear', ''),
-(48319, 'pt_BR:brokering.title.details', 'Notas do membro', ''),
-(48320, 'pt_BR:settings.alert.idleInvoiceExpiration', 'Vencimento da fatura eletrônica', ''),
-(48321, 'pt_BR:invoice.title.send.member', 'Enviar fatura eletrônica para membro', ''),
-(48322, 'pt_BR:menu.operator.member.messages', 'Mensagens', ''),
-(48323, 'pt_BR:menu.operator.account.transfersAuthorizations', 'Busca de autorizações', ''),
-(48324, 'pt_BR:permission.systemReports.simulations', 'Simulações', ''),
-(48325, 'pt_BR:customField.ad.searchVisibility', 'Visibilidade na busca', ''),
-(48326, 'pt_BR:conversionSimulation.result.graph', 'Valor da taxa vs tempo', ''),
-(48327, 'pt_BR:profile.action.allowLogin', 'Permitir acesso do usuário agora', ''),
-(48328, 'pt_BR:changeGroup.operator.title', 'Alterar grupo do operador {0}', ''),
-(48329, 'pt_BR:brokerCommissionContract.title.listByBroker', 'Contratos de comissão com {0}', ''),
-(48330, 'pt_BR:menu.admin.guarantees.searchPaymentObligations', 'Obrigações de pagamento', ''),
-(48331, 'pt_BR:notificationPreferences.disableSms', 'Desativar SMS', ''),
-(48332, 'pt_BR:payment.error.authorizedInPast', 'Não é possível realizar um pagamento autorizado no passado', ''),
-(48333, 'pt_BR:settings.message.paymentObligationRejected', 'Obrigação de pagamento negada', ''),
-(48334, 'pt_BR:settings.local.chargebackDescription', 'Descrição do pagamento de estorno', ''),
-(48335, 'pt_BR:paymentObligation.status.EXPIRED', 'Vencida', ''),
-(48336, 'pt_BR:settings.message.messageMailSuffixPlain', 'Sufixo para o corpo de e-mails somente texto', ''),
-(48337, 'pt_BR:guaranteeType.updated', 'O tipo de garantia foi modificado com sucesso', ''),
-(48338, 'pt_BR:customizedFile.title.search.page', 'Páginas do aplicativo customizadas', ''),
-(48339, 'pt_BR:profile.action.viewBrokerings', 'Lista de membros (como corretor)', ''),
-(48340, 'pt_BR:reports.stats.keydevelopments.numberOfAds.scheduled.short', 'Agendado', ''),
-(48341, 'pt_BR:ticket.status.OK', 'Sucesso', ''),
-(48342, 'pt_BR:settings.mail.fromMail', 'Endereço de origem', ''),
-(48343, 'pt_BR:settings.local.indexRebuildingPeriod', 'Reconstruir índices de busca a cada', ''),
-(48344, 'pt_BR:externalAccount.description', 'Descrição', ''),
-(48345, 'pt_BR:accountFeeLog.count', 'Número', ''),
-(48346, 'pt_BR:transactionFee.whichBroker', 'Quem irá receber', ''),
-(48347, 'pt_BR:settings.mail.activationMessageWithoutPassword', 'Mensagem quando a senha é atribuída manualmente', ''),
-(48348, 'pt_BR:posweb.client.transactionPassword', 'Senha de transação', ''),
-(48349, 'pt_BR:accountType.title.list', 'Contas', ''),
-(48350, 'pt_BR:profile.admin.title.of', 'Perfil de administrador de {0}', ''),
-(48351, 'pt_BR:accountFee.invoiceMode', 'Enviar fatura eletrônica', ''),
-(48352, 'pt_BR:permission.adminMemberAccess.unblockPin', 'Desbloquear senha externa (PIN)', ''),
-(48353, 'pt_BR:reports.members.accounts.credits', 'Limite de crédito inferior das contas', ''),
-(48354, 'pt_BR:permission.systemCardTypes', 'Tipos de Cartão', ''),
-(48355, 'pt_BR:transfer.scheduling.SINGLE_FUTURE', 'Agendado para uma data futura', ''),
-(48356, 'pt_BR:settings.message.commissionContractAccepted', 'Contrato de comissão aceito', ''),
-(48357, 'pt_BR:fieldMapping.modified', 'Mapeamento de campo modificado', ''),
-(48358, 'pt_BR:menu.member.account.memberInvoice', 'Fatura para membro', ''),
-(48359, 'pt_BR:login.error', 'Acesso inválido. Por favor, tente novamente', ''),
-(48360, 'pt_BR:menu.admin.accessDevices.cardType.manage', 'Gerenciar tipos de cartão', ''),
-(48361, 'pt_BR:permission.memberCards.changeCardSecurityCode', 'Alterar código', ''),
-(48362, 'pt_BR:reports.stats.taxes.relativeToGrossProduct', 'Relativas a produto bruto', ''),
-(48363, 'pt_BR:global.count', 'Quantidade', ''),
-(48364, 'pt_BR:transactionFee.toFixedMember.name', 'Nome de completo de destino', ''),
-(48365, 'pt_BR:profile.admin.title.my', 'Meu perfil de administrador', ''),
-(48366, 'pt_BR:global.yes', 'Sim', ''),
-(48367, 'pt_BR:contact.title.add', 'Adicionar novo contato', ''),
-(48368, 'pt_BR:brokerCommissionContract.status.DENIED', 'Negado', ''),
-(48369, 'pt_BR:guaranteeType.title.new', 'Novo tipo de garantia', ''),
-(48370, 'pt_BR:adImport.status.MISSING_OWNER', 'O membro está faltando', ''),
-(48371, 'pt_BR:customizedFile.contents', 'Conteúdo', ''),
-(48372, 'pt_BR:card.action.unblock', 'Desbloquear', ''),
-(48373, 'pt_BR:alert.member.NULL_IRATE', 'Valor nulo para indice-I inesperado foi encontrado', ''),
-(48374, 'pt_BR:permission.systemAccounts.scheduledInformation', 'Ver pagamentos agendados', ''),
-(48375, 'pt_BR:member.title.bulkActions.action', 'Ação', ''),
-(48376, 'pt_BR:defaultBrokerCommission.status.INACTIVE', 'Desativada', ''),
-(48377, 'pt_BR:externalTransferType.action', 'Ação', ''),
-(48378, 'pt_BR:permission.adminMemberBrokerings.changeBroker', 'Alterar corretor', ''),
-(48379, 'pt_BR:global.tooltip.help', 'Ajuda', ''),
-(48380, 'pt_BR:customImage.system.inactive', 'Ícone inativo', ''),
-(48381, 'pt_BR:mailPreferences.saved', 'As preferências de notificação por e-mail foram salvas', ''),
-(48382, 'pt_BR:message.rootType.ADMIN', 'Administração', ''),
-(48383, 'pt_BR:settings.message.lowUnits', 'Poucas unidades', ''),
-(48384, 'pt_BR:reports.stats.general.topten', 'Os dez maiores', ''),
-(48385, 'pt_BR:operator.lastLogin', 'Último acesso', ''),
-(48386, 'pt_BR:menu.admin.settings', 'Configurações', ''),
-(48387, 'pt_BR:customizedFile.removeConfirmation', 'Parar de customizar esse arquivo?', ''),
-(48388, 'pt_BR:customImage.system.checked', 'Pagamento externo conferido', ''),
-(48389, 'pt_BR:customField.memberRecord.brokerAccess.EDITABLE', 'Editável', ''),
-(48390, 'pt_BR:brokerCommission.error.stopping', 'Erro ao tentar interromper a comissão de corretor!', ''),
-(48391, 'pt_BR:reports.stats.choose.balances', 'Saldos', ''),
-(48392, 'pt_BR:reference.feedbackReply', 'Réplica do vendedor', ''),
-(48393, 'pt_BR:menu.member.guarantees.searchGuarantees', 'Garantias', ''),
-(48394, 'pt_BR:transferType.error.hasPendingPayments', 'Este tipo de pagamento não pode deixar de ser autorizado, pois existem pagamentos pendentes de autorização', ''),
-(48395, 'pt_BR:invoice.accept.header.withAuthorization', 'Você está prestes a aceitar uma fatura e submeter o seguinte pagamento para autorização:', ''),
-(48396, 'pt_BR:memberPos.allowMakePayment', 'Permitir fazer pagamento', ''),
-(48397, 'pt_BR:smsLog.type', 'Tipo', ''),
-(48398, 'pt_BR:brokering.title.removeMember', 'Remover membro', ''),
-(48399, 'pt_BR:customField.possibleValue.title.modify', 'Modificar valor', ''),
-(48400, 'pt_BR:transactionFee.chargeType.FIXED', 'Valor fixo', ''),
-(48401, 'pt_BR:invite.title', 'Convite', ''),
-(48402, 'pt_BR:errors.maxLength', '{0} não pode ser maior do que {1} caracteres', ''),
-(48403, 'pt_BR:group.title.modify.admin', 'Configurações de grupo de administradores', ''),
-(48404, 'pt_BR:externalTransfer.inserted', 'Tranferência externa inserida', ''),
-(48405, 'pt_BR:accountFee.runMode', 'Modo de execução', ''),
-(48406, 'pt_BR:accountFee.description', 'Descrição', ''),
-(48407, 'pt_BR:payment.invalid.schedulingDate', 'A data da parcela deve ser anterior a {0}', ''),
-(48408, 'pt_BR:accountFee.runMode.MANUAL', 'Manual', ''),
-(48409, 'pt_BR:payment.chargedBack', 'O pagamento foi estornado', ''),
-(48410, 'pt_BR:message.messageBox', 'Caixa de mensagens', ''),
-(48411, 'pt_BR:reports.stats.keydevelopments.numberOfAds', 'Número de anúncios', ''),
-(48412, 'pt_BR:contactUs.message', 'Nesta página, a administração pode colocar algum texto e endereço de correio eletrônico das pessoas de contato. Para isso, alterar a chave de tradução <i>contactUs.message</i>.', ''),
-(48413, 'pt_BR:receiptPrinterSettings.printerName', 'Nome da impressora local', ''),
-(48414, 'pt_BR:accountFee.nextExecution', 'Próxima execução', ''),
-(48415, 'pt_BR:createMember.error.registrationAgreementCheck', 'Para continuar, você deve concordar com o termo de adesão', ''),
-(48416, 'pt_BR:messageCategory.name', 'Nome', ''),
-(48417, 'pt_BR:errorLog.loggedUser', 'Usuário conectado', ''),
-(48418, 'pt_BR:payment.authorized', 'O pagamento foi autorizado', ''),
-(48419, 'pt_BR:settings.message.receivedInvoiceExpired', 'Fatura eletrônica recebida expirada', ''),
-(48420, 'pt_BR:settings.local.messageFormat', 'Formato das mensagens', ''),
-(48421, 'pt_BR:loan.grant.confirmation.group', 'Você está prestes a conceder um empréstimo de {0} para o grupo {1}, tendo {2} como responsável.{3}\n\nPor favor, clique em OK para prosseguir', ''),
-(48422, 'pt_BR:settings.local.precision', 'Precisão numérica', ''),
-(48423, 'pt_BR:invoice.title.accept', 'Confirmação de aceitação de fatura', ''),
-(48424, 'pt_BR:loan.repayment.error.partialInterestsAmount', 'Os juros relativos ao pagamento do empréstimo devem ser pagos conjuntamente.\nVocê pode pagar um valor parcial de até {0} ou o valor total restante de {1}', ''),
-(48425, 'pt_BR:groupFilter.title.insert', 'Inserir filtro de grupos', ''),
-(48426, 'pt_BR:menu.admin.reports.current', 'Estado geral', ''),
-(48427, 'pt_BR:permission.memberAccount.scheduledInformation', 'Ver pagamentos agendados', ''),
-(48428, 'pt_BR:reports.stats.activity.comparePeriods.percentageNoTrade', 'Percentual de membros que não transacionam', ''),
-(48429, 'pt_BR:menu.member.personal.profile', 'Perfil', ''),
-(48430, 'pt_BR:menu.member.personal.changePin', 'Alterar o PIN', ''),
-(48431, 'pt_BR:accountFeeLog.stillRunning', 'Ainda em execução...', ''),
-(48432, 'pt_BR:adCategory.action.export', 'Exportar todas as categorias para aquivo', ''),
-(48433, 'pt_BR:permission.memberLoans', 'Empréstimos', ''),
-(48434, 'pt_BR:reports.stats.taxes.volume', 'Volume', ''),
-(48435, 'pt_BR:reports.stats.choose.finances', 'Finanças', ''),
-(48436, 'pt_BR:permission.adminMemberInvoices.acceptAsMember', 'Aceitar fatura eletrônica como membro', ''),
-(48437, 'pt_BR:loan.confirmation.header.withAuthorization', 'Você está prestes a submeter este empréstimo para posterior autorização:', ''),
-(48438, 'pt_BR:settings.local.datePattern', 'Formato da data', ''),
-(48439, 'pt_BR:receiptPrinterSettings.title.modify', 'Modificar configuração de impressora de recibos', ''),
-(48440, 'pt_BR:permission.systemGuaranteeTypes', 'Tipos de garantias', ''),
-(48441, 'pt_BR:brokerCommissionContract.action.deny', 'Negar', ''),
-(48442, 'pt_BR:customField.payment.access.FROM_ACCOUNT', 'Somente na conta de origem', ''),
-(48443, 'pt_BR:posweb.action.searchTransactions', 'Transações', ''),
-(48444, 'pt_BR:permission.memberReports.showAccountInformation', 'Exibir informações de conta', ''),
-(48445, 'pt_BR:message.brokeredMembers', 'Membros registrados', ''),
-(48446, 'pt_BR:permission.adminMemberInvoices', 'Faturas eletrônicas de membros', ''),
-(48447, 'pt_BR:reports.simulations.aRate.config.combinedGraph', 'Porcentagem da taxa vs índice-A relativo', ''),
-(48448, 'pt_BR:member.group', 'Grupo de permissão', ''),
-(48449, 'pt_BR:adImport.confirm', 'Importar', ''),
-(48450, 'pt_BR:permission.brokerLoanGroups', 'Grupos de empréstimos', ''),
-(48451, 'pt_BR:message.messageBox.SENT', 'Itens enviados', ''),
-(48452, 'pt_BR:member.bulkActions.groupChanged', '{0} membros foram alterados para o grupo {2}.\n{1} membros não foram alterados, pois já estavam no grupo {2}', ''),
-(48453, 'pt_BR:errors.dateFormat', 'Data inválida. O formato correto é {0}', ''),
-(48454, 'pt_BR:reports.stats.keydevelopments.throughTime.MONTH', 'Cada mês', ''),
-(48455, 'pt_BR:memberRecordType.groups', 'Grupos', ''),
-(48456, 'pt_BR:reports.stats.general.throughTheYears', 'Ao longo do tempo', ''),
-(48457, 'pt_BR:reports.stats.activity.comparePeriods.loginTimes.row1', 'Acessos por membro', ''),
-(48458, 'pt_BR:transferType.from', 'De', ''),
-(48459, 'pt_BR:menu.member.personal.activities', 'Relatórios', ''),
-(48460, 'pt_BR:payment.title.brokerMemberToSystem', 'Pagamento do membro {0} para o sistema', ''),
-(48461, 'pt_BR:settings.local.maxAjaxResults', 'No. máx. de resultados de Ajax', ''),
-(48462, 'pt_BR:help.title.account_history', 'Histórico de conta', ''),
-(48463, 'pt_BR:menu.member.broker.defaultBrokerCommissions', 'Configurações de comissões', ''),
-(48464, 'pt_BR:memberImport.totalMembers', 'Número total de membros', ''),
-(48465, 'pt_BR:loanGroup.addMemberConfirmation', 'Adicionar o membro ao grupo de empréstimos?', ''),
-(48466, 'pt_BR:permission.adminMemberMessages.sendToGroup', 'Enviar para grupo', ''),
-(48467, 'pt_BR:transactionFee.removed', 'A taxa de transação foi removida', ''),
-(48468, 'pt_BR:translationMessage.title.import', 'Importar a partir de arquivo de propriedades', ''),
-(48469, 'pt_BR:login.memberUsername', 'Usuàrio do Membro', ''),
-(48470, 'pt_BR:customField.validation.required', 'Obrigatório', ''),
-(48471, 'pt_BR:guaranteeType.currency', 'Moeda', ''),
-(48472, 'pt_BR:registrationAgreement.removed', 'O termo de adesão foi removido', ''),
-(48473, 'pt_BR:certification.modified', 'A certificação foi alterada com sucesso', ''),
-(48474, 'pt_BR:menu.admin.usersGroups.connectedUsers', 'Usuários conectados', ''),
-(48475, 'pt_BR:transferType.fixedDestinationMember.username', 'Nome de login do membro fixo de destino', ''),
-(48476, 'pt_BR:group.title.settings.payments', 'Configurações de pagamentos', ''),
-(48477, 'pt_BR:reference.title.received.my', 'Referências recebidas', ''),
-(48478, 'pt_BR:guarantee.allowLoanPayment', 'Permitir pagamento de empréstimo', ''),
-(48479, 'pt_BR:help.title.translation', 'Tradução', ''),
-(48480, 'pt_BR:activities.brokering.numberMembers', 'Membros agenciados', ''),
-(48481, 'pt_BR:translationMessage.import.type.NEW_AND_MODIFIED', 'Importar chaves novas e modificadas', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(48482, 'pt_BR:payment.confirmation.chargeback', 'Você está prestes a estornar este pagamento.\n\nPor favor, clique em OK para confirmar', ''),
-(48483, 'pt_BR:transactionPassword.error.pending', 'Para acessar essa página, você precisa de sua senha de transação.', ''),
-(48484, 'pt_BR:permission.operatorPayments.poswebReceivePayment', 'Receber pagamento POSweb', ''),
-(48485, 'pt_BR:permission.adminMemberReports.view', 'Ver', ''),
-(48486, 'pt_BR:accountFeeLog.status.OPEN_INVOICE', 'Fatura em aberto', ''),
-(48487, 'pt_BR:posweb.printReceipt', 'Pagamento efetuado. Clique aqui ou tecle F4 para imprimir o recibo', ''),
-(48488, 'pt_BR:menu.admin.translation.mails', 'E-Mails', ''),
-(48489, 'pt_BR:externalTransfer.status.INCOMPLETE_PENDING', 'Incompleto', ''),
-(48490, 'pt_BR:adCategory.import.error.noFile', 'Por favor, selecione um arquivo para importar as categorias', ''),
-(48491, 'pt_BR:permission.adminMemberPos.changeParameters', 'Alterar parâmetros', ''),
-(48492, 'pt_BR:memberRecordType.title.modify', 'Modificar tipo de registro de membro', ''),
-(48493, 'pt_BR:customField.parent', 'Campo pai', ''),
-(48494, 'pt_BR:settings.local.deletePendingRegistrationsAfter', 'Tempo máximo para confirmação de e-mail no cadastro de membros', ''),
-(48495, 'pt_BR:loanGroup.removeConfirmation', 'Remover grupo de empréstimos?', ''),
-(48496, 'pt_BR:settings.mail.modified', 'As configurações de e-mail foram modificadas', ''),
-(48497, 'pt_BR:menu.operator.search.ads', 'Produtos e Serviços', ''),
-(48498, 'pt_BR:member.bulkActions.cardGenerated', '{0} cartões foram gerados', ''),
-(48499, 'pt_BR:loanGroup.member', 'Membros', ''),
-(48500, 'pt_BR:transactionFee.chargeType', 'Tipo de cobrança', ''),
-(48501, 'pt_BR:customField.type.URL', 'Endereço web', ''),
-(48502, 'pt_BR:ticket.toChannel', 'Canal de pagamento', ''),
-(48503, 'pt_BR:permission.systemThemes', 'Temas', ''),
-(48504, 'pt_BR:menu.admin.contentManagement.applicationPage', 'Páginas da aplicação', ''),
-(48505, 'pt_BR:guaranteeLog.by', 'Alterado por', ''),
-(48506, 'pt_BR:reports.stats.general.maxItemsExceded', 'Você excedeu o máximo de dados que você pode solicitar.\nEssa solicitação pode causar uma sobrecarga no servidor.\nPor favor limite a sua solicitação; consulte a ajuda para mais detalhes.\nO número máximo de pontos de dados é {0}; o número solicitado foi {1}.', ''),
-(48507, 'pt_BR:loan.payments', 'Pagamentos', ''),
-(48508, 'pt_BR:global.tooltip.print', 'Resultados para impressão', ''),
-(48509, 'pt_BR:adInterest.groupFilter', 'Comunidade', ''),
-(48510, 'pt_BR:menu.member.account.scheduledPayments', 'Pagamentos agendados', ''),
-(48511, 'pt_BR:pos.unblockPin.confirmation', 'Ativar o PIN?', ''),
-(48512, 'pt_BR:reports.stats.keydevelopments.numberOfAds.active', 'Anúncios ativos', ''),
-(48513, 'pt_BR:menu.operator.account.memberInvoice', 'Fatura para Membro', ''),
-(48514, 'pt_BR:permission.memberReferences.view', 'Ver', ''),
-(48515, 'pt_BR:alert.member.invoiceIdleTimeExceeded', 'Uma fatura de {0}, enviada em {1}, excedeu o tempo máximo de inatividade', ''),
-(48516, 'pt_BR:transactionFee.f1', 'Valor após 1 dia', ''),
-(48517, 'pt_BR:permission.brokerInvoices', 'Faturas eletrônicas', ''),
-(48518, 'pt_BR:guarantee.registerGuarantee', 'Criar garantia', ''),
-(48519, 'pt_BR:transactionFee.title.broker.list', 'Comissões de corretores', ''),
-(48520, 'pt_BR:group.settings.defaultMailMessages', 'Mensagens enviadas por mail por padrão', ''),
-(48521, 'pt_BR:customField.validation', 'Validação', ''),
-(48522, 'pt_BR:transferAuthorization.action.CANCEL', 'Cancelado', ''),
-(48523, 'pt_BR:message.search.keywords', 'Palavras-chave', ''),
-(48524, 'pt_BR:customImage.system.message_removed', 'Ícone de mensagem na lixeira', ''),
-(48525, 'pt_BR:cardType.cardFormatNumber', 'Formato de número', ''),
-(48526, 'pt_BR:ad.publicationPeriod', 'Período de publicação', ''),
-(48527, 'pt_BR:permission.adminMemberCards.unblockSecurityCode', 'Desbloquear código de segurança', ''),
-(48528, 'pt_BR:account.availableBalance', 'Saldo disponível', ''),
-(48529, 'pt_BR:externalAccountHistory.period.begin', 'A partir da data', ''),
-(48530, 'pt_BR:guaranteeType.title.listGuaranteeTypes', 'Tipos de garantia', ''),
-(48531, 'pt_BR:authorizationLevel.amount', 'Valor', ''),
-(48532, 'pt_BR:certificationLog.date', 'Data', ''),
-(48533, 'pt_BR:reports.current.remaining_open_loans', 'Valor restante de empréstimos em aberto', ''),
-(48534, 'pt_BR:home.status.newReferences', 'Você recebeu {0} novas referências desde o último login', ''),
-(48535, 'pt_BR:reports.stats.finances.income.short', 'Entrada', ''),
-(48536, 'pt_BR:adminTasks.onlineState.setOffline', 'Tornar o sistema indisponível', ''),
-(48537, 'pt_BR:reports.stats.finances.ThroughTime.income.title', 'Entrada (através do tempo)', ''),
-(48538, 'pt_BR:scheduledPayment.amount', 'Valor', ''),
-(48539, 'pt_BR:accountFee.action.new', 'Inserir nova taxa de conta', ''),
-(48540, 'pt_BR:member.generateCard.confirmation', 'Gerar cartão para {0}?', ''),
-(48541, 'pt_BR:permission.memberProfile.changeEmail', 'Alterar o próprio e-mail', ''),
-(48542, 'pt_BR:accountFeeLog.payments', 'Pagamentos', ''),
-(48543, 'pt_BR:loan.title.search.of', 'Empréstimos de {0}', ''),
-(48544, 'pt_BR:alert.system.ACCOUNT_FEE_RECOVERED', 'Taxa de conta recuperada', ''),
-(48545, 'pt_BR:permission.systemExternalAccounts.details', 'Detalhes', ''),
-(48546, 'pt_BR:transfer.scheduling.IMMEDIATELY', 'Não agendar (pagar imediatamente)', ''),
-(48547, 'pt_BR:adImport.status.MISSING_CUSTOM_FIELD', '{0} está faltando', ''),
-(48548, 'pt_BR:transfer.title.parent', 'Detalhes da transação mãe', ''),
-(48549, 'pt_BR:customizedFile.name', 'Nome do arquivo', ''),
-(48550, 'pt_BR:invoice.acceptConfirmationMessage', 'Aceitar fatura eletrônica vinda de {0} de {1}?{2}\n\nPor favor, clique em OK para confirmar.', ''),
-(48551, 'pt_BR:profile.action.accessActions', 'Acesso', ''),
-(48552, 'pt_BR:fieldMapping.name', 'Nome', ''),
-(48553, 'pt_BR:settings.local.maxImageSize', 'Tamanho máx. das imagens', ''),
-(48554, 'pt_BR:customImage.system.captchaBackground', 'Imagem de fundo da confirmação de registro', ''),
-(48555, 'pt_BR:customImage.system.delete', 'Ícone remover', ''),
-(48556, 'pt_BR:permission.brokerSmsMailings.freeSmsMailings', 'Enviar mensagens de difusão gratuitas', ''),
-(48557, 'pt_BR:alert.system.newVersionOfStaticFile', 'Existe uma nova versão do arquivo estático {0}, que foi customizado.\nPor favor, verifique para resolver possíveis conflitos', ''),
-(48558, 'pt_BR:login.pin', 'Senha externa', ''),
-(48559, 'pt_BR:manual.title.member', 'Manual do Cyclos', ''),
-(48560, 'pt_BR:menu.operator.search.members', 'Membros', ''),
-(48561, 'pt_BR:conversionSimulation.result.feelessAmount', 'Valor restante', ''),
-(48562, 'pt_BR:loan.title.search.my', 'Meus empréstimos', ''),
-(48563, 'pt_BR:message.rootType.SYSTEM', 'Sistema', ''),
-(48564, 'pt_BR:adImport.status.INVALID_OWNER', 'Membro inválido: {0}', ''),
-(48565, 'pt_BR:reports.members.ads.scheduled_ads', 'Anúncios agendados', ''),
-(48566, 'pt_BR:loanGroup.title.members', 'Membros deste grupo de empréstimos', ''),
-(48567, 'pt_BR:authorizationLevel.adminGroups.none', 'Nenhum', ''),
-(48568, 'pt_BR:message.type.FROM_ADMIN_TO_GROUP', 'Mensagens para grupos', ''),
-(48569, 'pt_BR:adminTasks.onlineState.online', 'O sistema está <b>disponível</b>', ''),
-(48570, 'pt_BR:guaranteeType.status', 'Estado', ''),
-(48571, 'pt_BR:loan.queryStatus.ANY_OPEN', 'Qualquer aberto', ''),
-(48572, 'pt_BR:admin.id', 'Identificador', ''),
-(48573, 'pt_BR:error.accessDenied', 'Acesso negado', ''),
-(48574, 'pt_BR:manual.title.stats', 'Manual de estatísticas do Cyclos', ''),
-(48575, 'pt_BR:adminTasks.indexes.status.ACTIVE', 'Ativo', ''),
-(48576, 'pt_BR:fieldMapping.title.order', 'Definir ordem dos mapeamentos de campos', ''),
-(48577, 'pt_BR:settings.message.messageMailSuffixHtml', 'Sufixo para o corpo de e-mails HTML', ''),
-(48578, 'pt_BR:permission.memberPayments.cancelAuthorized', 'Cancelar pagamento pendente (autorizado)', ''),
-(48579, 'pt_BR:paymentFilter.title.insert', 'Inserir filtro de pagamentos para {0}', ''),
-(48580, 'pt_BR:help.title.references', 'Referências', ''),
-(48581, 'pt_BR:permission.brokerMembers.manageContracts', 'Gerenciar contratos de comissões', ''),
-(48582, 'pt_BR:serviceClient.username', 'Nome de usuário HTTP', ''),
-(48583, 'pt_BR:externalTransfer.status.TOTAL', 'Total', ''),
-(48584, 'pt_BR:adminTasks.indexes.status', 'Estado', ''),
-(48585, 'pt_BR:ad.tradeType', 'Tipo', ''),
-(48586, 'pt_BR:permission.brokerInvoices.acceptAsMemberFromMember', 'Aceitar fatura eletrônica de membro como membo', ''),
-(48587, 'pt_BR:message.messageBox.INBOX', 'Caixa de entrada', ''),
-(48588, 'pt_BR:guarantee.validity', 'Validade', ''),
-(48589, 'pt_BR:reports.members_reports.details_level.SUMMARY', 'Resumo', ''),
-(48590, 'pt_BR:guarantee.issueFee', 'Taxa de emissão', ''),
-(48591, 'pt_BR:menu.admin.usersGroups.groupFilters', 'Filtros de grupos', ''),
-(48592, 'pt_BR:editCard.error.transactionPasswordBlocked', 'Para editar seu cartão, é necessária a senha de transação.\nNo entanto, sua senha de transação está bloqueada.\nPor favor, contate a administração', ''),
-(48593, 'pt_BR:activities.references', 'Referências', ''),
-(48594, 'pt_BR:permission.brokerSmsMailings', 'Mensagens SMS de difusão', ''),
-(48595, 'pt_BR:paymentObligation.title.modify', 'Modificar obrigação de pagamento', ''),
-(48596, 'pt_BR:registrationAgreement.removeConfirmation', 'Você confirma a exclusão deste termo de adesão?', ''),
-(48597, 'pt_BR:menu.admin.settings.access', 'Config. de acesso', ''),
-(48598, 'pt_BR:rates.reinit.enabledSince', 'Ativado desde', ''),
-(48599, 'pt_BR:accountFee.disabled', 'Desabilitada', ''),
-(48600, 'pt_BR:adImport.title.details.all', 'Todos os anúncios importados', ''),
-(48601, 'pt_BR:invoice.status', 'Estado', ''),
-(48602, 'pt_BR:about.message', 'Informações sobre o projeto Cyclos podem ser encontradas em: <a href="{0}"><u>{0}</u></a>', ''),
-(48603, 'pt_BR:infotext.active', 'Ativo', ''),
-(48604, 'pt_BR:permission.adminMemberPayments.authorize', 'Autorizar pagamentos', ''),
-(48605, 'pt_BR:posweb.printSettings.title', 'Preferências de impressão', ''),
-(48606, 'pt_BR:invoice.destinationAccountType', 'Conta de destino', ''),
-(48607, 'pt_BR:payment.error.relatesTo', 'O usuário conectado não esta relacionado ao membro ''{0}''.', ''),
-(48608, 'pt_BR:menu.member.personal.cards', 'Cartões', ''),
-(48609, 'pt_BR:reference.title.details.transactionFeedback', 'Detalhes da qualificação de transação', ''),
-(48610, 'pt_BR:alert.date', 'Data', ''),
-(48611, 'pt_BR:settings.local.memberResultDisplay.NAME', 'Nome do membro', ''),
-(48612, 'pt_BR:messageCategory.title.insert', 'Inserir nova categoria de mensagem', ''),
-(48613, 'pt_BR:global.pixels', 'pixels', ''),
-(48614, 'pt_BR:help.title.registration', 'Cadastro de membros', ''),
-(48615, 'pt_BR:customField.ad.visibility', 'Visível para', ''),
-(48616, 'pt_BR:account.initialCreditTransferType', 'Tipo de transação para crédito inicial', ''),
-(48617, 'pt_BR:group.settings.maxTransactionPasswordWrongTries', 'No. máx. de tentativas de senha de transação', ''),
-(48618, 'pt_BR:mailPreferences.memberAlerts', 'Alertas de membro', ''),
-(48619, 'pt_BR:externalTransferType.removeConfirmation', 'Remover tipo de pagamento?', ''),
-(48620, 'pt_BR:mobile.viewPayments.amount', 'Valor', ''),
-(48621, 'pt_BR:changeGroup.removedMember', 'O membro foi removido', ''),
-(48622, 'pt_BR:authorizationLevel.removeConfirmation', 'Remover esse nível de autorização?', ''),
-(48623, 'pt_BR:reports.stats.keyParams', 'Parâmetros chave', ''),
-(48624, 'pt_BR:global.nothingSelected', 'Nada selecionado', ''),
-(48625, 'pt_BR:error.maxUploadSizeExceeded', 'Tamanho máximo de arquivo ({0}) excedido', ''),
-(48626, 'pt_BR:reports.stats.taxes.paid.notPaid', 'Não pagas', ''),
-(48627, 'pt_BR:permission.adminAdminRecords.manage', 'Gerenciar', ''),
-(48628, 'pt_BR:customField.title.modify.loanGroup', 'Modificar campo customizado de grupo de empréstimos', ''),
-(48629, 'pt_BR:permission.systemInvoices.manage', 'Gerenciar', ''),
-(48630, 'pt_BR:permission.systemCurrencies.view', 'Ver', ''),
-(48631, 'pt_BR:adCategory.import.file', 'Arquivo', ''),
-(48632, 'pt_BR:menu.admin.accounts.details', 'Contas de sistema', ''),
-(48633, 'pt_BR:global.weekDay.short.TUESDAY', 'Ter', ''),
-(48634, 'pt_BR:conversionSimulation.result.input.date', 'Data de conversão aplicada', ''),
-(48635, 'pt_BR:mobile.viewPayments.next', 'Prox.', ''),
-(48636, 'pt_BR:messageCategory.action.new', 'Inserir nova categoria de mensagem', ''),
-(48637, 'pt_BR:externalAccountHistory.action.confirmDelete', 'Remover transação externa permanentemente?', ''),
-(48638, 'pt_BR:adInterest.removed', 'Interesse em anúncios removido', ''),
-(48639, 'pt_BR:reports.simulations.aRateConfigSimulation.range.percentUnits', '% do período total da garantia', ''),
-(48640, 'pt_BR:permission.memberInvoices', 'Faturas eletrônicas', ''),
-(48641, 'pt_BR:menu.operator.account.loans', 'Empréstimos', ''),
-(48642, 'pt_BR:reports.stats.activity.singlePeriod.loginTimes', 'Acessos por membro', ''),
-(48643, 'pt_BR:guaranteeType.title.modify', 'Modificar tipo de garantia', ''),
-(48644, 'pt_BR:receipt.posweb.transactions.date', 'Data: {0}', ''),
-(48645, 'pt_BR:errorLog.loggedUser.none', 'Nenhum usuário conectado', ''),
-(48646, 'pt_BR:permission.operatorPayments.poswebMakePayment', 'Fazer pagamento POSweb', ''),
-(48647, 'pt_BR:authorizationLevel.title.edit', 'Editar nível de autorização', ''),
-(48648, 'pt_BR:home.admin.status.unreadMessages', 'Mensagens não lidas', ''),
-(48649, 'pt_BR:settings.local.numberLocale.COMMA_AS_DECIMAL', '1.234,56', ''),
-(48650, 'pt_BR:menu.admin.settings.mail', 'Config. de e-mail', ''),
-(48651, 'pt_BR:permission.operatorPayments.cancelAuthorized', 'Cancelar pagamento pendente', ''),
-(48652, 'pt_BR:externalTransferType.action.GENERATE_MEMBER_PAYMENT', 'Gerar pagamento para o membro', ''),
-(48653, 'pt_BR:customField.member.adSearchAccess', 'Busca por anúncio', ''),
-(48654, 'pt_BR:group.settings.externalAdPublication.ALLOW_CHOICE', 'Permitir escolha', ''),
-(48655, 'pt_BR:member.bulkActions.changeChannels', 'Ativar/desativar canais', ''),
-(48656, 'pt_BR:customizedFile.title.search.help', 'Arquivos de ajuda customizados', ''),
-(48657, 'pt_BR:reports.transactions_report.member_invoices', '{0} de {1} faturas eletrônicas de membro para membro', ''),
-(48658, 'pt_BR:settings.local.highPrecision', 'Alta precisão', ''),
-(48659, 'pt_BR:memberImport.title.details.all', 'Todos os membros importados', ''),
-(48660, 'pt_BR:transferAuthorization.title.list', 'Ações sobre transações autorizadas', ''),
-(48661, 'pt_BR:error.permissionDenied', 'Você não tem permissões suficientes para executar essa ação', ''),
-(48662, 'pt_BR:guarantee.error.noIssuer', 'Não há emissores possíveis para este tipo de garantia', ''),
-(48663, 'pt_BR:adInterest.new', 'Inserir novo interesse em anúncios', ''),
-(48664, 'pt_BR:invoice.action.deny', 'Negar', ''),
-(48665, 'pt_BR:memberImport.status.MISSING_RECORD_FIELD', '{0} está faltando', ''),
-(48666, 'pt_BR:smsMailing.sendType', 'Tipo de envio', ''),
-(48667, 'pt_BR:menu.member.preferences.notification', 'Notificação', ''),
-(48668, 'pt_BR:permission.adminAdminRemarks', 'Observações', ''),
-(48669, 'pt_BR:settings.local.maxPageResults', 'No. máx. de resultados por página', ''),
-(48670, 'pt_BR:card.action.changeCardCode', 'Alterar senha do cartão', ''),
-(48671, 'pt_BR:memberImport.status.MISSING_NAME', 'O nome está faltando', ''),
-(48672, 'pt_BR:permission.systemGroups.manageAdmin', 'Gerenciar grupos de administradores', ''),
-(48673, 'pt_BR:global.percentPerDay', '% / dia', ''),
-(48674, 'pt_BR:transactionPassword.description', 'Agora você pode gerar a sua senha pessoal de transação.\nApós clicar no botão abaixo, sua senha será gerada e exibida.\nCertifique-se de memorizar a sua senha de transação.\nVocê só terá uma oportunidade de ver a senha de transação.', ''),
-(48675, 'pt_BR:certification.buyerUsername', 'Usuário do comprador', ''),
-(48676, 'pt_BR:pos.remove.confirmation', 'Você realmente deseja excluir esse POS?', ''),
-(48677, 'pt_BR:currency.dRate.minimalD', 'D mínimo', ''),
-(48678, 'pt_BR:member.title.search', 'Busca de membros', ''),
-(48679, 'pt_BR:reports.members.date.history', 'Histórico', ''),
-(48680, 'pt_BR:payment.performed', 'O pagamento foi realizado', ''),
-(48681, 'pt_BR:channel.credentials.CARD_SECURITY_CODE', 'Código de segurança do cartão', ''),
-(48682, 'pt_BR:theme.title.export', 'Exportar definições atuais como tema', ''),
-(48683, 'pt_BR:permission.systemThemes.import', 'Importar', ''),
-(48684, 'pt_BR:ad.search.tradeType.SEARCH', 'Demanda', ''),
-(48685, 'pt_BR:pos.blocked', 'POS foi bloqueado', ''),
-(48686, 'pt_BR:permission.adminMemberAccounts.authorizedInformation', 'Ver pagamentos autorizados', ''),
-(48687, 'pt_BR:transactionPassword.AUTOMATIC', 'Automaticamente', ''),
-(48688, 'pt_BR:fileMapping.numberFormat', 'Formato de número', ''),
-(48689, 'pt_BR:changePassword.modified', 'A senha foi modificada', ''),
-(48690, 'pt_BR:transferType.priority', 'Prioridade', ''),
-(48691, 'pt_BR:loan.grant.paymentCount', 'No.de pagamentos', ''),
-(48692, 'pt_BR:permission.brokerInvoices.cancelAsMember', 'Cancelar como membro', ''),
-(48693, 'pt_BR:profile.action.manageBrokerCommissions', 'Configurações de comissões', ''),
-(48694, 'pt_BR:settings.message.loginBlocked', 'Login bloqueado por excesso de tentativas', ''),
-(48695, 'pt_BR:smsLog.search.noResults', 'Nenhum registro de SMS encontrado', ''),
-(48696, 'pt_BR:menu.admin.accounts.loans', 'Gerenciar empréstimos', ''),
-(48697, 'pt_BR:posweb.target.name', 'Nome (destinatário)', ''),
-(48698, 'pt_BR:guarantee.removeConfirmation', 'Você tem certeza que deseja remover esta garantia?', ''),
-(48699, 'pt_BR:payment.confirmation.other.withAuthorization', 'Este pagamento de {0} para {2} precisa de autorização e ficará pendente até que seja autorizado e processado.{3}\n\nPor favor, clique em OK para confirmar.', ''),
-(48700, 'pt_BR:receipt.transfer.textAfter', '----------------', ''),
-(48701, 'pt_BR:group.account.error.minInitialCredit', '', ''),
-(48702, 'pt_BR:permission.systemCustomizedFiles', 'Arquivos customizados do sistema', ''),
-(48703, 'pt_BR:global.month.JANUARY', 'Janeiro', ''),
-(48704, 'pt_BR:settings.mail.smtpPort', 'Porta', ''),
-(48705, 'pt_BR:fieldMapping.field.DATE', 'data do pagamento', ''),
-(48706, 'pt_BR:theme.remove.confirmation', 'Tem certeza que deseja remover este tema?', ''),
-(48707, 'pt_BR:global.range', 'Período', ''),
-(48708, 'pt_BR:adCategory.imported', 'As categorias foram importadas com sucesso', ''),
-(48709, 'pt_BR:payment.confirmation.deny', 'Você está prestes a negar este pagamento.\n\nPor favor, clique em OK para confirmar', ''),
-(48710, 'pt_BR:operator.username', 'Usuário do operador', ''),
-(48711, 'pt_BR:errorLog.search.date.begin', 'De', ''),
-(48712, 'pt_BR:reports.stats.transferTypeFilters', 'Filtros de tipos de transações', ''),
-(48713, 'pt_BR:paymentFilter.action.new', 'Inserir novo filtro de pagamentos', ''),
-(48714, 'pt_BR:payment.error.manageFrom', 'O usuário conectado não possui permissões para gerenciar o membro ''{0}''.', ''),
-(48715, 'pt_BR:externalTransferImport.by', 'Realizado por', ''),
-(48716, 'pt_BR:accountFee.recurrence', 'Freqüência', ''),
-(48717, 'pt_BR:accountFeeLog.rechargeFailed', 'Cobrar (membros que falharam)', ''),
-(48718, 'pt_BR:customImage.system.previous', 'Ícone de página anterior', ''),
-(48719, 'pt_BR:transactionFee.enabled', 'Habilitada', ''),
-(48720, 'pt_BR:permission.basic', 'Básico', ''),
-(48721, 'pt_BR:card.unblocked', 'Cartão desbloqueado', ''),
-(48722, 'pt_BR:customField.ad.searchVisibility.NONE', 'Nenhuma', ''),
-(48723, 'pt_BR:reports.stats.activity.topten.grossProduct.title', 'Os dez maiores em produto bruto por membro', ''),
-(48724, 'pt_BR:menu.admin.usersGroups.members', 'Gerenciar membros', ''),
-(48725, 'pt_BR:quickAccess.messages', 'Mensagens', ''),
-(48726, 'pt_BR:reports.stats.keydevelopments.throughTime.throughTime', 'Ao longo do tempo', ''),
-(48727, 'pt_BR:loan.group.members', 'Membros no grupo', ''),
-(48728, 'pt_BR:permission.adminAdmins.register', 'Cadastrar', ''),
-(48729, 'pt_BR:brokerCommissionContract.broker', 'Corretor', ''),
-(48730, 'pt_BR:payment.confirmation.self.withAuthorization', 'Esta transferência de {0} da {1} para a {2} precisa de autorização e ficará pendente até que seja autorizada e processada.{3}\n\nPor favor, clique em OK para confirmar', ''),
-(48731, 'pt_BR:adCategory.path', 'Caminho', ''),
-(48732, 'pt_BR:customField.payment.access.BOTH_ACCOUNTS', 'Em ambas as contas', ''),
-(48733, 'pt_BR:message.type.PAYMENT_OBLIGATION', 'Obrigações de pagamento', ''),
-(48734, 'pt_BR:permission.systemAdminGroups.view', 'Ver', ''),
-(48735, 'pt_BR:permission.systemInfoTexts', 'Mensagens informativas', ''),
-(48736, 'pt_BR:reference.modified', 'Referência modificada', ''),
-(48737, 'pt_BR:memberImport.status.MISSING_EMAIL', 'O e-mail está faltando', ''),
-(48738, 'pt_BR:notificationPreferences.costPerMessage', 'O custo por mensagem enviada é de {0}', ''),
-(48739, 'pt_BR:reports.members.permission_groups', 'Grupos de permissões', ''),
-(48740, 'pt_BR:permission.adminMemberPos.block', 'Bloquear', ''),
-(48741, 'pt_BR:global.weekDay.short.WEDNESDAY', 'Qua', ''),
-(48742, 'pt_BR:changePin.error.userBlocked', 'Você excedeu o máximo de tentativas da senha de login e sua sessão está bloqueada agora', ''),
-(48743, 'pt_BR:smsLog.status', 'Estado', ''),
-(48744, 'pt_BR:conversionSimulation.useActualRates', 'Usar índices atuais', ''),
-(48745, 'pt_BR:activities.invoices.incoming.amount', 'Valor de entrada', ''),
-(48746, 'pt_BR:menu.member.operators.groups', 'Grupos de operadores', ''),
-(48747, 'pt_BR:manual.action.printManual', 'Imprimir todo o manual', ''),
-(48748, 'pt_BR:activities.transactions.averageSell', 'Recebidas - valor médio', ''),
-(48749, 'pt_BR:loan.expirationDailyInterest', 'Juros de vencimento', ''),
-(48750, 'pt_BR:memberRecordType.editable', 'Editável', ''),
-(48751, 'pt_BR:transferAuthorization.showToMember', 'Mostrar para o membro', ''),
-(48752, 'pt_BR:reports.members_reports.total_amount', 'Quantidade total', ''),
-(48753, 'pt_BR:customField.type.MEMBER', 'Membro', ''),
-(48754, 'pt_BR:fieldMapping.field.MEMBER_CUSTOM_FIELD', 'Campo customizado', ''),
-(48755, 'pt_BR:currency.title.modify', 'Modificar moeda', ''),
-(48756, 'pt_BR:group.account.title.new', 'Adicionar uma conta ao grupo {0}', ''),
-(48757, 'pt_BR:brokerCommissionContract.error.contractNotFound', 'O contrato de comissão não pode ser encontrado, é provável que tenha sido removido.', ''),
-(48758, 'pt_BR:permission.brokerCards.block', 'Bloquear', ''),
-(48759, 'pt_BR:global.weekDay.short.THURSDAY', 'Qui', ''),
-(48760, 'pt_BR:changeChannels.enableChannels', 'Ativar canais', ''),
-(48761, 'pt_BR:customImage.system.quickAccess_contacts', 'Acesso rápido: contatos', ''),
-(48762, 'pt_BR:fileMapping.stringQuote', 'Delimitador de texto', ''),
-(48763, 'pt_BR:authorizationLevel.authorizer', 'Quem autoriza', ''),
-(48764, 'pt_BR:permission.operatorAds.publish', 'Publicar', ''),
-(48765, 'pt_BR:changePin.error.pinsAreNotEqual', 'As senhas externas não são idênticas', ''),
-(48766, 'pt_BR:permission.operatorAccount', 'Conta de membro', ''),
-(48767, 'pt_BR:menu.admin.bookkeeping.accounts', 'Administrar contas externas', ''),
-(48768, 'pt_BR:global.datePattern.year', 'aaaa', ''),
-(48769, 'pt_BR:adInterest.type', 'Tipo', ''),
-(48770, 'pt_BR:account.defaultCreditLimit', 'Limite de crédito inferior', ''),
-(48771, 'pt_BR:externalAccountHistory.period.end', 'Até a data', ''),
-(48772, 'pt_BR:accountFeeLog.status.TRANSFER', 'Pagamento', ''),
-(48773, 'pt_BR:error.loggedOut', 'Você foi desconectado do sistema', ''),
-(48774, 'pt_BR:loanPayment.repaymentDate', 'Pagamento', ''),
-(48775, 'pt_BR:alert.member.TRANSACTION_PASSWORD_BLOCKED_BY_TRIES', 'Senha de transação bloqueada por excesso de tentativas', ''),
-(48776, 'pt_BR:customImage.system.import', 'Ícone de importação', ''),
-(48777, 'pt_BR:permission.adminMemberPayments.blockScheduledAsMember', 'Bloquear pagamento agendado como membro', ''),
-(48778, 'pt_BR:reports.stats.keydevelopments.grossProduct.yAxis', 'Produto bruto (unidades)', ''),
-(48779, 'pt_BR:conversionSimulation.result.percentage', 'Porcentagem', ''),
-(48780, 'pt_BR:transferType.action.new', 'Inserir novo tipo de transação', ''),
-(48781, 'pt_BR:paymentObligation.next', 'Próximo', ''),
-(48782, 'pt_BR:transfer.calculatePayments', 'Calcular', ''),
-(48783, 'pt_BR:permission.adminMemberGuarantees.viewCertifications', 'Ver certificações', ''),
-(48784, 'pt_BR:settings.message.adminAlerts', 'Assunto para notificações de alertas', ''),
-(48785, 'pt_BR:groupFilter.customizedFiles.title', 'Arquivos customizados', ''),
-(48786, 'pt_BR:memberImport.initialDebitTransferType.empty', 'Ignorar saldos negativos', ''),
-(48787, 'pt_BR:loan.title.details', 'Detalhes do empréstimo', ''),
-(48788, 'pt_BR:permission.operatorReferences.view', 'Visualizar', ''),
-(48789, 'pt_BR:settings.type.MAIL_TRANSLATION', 'E-mail', ''),
-(48790, 'pt_BR:infoText.empty.subject', 'Nenhuma informação encontrada', ''),
-(48791, 'pt_BR:alert.system.ADMIN_LOGIN_BLOCKED_BY_PERMISSION_DENIEDS', 'O máximo de permissões negadas foi alcançado por um administrador', ''),
-(48792, 'pt_BR:receiptPrinter.error.ie', 'A impressão local de recibos não é suportada no Microsoft Internet Explorer. Por favor, utilize uma versão recente do Mozilla Firefox, Google Chrome ou Opera', ''),
-(48793, 'pt_BR:menu.admin.customFields.adminFields', 'Administrador', ''),
-(48794, 'pt_BR:reports.current.presentation', 'Relatório do estado atual', ''),
-(48795, 'pt_BR:settings.local.csv', 'Exportação para arquivos CSV', ''),
-(48796, 'pt_BR:permission.brokerReports.view', 'Ver', ''),
-(48797, 'pt_BR:paymentObligation.action.create', 'Criar obrigação de pagamento', ''),
-(48798, 'pt_BR:menu.admin.settings.local', 'Config. locais', ''),
-(48799, 'pt_BR:loan.status', 'Estado', ''),
-(48800, 'pt_BR:alert.system.applicationRestarted', 'Aplicação iniciada', ''),
-(48801, 'pt_BR:invoice.search.direction.OUTGOING', 'Saída', ''),
-(48802, 'pt_BR:permission.systemGuaranteeTypes.manage', 'Gerenciar', ''),
-(48803, 'pt_BR:accountFeeLog.status.SKIPPED', 'Não cobrado', ''),
-(48804, 'pt_BR:customizedFile.title.customize.css', 'Personalizar folha de estilo', ''),
-(48805, 'pt_BR:reference.comments', 'Comentários', ''),
-(48806, 'pt_BR:externalAccount.memberAccount', 'Conta de membro', ''),
-(48807, 'pt_BR:customizedFile.removed', 'O arquivo não está mais customizado', ''),
-(48808, 'pt_BR:group.registrationAgreement.forceAccept', 'Forçar a aceitação no próximo login', ''),
-(48809, 'pt_BR:message.to', 'Para', ''),
-(48810, 'pt_BR:loanPayment.status', 'Estado', ''),
-(48811, 'pt_BR:paymentFilter.showInAccountHistory', 'Exibir no histórico da conta', ''),
-(48812, 'pt_BR:mailPreferences.messages', 'Mensagens', ''),
-(48813, 'pt_BR:reports.stats.activity.comparePeriods.numberTransactions.row2.short', 'Todos os membros', ''),
-(48814, 'pt_BR:invoice.sentBy', 'Enviado por', ''),
-(48815, 'pt_BR:payment.newPayment', 'Fazer novo pagamento', ''),
-(48816, 'pt_BR:image.error.removing', 'A imagem não pôde ser removida', ''),
-(48817, 'pt_BR:global.weekDay.short.SATURDAY', 'Sab', ''),
-(48818, 'pt_BR:profile.action.activities', 'Ver relatórios', ''),
-(48819, 'pt_BR:payment.invalid.paymentAmount', 'O valor total do pagamento deve ser igual ao valor da soma das parcelas', ''),
-(48820, 'pt_BR:conversionSimulation.result.result', 'Resultado', ''),
-(48821, 'pt_BR:loan.member', 'Nome do membro', ''),
-(48822, 'pt_BR:pin.unblock.message', 'A senha externa (PIN) está bloqueada por excesso de tentativas inválidas', ''),
-(48823, 'pt_BR:about.title', 'Sobre', ''),
-(48824, 'pt_BR:externalTransfer.status.PROCESSED', 'Processado', ''),
-(48825, 'pt_BR:menu.admin.customFields.loanFields', 'Empréstimo', ''),
-(48826, 'pt_BR:reports.stats.finances.expenditure', 'Saída', ''),
-(48827, 'pt_BR:sms.type.REQUEST_PAYMENT', 'Solicitação de pagamento', ''),
-(48828, 'pt_BR:receiptPrinter.error.printerNotFoundError', 'Impressora não encontrada: {0}.\n\nCertifique-se que exista no sistema operacional uma impressora de textos genérica com esse nome.', ''),
-(48829, 'pt_BR:menu.admin.translation.application', 'Aplicação', ''),
-(48830, 'pt_BR:pendingMember.removed', 'O cadastro pendente foi removido', ''),
-(48831, 'pt_BR:transfer.channel', 'Pagamento através de', ''),
-(48832, 'pt_BR:menu.member.preferences.receiptPrinterSettings', 'Impressoras de recibo', ''),
-(48833, 'pt_BR:loan.grant.confirmation.member', 'Você está prestes a conceder um empréstimo de {0} para {1}.{2}\n\nPor favor, clique em OK para prosseguir', ''),
-(48834, 'pt_BR:translationMessage.message', 'Valor', ''),
-(48835, 'pt_BR:errors.pageNotFound', 'A página que você tentou acessar não pôde ser encontrada', ''),
-(48836, 'pt_BR:menu.admin.guarantees.searchCertifications', 'Certificações', ''),
-(48837, 'pt_BR:permission.adminMemberDocuments', 'Documentos', ''),
-(48838, 'pt_BR:reports.stats.choose.activity', 'Atividade dos membros', ''),
-(48839, 'pt_BR:activities.brokering.commission.amount', 'Comissão total', ''),
-(48840, 'pt_BR:settings.local.csv.stringQuote.NONE', 'Nenhuma', ''),
-(48841, 'pt_BR:login.error.inactive', 'Sua conta ainda não foi ativada.\nPor favor, contate a administração', ''),
-(48842, 'pt_BR:conversionSimulation.result.amount', 'Valor', ''),
-(48843, 'pt_BR:ad.category', 'Categoria', ''),
-(48844, 'pt_BR:customizedFile.type.APPLICATION_PAGE', 'Páginas do aplicativo', ''),
-(48845, 'pt_BR:alert.system.ACCOUNT_FEE_FINISHED', 'Taxa de conta concluída', ''),
-(48846, 'pt_BR:accountFee.paymentDirection.TO_MEMBER', 'De sistema para membro', ''),
-(48847, 'pt_BR:help.title.payments', 'Pagamentos', ''),
-(48848, 'pt_BR:activities.transactions.averageBuy', 'Pagas - valor médio', ''),
-(48849, 'pt_BR:alert.member.NEW_PENDING', 'Pendente', ''),
-(48850, 'pt_BR:menu.member.account.memberPayment', 'Pagamento para membro', ''),
-(48851, 'pt_BR:currency.removed', 'A moeda foi removida', ''),
-(48852, 'pt_BR:loan.firstRepaymentDate', 'Primeira data de pagamento', ''),
-(48853, 'pt_BR:posweb.searchTransactions.title.scheduledPayments', 'Pagamentos agendados', ''),
-(48854, 'pt_BR:permission.systemServiceClients.manage', 'Gerenciar', ''),
-(48855, 'pt_BR:menu.admin.reports.statistics', 'Análise estatística', ''),
-(48856, 'pt_BR:customImage.removeConfirmation', 'Remover essa imagem?', ''),
-(48857, 'pt_BR:invoice.status.ACCEPTED', 'Aceita', ''),
-(48858, 'pt_BR:loan.group.personal', 'Pessoal', ''),
-(48859, 'pt_BR:guaranteeType.paymentObligationPeriod', 'Período entre obrigações de pagamento', ''),
-(48860, 'pt_BR:scheduledPayments.title.list', 'Procurar pagamentos agendados', ''),
-(48861, 'pt_BR:card.unblockCard.confirmation', 'Desbloquear cartão?', ''),
-(48862, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.yAxis', 'Número', ''),
-(48863, 'pt_BR:externalAccountHistory.error.cannotMarkExternalTransferAsUnchecked', 'Apenas pagamentos conferidos podem ser marcadas como não conferidos', ''),
-(48864, 'pt_BR:global.month.SEPTEMBER', 'Setembro', ''),
-(48865, 'pt_BR:adminTasks.indexes.type', 'Tipo', ''),
-(48866, 'pt_BR:externalTransferImport.date', 'Data', ''),
-(48867, 'pt_BR:guarantee.action.delete', 'Remover', ''),
-(48868, 'pt_BR:groupFilter.description', 'Descrição', ''),
-(48869, 'pt_BR:authorizationLevel.action.new', 'Novo nível de autorização', ''),
-(48870, 'pt_BR:ad.removeConfirmation', 'Remover anúncio?', ''),
-(48871, 'pt_BR:createOperator.title', 'Criar um novo operador', ''),
-(48872, 'pt_BR:permission.brokerMemberRecords', 'Registros de membros', ''),
-(48873, 'pt_BR:transactionFee.action.broker.new', 'Inserir nova comissão de corretor', ''),
-(48874, 'pt_BR:paymentFilter.description', 'Descrição', ''),
-(48875, 'pt_BR:permission.operatorPayments.paymentToMember', 'Pagamento para membros', ''),
-(48876, 'pt_BR:externalAccountHistory.amountRange.end', 'Para quantia', ''),
-(48877, 'pt_BR:permission.operatorMessages.sendToMember', 'Enviar para outros membros', ''),
-(48878, 'pt_BR:reports.stats.keydevelopments.throughTime.YEAR', 'Cada ano', ''),
-(48879, 'pt_BR:permission.adminMemberBrokerings.viewLoans', 'Ver dados de empréstimos na impressão da lista de membros', ''),
-(48880, 'pt_BR:invoice.action.goToPayment', 'Ver detalhes do pagamento', ''),
-(48881, 'pt_BR:brokerCommissionContract.cancelConfirmation', 'Cancelar este contrato de comissão de corretor?', ''),
-(48882, 'pt_BR:permission.systemSettings.manageAlert', 'Gerenciar configurações de aviso', ''),
-(48883, 'pt_BR:profile.userAllowedToLogin', 'O usuário está autorizado a entrar agora', ''),
-(48884, 'pt_BR:settings.message.invoiceDenied', 'Fatura eletrônica negada', ''),
-(48885, 'pt_BR:reports.stats.keydevelopments.numberOfAds.created.short', 'Criado', ''),
-(48886, 'pt_BR:externalTransferImport.period.begin', 'Desde o dia', ''),
-(48887, 'pt_BR:serviceClient.inserted', 'O cliente de serviços web foi inserido', ''),
-(48888, 'pt_BR:smsLog.messageType', 'Notificação', ''),
-(48889, 'pt_BR:mobile.error.invalidUser', 'Usuário inválido para serviço móvel', ''),
-(48890, 'pt_BR:payment.status.SCHEDULED', 'Agendado', ''),
-(48891, 'pt_BR:customImage.system.quickAccess_placeAd', 'Acesso rápido: cadastrar anúncio', ''),
-(48892, 'pt_BR:settings.local.schedulingMinute', 'Minuto das tarefas agendadas', ''),
-(48893, 'pt_BR:member.bulkActions.choose', 'Selecione a ação', ''),
-(48894, 'pt_BR:reference.level.select', 'Selecione um valor', ''),
-(48895, 'pt_BR:guarantee.logs', 'Detalhes das alterações', ''),
-(48896, 'pt_BR:adCategory.children', 'Categorias filhas', ''),
-(48897, 'pt_BR:brokerCommissionContract.cancelled', 'O contrato de comissão de corretor foi cancelado', ''),
-(48898, 'pt_BR:group.error.passwordPolicySpecialVirtualKeyboard', '{0} não pode obrigar caracteres especiais porque o teclado virtual está em uso para a senha de login', ''),
-(48899, 'pt_BR:cardType.error.removing', 'O tipo de cartão não pode ser removido porque pertence a pelo menos um grupo ou possui pelo menos um cartão associado', ''),
-(48900, 'pt_BR:about.version', '<b>Versão da aplicação:</b> {0}', ''),
-(48901, 'pt_BR:loan.status.IN_PROCESS', 'Em processo', ''),
-(48902, 'pt_BR:customField.title.modify.memberRecord', 'Modificar campo customizado para registro de membro {0}', ''),
-(48903, 'pt_BR:permission.adminMemberBulkActions.changeBroker', 'Alterar corretor', ''),
-(48904, 'pt_BR:alert.member.accountActivationFailed', 'Ativação da conta {0} falhou', ''),
-(48905, 'pt_BR:settings.access.generatedUsernameLength', 'Comprimento do nome de usuário gerado', ''),
-(48906, 'pt_BR:brokerCommission.unsuspended', 'A comissão de corretor foi reaberta', ''),
-(48907, 'pt_BR:admin.action.create.selectGroup', 'Selecione o grupo de administrador', ''),
-(48908, 'pt_BR:permission.module.type.BROKER', 'Permissões de corretor de {0}', ''),
-(48909, 'pt_BR:permission.systemCurrencies.manage', 'Gerenciar', ''),
-(48910, 'pt_BR:permission.adminMemberGroups.manageMemberCustomizedFiles', 'Gerenciar arquivos customizados', ''),
-(48911, 'pt_BR:webshop.error.ticket', 'Tíquete de pagamento não encontrado', ''),
-(48912, 'pt_BR:memberImport.title.details.error', 'Membros com erro de importação', ''),
-(48913, 'pt_BR:reports.stats.general.sum', 'Soma', ''),
-(48914, 'pt_BR:error.image.dimension', '­As dimensões da imagem são muito grandes', ''),
-(48915, 'pt_BR:invoice.error.noAccountType', 'Não há tipo de conta destino possível.\nPor favor, contate a administração', ''),
-(48916, 'pt_BR:menu.member.personal.ads', 'Anúncios', ''),
-(48917, 'pt_BR:settings.message.referenceReceived', 'Referência recebida', ''),
-(48918, 'pt_BR:customizedFile.newContents', 'Novo conteúdo', ''),
-(48919, 'pt_BR:pos.error.removing', 'O POS não pode ser removido porque pertence a um membro ou existe um log associado', ''),
-(48920, 'pt_BR:menu.operator.account.transfersAwaitingAuthorization', 'Aguardando autorização', ''),
-(48921, 'pt_BR:settings.local.memberResultDisplay', 'Exibir na lista de resultados de membros', ''),
-(48922, 'pt_BR:message.sent', 'A mensagem foi enviada com sucesso', ''),
-(48923, 'pt_BR:permission.adminAdmins.changeGroup', 'Alterar grupo', ''),
-(48924, 'pt_BR:customField.possibleValue.inserted', 'O valor foi inserido', ''),
-(48925, 'pt_BR:guarantee.issuedDate', 'Data de emissão', ''),
-(48926, 'pt_BR:group.settings.smsFree', 'Mensagens SMS gratuitas', ''),
-(48927, 'pt_BR:payment.title.confirm', 'Confirmação de transação', ''),
-(48928, 'pt_BR:permission.memberPreferences.manageAdInterests', 'Gerenciar interesses em anúncios', ''),
-(48929, 'pt_BR:profile.action.memberSelfPayment', 'Self payment', ''),
-(48930, 'pt_BR:accountFee.action.run.confirmation', 'Você está prestes a executar uma cobrança de taxa de conta.\n\nPor favor, clique em OK para confirmar', ''),
-(48931, 'pt_BR:memberPos.status.PIN_BLOCKED', 'PIN bloqueado', ''),
-(48932, 'pt_BR:rates.reinitialize', 'Reinicializar índices', ''),
-(48933, 'pt_BR:global.textFormat.PLAIN', 'Texto puro', ''),
-(48934, 'pt_BR:permission.memberCards', 'Cartões', ''),
-(48935, 'pt_BR:transferType.defaultFeedbackLevel', 'Valor da qualificação quando expirado', ''),
-(48936, 'pt_BR:permission.adminMemberInvoices.send', 'Enviar fatura eletrônica a partir do perfil', ''),
-(48937, 'pt_BR:authorizationLevel.authorizer.PAYER', 'Comprador', ''),
-(48938, 'pt_BR:brokerCommissionContract.amount', 'Valor', ''),
-(48939, 'pt_BR:transfer.title.print', 'Informações da transação', ''),
-(48940, 'pt_BR:settings.local.csv.valueSeparator', 'Separador de valores', ''),
-(48941, 'pt_BR:global.quarter.FIRST', 'Primeiro trimestre', ''),
-(48942, 'pt_BR:reports.members_reports.number', 'Número', ''),
-(48943, 'pt_BR:webshop.payment.descriptionText', 'A seguinte descrição foi informada:', ''),
-(48944, 'pt_BR:customImage.title.style', 'Imagens de folha de estilo', ''),
-(48945, 'pt_BR:menu.member.logout', 'Sair', ''),
-(48946, 'pt_BR:permission.brokerDocuments', 'Documentos', ''),
-(48947, 'pt_BR:memberRecordType.action.new', 'Inserir novo tipo de registro de membro', ''),
-(48948, 'pt_BR:contact.title.list', 'Lista de contatos', ''),
-(48949, 'pt_BR:activities.sinceActive', 'Membro desde', ''),
-(48950, 'pt_BR:externalAccount.title.overview', 'Contas externas', ''),
-(48951, 'pt_BR:memberImport.status.INVALID_EMAIL', 'O e-mail é inválido: {0}', ''),
-(48952, 'pt_BR:loan.setExpiredStatus', 'Marcar este empréstimo como ''{0}''', ''),
-(48953, 'pt_BR:permission.adminMemberPos.manage', 'Gerenciar', ''),
-(48954, 'pt_BR:guaranteeType.status.DISABLED', 'Inativo', ''),
-(48955, 'pt_BR:accountFee.error.mustRechargeOldestLogFirst', 'Esta execução da taxa não pode ser cobrada agora porque existe uma execução mais antiga que também falhou.\n\nPor favor, tente rodar a mais antiga primeiro.', ''),
-(48956, 'pt_BR:permission.adminMembers.import', 'Importar', ''),
-(48957, 'pt_BR:guaranteeType.pendingGuaranteeExpiration.tooltip', 'Representa o período máximo de resposta do emissor/administrador a uma garantia pendente', ''),
-(48958, 'pt_BR:ad.publicationPeriod.permanent', 'Permanente', ''),
-(48959, 'pt_BR:externalTransferProcess.loanDescription', 'Nº {0}, em {1} de {2}', ''),
-(48960, 'pt_BR:memberImport.status.INVALID_CUSTOM_FIELD_VALUE_MIN_LENGTH', '{0} é invalido: o tamanho minimo é {1}.', ''),
-(48961, 'pt_BR:menu.member.account.transfersAwaitingAuthorization', 'Aguardando autorização', ''),
-(48962, 'pt_BR:settings.message.externalChannelPaymentPerformed', 'Pagamento efetuado pelo canal externo', ''),
-(48963, 'pt_BR:group.status', 'Estado', ''),
-(48964, 'pt_BR:accountHistory.period.end', 'Data final', ''),
-(48965, 'pt_BR:alert.member.RECEIVED_VERY_BAD_REFS', 'O membro recebeu muitas referências de valor ''muito ruim''', ''),
-(48966, 'pt_BR:message.type', 'Tipo', ''),
-(48967, 'pt_BR:reports.simulations.aRate.config.graph.title', 'Curva de configuração do índice-A', ''),
-(48968, 'pt_BR:transactionFee.inserted', 'A taxa de transação foi inserida', ''),
-(48969, 'pt_BR:home.operator.news.title', 'Notícias (quadro de mensagens)', ''),
-(48970, 'pt_BR:changeGroup.member.expired', 'A participação no grupo expirou', ''),
-(48971, 'pt_BR:reports.members_reports.system_invoices.invoiceModeRequired', 'É necessário selecionar pelo menos um tipo (entrada / saída) de faturas eletrônicas de membro ou sistema', ''),
-(48972, 'pt_BR:reports.stats.activity.histogram.logins', 'Histograma de acessos por membro', ''),
-(48973, 'pt_BR:errors.javaClass', '{0} deve ser um nome válido de uma classe java atribuível a {1}', ''),
-(48974, 'pt_BR:permission.systemInfoTexts.manage', 'Gerenciar', ''),
-(48975, 'pt_BR:guarantee.loan', 'Exibir', ''),
-(48976, 'pt_BR:loan.changedExpiredStatus', 'O empréstimo foi marcado como ''{0}''', ''),
-(48977, 'pt_BR:serviceOperation.CHARGEBACK', 'Estornar pagamentos', ''),
-(48978, 'pt_BR:loan.totalAmount', 'Valor total', ''),
-(48979, 'pt_BR:customField.member.indexing.MEMBERS_ONLY', 'Somente membros', ''),
-(48980, 'pt_BR:operator.action.create.selectGroup', 'Selecione o grupo', ''),
-(48981, 'pt_BR:accountFee.freeBase', 'Base livre', ''),
-(48982, 'pt_BR:certification.removed', 'A certificação foi removida', ''),
-(48983, 'pt_BR:payment.error.enoughCredits', 'Saldo insuficiente: {0}', ''),
-(48984, 'pt_BR:transactionFee.aRateParameters', 'Parâmetros do índice-A', ''),
-(48985, 'pt_BR:profile.action.listBrokerCommissionContracts', 'Contratos de comissão', ''),
-(48986, 'pt_BR:permission.systemCustomFields.view', 'Ver', ''),
-(48987, 'pt_BR:transferType.fields.title.list', 'Campos customizados', ''),
-(48988, 'pt_BR:home.admin.status.cyclosVersion', 'Versão do Cyclos', ''),
-(48989, 'pt_BR:transfer.chargeback.details', 'Exibir detalhes', ''),
-(48990, 'pt_BR:login.registration.text', 'Você pode se cadastrar clicando no botão abaixo.', ''),
-(48991, 'pt_BR:card.changeCardCode.newCode2', 'Confirmação', ''),
-(48992, 'pt_BR:card.changeCardCode.newCode1', 'Novo código de segurança', ''),
-(48993, 'pt_BR:guarantee.currentCreditFeeValue', 'Taxa de crédito cobrada', ''),
-(48994, 'pt_BR:changePassword.resetAndErrorSending', 'A senha foi reiniciada, porém, o e-mail não pôde ser enviado ao membro', ''),
-(48995, 'pt_BR:group.settings.maxAmountPerDay', 'Valor máximo por dia por tipo de pagamento', ''),
-(48996, 'pt_BR:changeGroup.admin.changed', 'O grupo do administrador foi alterado', ''),
-(48997, 'pt_BR:paymentObligation.buyerName', 'Nome do comprador', ''),
-(48998, 'pt_BR:menu.admin.translation.file', 'Importar / Exportar', ''),
-(48999, 'pt_BR:externalTransferImport.error.importing.invalidMemberId', 'Identificador de membro inválido: {0}', ''),
-(49000, 'pt_BR:currency.dRate.baseMalus', 'Malus base', ''),
-(49001, 'pt_BR:permission.adminMemberLoans.grant', 'Conceder empréstimo', ''),
-(49002, 'pt_BR:global.weekDay.TUESDAY', 'Terça-feira', ''),
-(49003, 'pt_BR:settings.message.cardSecurityCodeBlocked', 'Código de segurança do cartão bloqueado por tentativas inválidas', ''),
-(49004, 'pt_BR:reference.transactionFeedback.role.SELLER', 'Pagamentos recebidos', ''),
-(49005, 'pt_BR:global.datePattern.second', 'ss', ''),
-(49006, 'pt_BR:guarantee.action.cancel', 'Cancelar', ''),
-(49007, 'pt_BR:adInterest.type.SEARCH', 'Demanda', ''),
-(49008, 'pt_BR:messageCategory.noMessageCategories', 'Não há categorias de mensagem disponíveis!', ''),
-(49009, 'pt_BR:member.id', 'Identificador', ''),
-(49010, 'pt_BR:reports.stats.general.growth', 'Crescimento', ''),
-(49011, 'pt_BR:permission.systemGuaranteeTypes.view', 'Ver', ''),
-(49012, 'pt_BR:card.created', 'O cartão foi criado', ''),
-(49013, 'pt_BR:theme.import.error.reading', 'Erro ao importar o tema. Arquivo inválido.', ''),
-(49014, 'pt_BR:permission.adminMemberGuarantees.cancelGuaranteesAsMember', 'Negar / Cancelar garantias', ''),
-(49015, 'pt_BR:reports.members.references.received', 'Referências recebidas', ''),
-(49016, 'pt_BR:reports.stats.activity.topten.login.title', 'Os dez maiores em acessos', ''),
-(49017, 'pt_BR:posLog.date', 'Data', ''),
-(49018, 'pt_BR:permission.operatorMessages.sendToAdministration', 'Enviar para a administração', ''),
-(49019, 'pt_BR:loan.summary.loans', 'Empréstimos', ''),
-(49020, 'pt_BR:translationMessage.title.search', 'Procurar chaves de tradução', ''),
-(49021, 'pt_BR:menu.operator.account.memberPayment', 'Pagamento para Membro', ''),
-(49022, 'pt_BR:settings.local.scheduledTasks', 'Tarefas agendadas', ''),
-(49023, 'pt_BR:settings.type.MESSAGE', 'Notificações', ''),
-(49024, 'pt_BR:conversionSimulation.result.name', 'Nome', ''),
-(49025, 'pt_BR:profile.action.manageAds', 'Gerenciar anúncios', ''),
-(49026, 'pt_BR:changePin.error.mustBeNumeric', 'A senha externa (PIN) pode conter apenas números', ''),
-(49027, 'pt_BR:group.settings.pinBlockTimeAfterMaxTries', 'Tempo de bloqueio do PIN após tentativas inválidas', ''),
-(49028, 'pt_BR:permission.systemAlerts.viewMemberAlerts', 'Ver avisos de membro', ''),
-(49029, 'pt_BR:permission.adminMemberRecords.create', 'Criar', ''),
-(49030, 'pt_BR:accountFee.paymentDirection', 'Sentido do pagamento', ''),
-(49031, 'pt_BR:permission.brokerMemberAccess.transactionPassword', 'Gerenciar senha de transação', ''),
-(49032, 'pt_BR:reports.members.accounts.upper_credits', 'Limite de crédito superior das contas', ''),
-(49033, 'pt_BR:transactionPassword.error.blocked', 'A sua senha de transação está bloqueada.\nPor favor, contate a administração', ''),
-(49034, 'pt_BR:posweb.target.username', 'Nome de usuário (destinatário)', ''),
-(49035, 'pt_BR:permission.adminMemberPreferences', 'Preferências', ''),
-(49036, 'pt_BR:permission.memberPayments.paymentToMember', 'Pagamento para membro', ''),
-(49037, 'pt_BR:permission.memberPayments.request', 'Solicitar pagamentos de outros canais', ''),
-(49038, 'pt_BR:login.action.loginAsMember', 'Acessar como membro', ''),
-(49039, 'pt_BR:settings.mail.smtpUseTLS', 'Usar TLS', ''),
-(49040, 'pt_BR:permission.systemTasks.manageIndexes', 'Gerenciar índices de busca', ''),
-(49041, 'pt_BR:permission.operatorContacts.manage', 'Gerenciar', ''),
-(49042, 'pt_BR:group.customizedFiles.removed', 'O arquivo não está mais customizado para este grupo', ''),
-(49043, 'pt_BR:guarantee.status.ACCEPTED', 'Aceita', ''),
-(49044, 'pt_BR:mailPreferences.newMembers', 'Novos membros cadastrados', ''),
-(49045, 'pt_BR:card.cardCodeChanged', 'Senha do cartão alterada', ''),
-(49046, 'pt_BR:pin.unblocked', 'A senha externa (PIN) foi desbloqueada', ''),
-(49047, 'pt_BR:paymentObligation.selectIssuer', 'Emissor selecionado:', ''),
-(49048, 'pt_BR:smsMailing.broker.all', 'Meus membros registrados', ''),
-(49049, 'pt_BR:customField.operator.visibility.VISIBLE_NOT_EDITABLE', 'Visível e não editável', ''),
-(49050, 'pt_BR:translationMessage.import.type.NEW_AND_EMPTY', 'Importar chaves novas e vazias', ''),
-(49051, 'pt_BR:settings.log.accountFeeLevel.DETAILED', 'Detalhado', ''),
-(49052, 'pt_BR:permission.systemCardTypes.manage', 'Gerenciar tipos de cartão', ''),
-(49053, 'pt_BR:customField.control.RADIO', 'Seletor', ''),
-(49054, 'pt_BR:menu.admin.help.manual', 'Manual', ''),
-(49055, 'pt_BR:cardSecurityCode.error.blocked', 'O código de segurança do cartão agora está temporariamente bloqueado', ''),
-(49056, 'pt_BR:reports.simulations.aRateConfigSimulation.endA', 'Termina em A =', ''),
-(49057, 'pt_BR:menu.operator.help.manual', 'Manual', ''),
-(49058, 'pt_BR:permission.operatorInvoices.sendToMember', 'Enviar para membro', ''),
-(49059, 'pt_BR:profile.action.managePasswords', 'Gerenciar senhas', ''),
-(49060, 'pt_BR:adCategory.error.cantActivateCategoryWithInactiveParent', 'Uma categoria não pode ser ativada se sua categoria mãe está inativa', ''),
-(49061, 'pt_BR:settings.message.newPendingPaymentByBroker', 'Novo pagamento para o corretor autorizar', ''),
-(49062, 'pt_BR:serviceOperation.SMS', 'Enviar mensagens SMS', ''),
-(49063, 'pt_BR:currency.symbol', 'Símbolo', ''),
-(49064, 'pt_BR:reports.current.n_enabled', 'Número de membros ativos', ''),
-(49065, 'pt_BR:fieldMapping.orderModified', 'Ordem do mapeamento de campo modificada', ''),
-(49066, 'pt_BR:reports.members.download_btn', 'Baixar relatório', ''),
-(49067, 'pt_BR:group.title.settings', 'Configurações de grupo', ''),
-(49068, 'pt_BR:reports.stats.groupfilter', 'Filtro de membro', ''),
-(49069, 'pt_BR:accountType.title.new', 'Nova conta', ''),
-(49070, 'pt_BR:reports.stats.finances.expenditure.short', 'Saída', ''),
-(49071, 'pt_BR:payment.error.ratesRequiresLocksOnAllAccounts', 'Com indices ativados, todas as contas têm de ser bloqueadas.\nContate a organização para que configure corretamente as propriedades necessárias do cyclos.', ''),
-(49072, 'pt_BR:externalTransfer.date', 'Data', ''),
-(49073, 'pt_BR:customizedFile.newContentsNotification', 'Há uma nova versão (original) deste arquivo customizado. Confira o seu conteúdo e selecione "resolver conflitos" antes de salvá-lo.', ''),
-(49074, 'pt_BR:guarantee.starts', 'Início', ''),
-(49075, 'pt_BR:loan.queryStatus.ANY_CLOSED', 'Qualquer fechado', ''),
-(49076, 'pt_BR:translationMessage.title.modify', 'Modificar chave de tradução', ''),
-(49077, 'pt_BR:reference.direction.transactionFeedback.RECEIVED', 'Qualificações recebidas', ''),
-(49078, 'pt_BR:reference.date', 'Data', ''),
-(49079, 'pt_BR:menu.admin.accounts.loanPayments', 'Pagamentos de empréstimo', ''),
-(49080, 'pt_BR:settings.message.accountFeeReceived', 'Taxa de conta recebida', ''),
-(49081, 'pt_BR:adminTasks.onlineState.offline', 'O sistema está <b>indisponível</b>', ''),
-(49082, 'pt_BR:guaranteeType.status.ENABLED', 'Ativo', ''),
-(49083, 'pt_BR:permission.memberAds', 'Anúncios', ''),
-(49084, 'pt_BR:reference.action.set', 'Definir referência', ''),
-(49085, 'pt_BR:help.title.statistics', 'Estatísticas', ''),
-(49086, 'pt_BR:externalAccountHistory.transferImport.title', 'Transações de {0} para a importação realizada em {1}', ''),
-(49087, 'pt_BR:pos.status', 'Estado', ''),
-(49088, 'pt_BR:permission.adminMemberLoans.grantWithDate', 'Conceder empréstimo em data no passado', ''),
-(49089, 'pt_BR:reports.simulations.aRate.config.graph.xAxis', 'índice-A (dias)', ''),
-(49090, 'pt_BR:reports.simulations.choose', 'Escolher simulação', ''),
-(49091, 'pt_BR:customizedFile.select.name', 'Selecione o arquivo', ''),
-(49092, 'pt_BR:reports.stats.keydevelopments.grossProduct.allTransactions', 'Para todas as transações', ''),
-(49093, 'pt_BR:createOperator.action.saveAndOpenProfile', 'Salvar e abrir o perfil do operador', ''),
-(49094, 'pt_BR:loanGroup.title.search', 'Procurar grupos de empréstimos', ''),
-(49095, 'pt_BR:smsLog.status.DELIVERED', 'Enviada', ''),
-(49096, 'pt_BR:reports.stats.keydevelopments.numberOfAds.created', 'Anúncios criados', ''),
-(49097, 'pt_BR:permission.brokerInvoices.denyAsMember', 'Negar como membro', ''),
-(49098, 'pt_BR:help.title.settings', 'Configurações', ''),
-(49099, 'pt_BR:guarantee.status.PENDING_ISSUER', 'Pendente pelo emissor', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(49100, 'pt_BR:settings.action.EXPORT', 'Exportar', ''),
-(49101, 'pt_BR:ad.title.view', 'Detalhes do anúncio', ''),
-(49102, 'pt_BR:receipt.transfer.installments', 'Parcelas:', ''),
-(49103, 'pt_BR:document.action.new', 'Inserir novo documento', ''),
-(49104, 'pt_BR:posweb.searchTransactions.noTransactions', 'Não há pagamentos na data especificada', ''),
-(49105, 'pt_BR:document.removeConfirmation', 'Remover documento?', ''),
-(49106, 'pt_BR:changeGroup.admin.permanentlyRemovedMessage', 'O administrador foi removido permanentemente', ''),
-(49107, 'pt_BR:accountFeeLog.rechargingFailed', 'Cobrando novamente os membros que falharam...', ''),
-(49108, 'pt_BR:loan.paymentDate', 'Pagamento', ''),
-(49109, 'pt_BR:accountFee.action.recharge', 'Repetir cobrança', ''),
-(49110, 'pt_BR:category.children', 'Sub categoria', ''),
-(49111, 'pt_BR:adCategory.removed', 'A categoria foi removida', ''),
-(49112, 'pt_BR:menu.operator.account.accountInformation', 'Informações de Conta', ''),
-(49113, 'pt_BR:permission.brokerLoans', 'Empréstimos', ''),
-(49114, 'pt_BR:settings.local.memberSortOrder.ALPHABETICAL', 'Alfabético', ''),
-(49115, 'pt_BR:adImport.status.INVALID_CUSTOM_FIELD', '{0} é inválido: {1}', ''),
-(49116, 'pt_BR:serviceClient.modified', 'O cliente de serviços web foi modificado', ''),
-(49117, 'pt_BR:customField.title.list.ad', 'Campos customizados de anúncio', ''),
-(49118, 'pt_BR:alert.member.negativeVirtualRatedBalance', 'Um balanço negativo virtual de indices foi encontrado na conta {0}. O balanço de indices virtuais foi definido para 0, mas a causa para este erro deve ser verificada.', ''),
-(49119, 'pt_BR:permission.systemCustomImages', 'Imagens customizadas', ''),
-(49120, 'pt_BR:help.title.brokering', 'Corretagem', ''),
-(49121, 'pt_BR:loan.type.SINGLE_PAYMENT', 'Pagamento único', ''),
-(49122, 'pt_BR:externalTransferImport.error.importing', 'Ocorreu um erro ao importar o arquivo de transações', ''),
-(49123, 'pt_BR:menu.admin.accessDevices.pos.search', 'Busca pos', ''),
-(49124, 'pt_BR:permission.adminMemberAds.import', 'Importar', ''),
-(49125, 'pt_BR:invoice.accept.transactionPassword', 'Para aceitar a fatura, você deve fornecer sua senha de transação', ''),
-(49126, 'pt_BR:errorLog.title.details', 'Detalhes do erro', ''),
-(49127, 'pt_BR:customizedFile.modified', 'O arquivo foi modificado', ''),
-(49128, 'pt_BR:adImport.processed', 'Os anúncios foram importados com sucesso', ''),
-(49129, 'pt_BR:posweb.action.logout', 'Desconectar (F10)', ''),
-(49130, 'pt_BR:settings.log.modified', 'As configurações de log foram modificadas', ''),
-(49131, 'pt_BR:permission.systemTranslation.file', 'Importar / exportar para arquivo', ''),
-(49132, 'pt_BR:authorizationLevel.authorizer.BROKER', 'Corretor / administrador', ''),
-(49133, 'pt_BR:settings.mail.resetPassword', 'E-mail de reinicialização da senha', ''),
-(49134, 'pt_BR:permission.brokerDocuments.viewMember', 'Ver documentos individuais de membro', ''),
-(49135, 'pt_BR:payment.chargeback.transactionPassword', 'Para estornar este pagamento, você deve fornecer sua senha de transação', ''),
-(49136, 'pt_BR:invoice.acceptConfirmationMessage.fees', 'Se você aceitar a fatura eletrônica, As seguintes taxas serão aplicadas:', ''),
-(49137, 'pt_BR:serviceClient.name', 'Nome', ''),
-(49138, 'pt_BR:paymentObligation.registrationDate', 'Data de criação', ''),
-(49139, 'pt_BR:adminTasks.onlineState.setOnline', 'Tornar o sistema disponível', ''),
-(49140, 'pt_BR:multiDropDown.singleItemMessage', '1 item selecionado', ''),
-(49141, 'pt_BR:error.rateParameters.creationExpirationSmallerThanEmission', 'Valor de criação do indice-D deve ser maior que o valor de criação do indice-A.', ''),
-(49142, 'pt_BR:card.title.search', 'Busca de cartões', ''),
-(49143, 'pt_BR:reports.members_reports.debits', 'Débitos', ''),
-(49144, 'pt_BR:customField.possibleValue.modified', 'O valor foi modificado', ''),
-(49145, 'pt_BR:virtualKeyboard.full', 'Completo', ''),
-(49146, 'pt_BR:menu.admin.logout', 'Sair', ''),
-(49147, 'pt_BR:externalTransfer.modified', 'Tranferência externa modificada', ''),
-(49148, 'pt_BR:transactionFee.subject.SOURCE', 'Membro que está pagando (origem)', ''),
-(49149, 'pt_BR:loanGroup.title.modify', 'Modificar grupo de empréstimos', ''),
-(49150, 'pt_BR:activities.invoices.outgoing.count', 'No. de saídas', ''),
-(49151, 'pt_BR:settings.log.accountFeeLevel.STATUS', 'Mudanças de estado e erros', ''),
-(49152, 'pt_BR:settings.local.rootUrl', 'URL raiz da aplicação', ''),
-(49153, 'pt_BR:permission.brokerReferences', 'Referências', ''),
-(49154, 'pt_BR:mobile.payment.amount', 'Valor', ''),
-(49155, 'pt_BR:adImport.invalidFormat', 'Formato inválido de arquivo', ''),
-(49156, 'pt_BR:memberImport.status.INVALID_BALANCE', 'O saldo é inválido: {0}', ''),
-(49157, 'pt_BR:adImport.status.INVALID_CATEGORY', 'Categoria inválida: {0}', ''),
-(49158, 'pt_BR:pos.createdAndAssigned', 'POS criado e associado ao membro {0}', ''),
-(49159, 'pt_BR:changePin.newPinConfirmation', 'Confirmar a nova senha externa (PIN)', ''),
-(49160, 'pt_BR:reports.current.member_count_on_group', 'Membros no grupo {0}', ''),
-(49161, 'pt_BR:scheduledPayment.date', 'Data', ''),
-(49162, 'pt_BR:alert.system.rateInitializationFinished', 'Tarefa de inicialização de indices na moeda {0} finalizada para os seguintes indices:\n{1}', ''),
-(49163, 'pt_BR:accountFee.hour', 'Hora', ''),
-(49164, 'pt_BR:global.error.nothingSelected', 'Nada selecionado', ''),
-(49165, 'pt_BR:reports.simulations.aRateConfigSimulation.transactionFee', 'Taxa de transação (para valores padrão)', ''),
-(49166, 'pt_BR:changePassword.error.mustBeAlphaNumeric', 'A senha pode conter apenas letras ou números', ''),
-(49167, 'pt_BR:home.admin.status.memberAlerts', 'Número de avisos de membro', ''),
-(49168, 'pt_BR:alert.system.adminTransactionPasswordBlockedByTries', 'A senha de transação do administrador {0} agora está bloqueada por exceder a quantidade máxima de tentativas ({1}). O endereço IP remoto é {2}', ''),
-(49169, 'pt_BR:customField.ad.showInSearch', 'Exibir em buscas', ''),
-(49170, 'pt_BR:brokerCommissionContract.action.accept', 'Aceitar', ''),
-(49171, 'pt_BR:accountFee.action.running', 'A cobrança da taxa de conta está sendo executada', ''),
-(49172, 'pt_BR:permission.memberLoans.view', 'Ver', ''),
-(49173, 'pt_BR:loan.repaymentType', 'Tipo de pagamento', ''),
-(49174, 'pt_BR:notificationPreferences.disableSms.confirmation', 'Você tem certeza que deseja desativar todas as notificações e operações por SMS?', ''),
-(49175, 'pt_BR:reports.stats.activity.singlePeriod.grossProduct.row2.short', 'Todos', ''),
-(49176, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.numberOfNewMembers', 'Número de novos membros', ''),
-(49177, 'pt_BR:pos.actions.block', 'Bloquear', ''),
-(49178, 'pt_BR:reports.stats.keydevelopments.throughTime.years.title', 'Progresso ao longo do tempo', ''),
-(49179, 'pt_BR:settings.title.file', 'Importar / exportar configurações', ''),
-(49180, 'pt_BR:transfersAwaitingAuthorization.title', 'Pagamentos aguardando autorização', ''),
-(49181, 'pt_BR:settings.message.scheduledPaymentsCancelled', '', ''),
-(49182, 'pt_BR:settings.message.newPendingPaymentByPayer', 'Novo pagamento para o pagante autorizar', ''),
-(49183, 'pt_BR:brokerCommissionContract.endDate.from', 'Terminando a partir de', ''),
-(49184, 'pt_BR:certification.details', 'Detalhes', ''),
-(49185, 'pt_BR:payment.error.manageRelates', 'O usuário logado precisa precisa gerenciar uma das partes do pagamento e estar relacionado com a outra.', ''),
-(49186, 'pt_BR:guaranteeType.action.select', 'Cadastrar garantia', ''),
-(49187, 'pt_BR:rates.reinit.date', 'Data de reinicialização', ''),
-(49188, 'pt_BR:defaultBrokerCommission.noCustomizedByBroker', 'Essa comisssão não foi customizada pelo corretor ainda e está sujeita a mudanças pela administração', ''),
-(49189, 'pt_BR:transactionFee.when.COUNT', 'Transações', ''),
-(49190, 'pt_BR:invoice.action.cancel', 'Cancelar', ''),
-(49191, 'pt_BR:permission.operatorInvoices', 'Faturas eletrônicas', ''),
-(49192, 'pt_BR:theme.title.select', 'Escolha de tema', ''),
-(49193, 'pt_BR:accountType.inserted', 'O tipo de conta foi inserido', ''),
-(49194, 'pt_BR:transfer.paymentEvery', 'Parcela a cada', ''),
-(49195, 'pt_BR:transactionFee.aRateRelation.LINEAR', 'Linear', ''),
-(49196, 'pt_BR:brokering.status', 'Estado', ''),
-(49197, 'pt_BR:member.memberName', 'Nome do membro', ''),
-(49198, 'pt_BR:group.settings.passwordTries.deactivationTime', 'Tempo de desativação após no. máx. de tentativas de senha', ''),
-(49199, 'pt_BR:settings.log.accountFeeLevel.ERRORS', 'Apenas erros', ''),
-(49200, 'pt_BR:conversionSimulation.result.graph.yAxis', 'Valor da taxa', ''),
-(49201, 'pt_BR:card.expirationPeriod.from', 'Expira de', ''),
-(49202, 'pt_BR:cardType.inserted', 'O tipo de cartão foi inserido', ''),
-(49203, 'pt_BR:customizedFile.path', 'Endereço', ''),
-(49204, 'pt_BR:memberRecordType.label', 'Rótulo (plural)', ''),
-(49205, 'pt_BR:customField.ad.visibility.ADMIN', 'Somente administradores', ''),
-(49206, 'pt_BR:loan.remainingAmount', 'Valor restante', ''),
-(49207, 'pt_BR:card.group', 'Grupo', ''),
-(49208, 'pt_BR:settings.alert.title', 'Configurações de alerta', ''),
-(49209, 'pt_BR:settings.local.language.PORTUGUESE_BRAZIL', 'Português (Brasil)', ''),
-(49210, 'pt_BR:payment.title.systemToSystem', 'Transferência entre contas de sistema', ''),
-(49211, 'pt_BR:alert.title', 'Título', ''),
-(49212, 'pt_BR:settings.local.csv.valueSeparator.TAB', 'Tabulação', ''),
-(49213, 'pt_BR:menu.operator.search', 'Buscar', ''),
-(49214, 'pt_BR:menu.member.broker.pendingMembers', 'Membros pendentes', ''),
-(49215, 'pt_BR:permission.adminMemberPos', 'POS', ''),
-(49216, 'pt_BR:sms.type.REQUEST_PAYMENT_ERROR.description', 'Erro na solicitação de pagamento', ''),
-(49217, 'pt_BR:certification.title.view', 'Detalhes da certificação', ''),
-(49218, 'pt_BR:memberPos.date', 'Atribuído ao membro em', ''),
-(49219, 'pt_BR:operator.title.search', 'Pesquisa de operadores', ''),
-(49220, 'pt_BR:global.timePeriod.MILLIS', 'Milisegundo(s)', ''),
-(49221, 'pt_BR:externalTransferType.transferType', 'Tipo de pagamento', ''),
-(49222, 'pt_BR:group.title.settings.registration', 'Configurações de registro', ''),
-(49223, 'pt_BR:createMember.captcha.invalid', 'Você não digitou corretamente os caracteres da imagem', ''),
-(49224, 'pt_BR:reports.stats.activity.singlePeriod.grossProduct', 'Produto bruto por membro', ''),
-(49225, 'pt_BR:reports.stats.general.graph.allGraphs', 'Exibir todos os gráficos', ''),
-(49226, 'pt_BR:externalTransfer.comments', 'Comentários da importação', ''),
-(49227, 'pt_BR:permission.systemLoanGroups', 'Grupos de empréstimos', ''),
-(49228, 'pt_BR:menu.admin.personal.changePassword', 'Alterar senha', ''),
-(49229, 'pt_BR:conversionSimulation.result.input', 'Entrada', ''),
-(49230, 'pt_BR:permission.adminMemberBulkActions.changeGroup', 'Alterar grupo', ''),
-(49231, 'pt_BR:groupFilter.new', 'Inserir novo filtro de grupos', ''),
-(49232, 'pt_BR:invoice.search.period.end', 'Até', ''),
-(49233, 'pt_BR:reports.stats.activity.comparePeriods.grossProduct.yAxis', 'Produto bruto', ''),
-(49234, 'pt_BR:posLog.assignTo', 'Atribuído para', ''),
-(49235, 'pt_BR:externalTransferImport.removeConfirmation', 'Remover esta importação de transações?', ''),
-(49236, 'pt_BR:message.type.EXTERNAL_PAYMENT', 'Pagamentos realizados por canais externos', ''),
-(49237, 'pt_BR:payment.error.sameFromAntToInFee', 'Este pagamento não pode ser realizado porque geraria uma cobrança de taxa de / para a mesma conta', ''),
-(49238, 'pt_BR:message.error.memberWontReceiveNotification', 'O membro selecionado optou por não receber mensagens de outros membros', ''),
-(49239, 'pt_BR:permission.brokerInvoices.sendAsMemberToMember', 'Enviar como membro para membro', ''),
-(49240, 'pt_BR:certification.logs', 'Detalhes das alterações', ''),
-(49241, 'pt_BR:card.activationDate', 'Data de ativação', ''),
-(49242, 'pt_BR:settings.local.applicationUsername', 'Nome de usuário do aplicativo', ''),
-(49243, 'pt_BR:brokerCommission.type', 'Tipo', ''),
-(49244, 'pt_BR:customField.size', 'Tamanho do campo', ''),
-(49245, 'pt_BR:ad.search.noResults', 'Nenhum anúncio foi encontrado', ''),
-(49246, 'pt_BR:settings.local.language.GERMAN', 'Alemão', ''),
-(49247, 'pt_BR:alert.system.accountFeeFinished', 'A taxa de conta {0} foi concluída', ''),
-(49248, 'pt_BR:menu.admin.guarantees', 'Garantias', ''),
-(49249, 'pt_BR:mobile.payment.error.maxAmountPerDay', 'Você já atingiu o valor máximo hoje', ''),
-(49250, 'pt_BR:permission.systemChannels.manage', 'Gerenciar', ''),
-(49251, 'pt_BR:customField.title.list.loanGroup', 'Campos customizados de grupo de empréstimos', ''),
-(49252, 'pt_BR:createMember.created.mailError', 'O membro foi criado, porém, o e-mail de ativação não pôde ser enviado', ''),
-(49253, 'pt_BR:defaultBrokerCommission.status.SUSPENDED', 'Suspensa', ''),
-(49254, 'pt_BR:payment.authorizeOnly.transactionPassword', 'Para autorizar este pagamento, você deve informar sua senha de transação', ''),
-(49255, 'pt_BR:home.status.title', 'Quadro de notificações', ''),
-(49256, 'pt_BR:message.category', 'Categoria', ''),
-(49257, 'pt_BR:permission.memberMessages.view', 'Ver', ''),
-(49258, 'pt_BR:account.status.ACTIVE', 'Ativa', ''),
-(49259, 'pt_BR:certification.status.SCHEDULED', 'Agendada', ''),
-(49260, 'pt_BR:admin.email', 'E-Mail', ''),
-(49261, 'pt_BR:theme.filename', 'Nome do arquivo', ''),
-(49262, 'pt_BR:customField.validation.unique', 'Único', ''),
-(49263, 'pt_BR:settings.local.csv.stringQuote', 'Delimiador de texto', ''),
-(49264, 'pt_BR:reports.stats.activity.throughTime.percentageNoTrade.col1', 'Percentual sem transações', ''),
-(49265, 'pt_BR:alert.system.NEW_VERSION_OF_APPLICATION_PAGE', 'Nova versão de página de aplicação', ''),
-(49266, 'pt_BR:settings.log.transactionLevel.NORMAL', 'Normal', ''),
-(49267, 'pt_BR:menu.member.broker.registerMember', 'Cadastrar membro', ''),
-(49268, 'pt_BR:operator.email', 'E-mail', ''),
-(49269, 'pt_BR:settings.access.memberTimeout', 'Tempo de expiração da sessão do membro', ''),
-(49270, 'pt_BR:externalAccount.inserted', 'A conta externa foi inserida', ''),
-(49271, 'pt_BR:permission.memberMessages.sendToMember', 'Enviar para outro membro', ''),
-(49272, 'pt_BR:externalTransferType.name', 'Nome', ''),
-(49273, 'pt_BR:settings.local.modified', 'As configurações locais foram modificadas', ''),
-(49274, 'pt_BR:settings.local.maxImageHeight', '', ''),
-(49275, 'pt_BR:memberRecord.date', 'Criado em', ''),
-(49276, 'pt_BR:memberImport.initialCredits', 'Créditos', ''),
-(49277, 'pt_BR:fieldMapping.field.DESCRIPTION', 'Descrição', ''),
-(49278, 'pt_BR:pos.title.insert', 'Inserir POS', ''),
-(49279, 'pt_BR:document.currentFile', 'Arquivo atual', ''),
-(49280, 'pt_BR:settings.local.brokeringExpiration', 'Vencimento da corretagem', ''),
-(49281, 'pt_BR:adInterest.title', 'Título descritivo', ''),
-(49282, 'pt_BR:image.details.title', 'Ajustar ordem e legenda da imagem', ''),
-(49283, 'pt_BR:brokerCommissionContract.action.remove', 'Remover', ''),
-(49284, 'pt_BR:menu.member.personal.commissionChargeStatus', 'Estado da cobrança de commissões', ''),
-(49285, 'pt_BR:certification.lock', 'Suspender', ''),
-(49286, 'pt_BR:customImage.system.pay', 'Ícone de pagamento', ''),
-(49287, 'pt_BR:loanPayment.summary.discardedPayments', 'Parcelas descartadas', ''),
-(49288, 'pt_BR:connectedUsers.noOperators', 'Não há operadores conectados no momento', ''),
-(49289, 'pt_BR:memberRecordType.fields.title.list', 'Campos customizados', ''),
-(49290, 'pt_BR:transactionFee.description', 'Descrição', ''),
-(49291, 'pt_BR:member.search.allGroups', 'Todos os grupos', ''),
-(49292, 'pt_BR:reports.members.account.header', 'Conta: {0}', ''),
-(49293, 'pt_BR:ad.category.title.order', 'Definir a ordem das categorias', ''),
-(49294, 'pt_BR:externalTransferImport.error.format.detailed', 'Erro importando transações: Valor inválido: \nLinha: {0}\nColuma: {1}\nCampo: {2}\nValor: {3}', ''),
-(49295, 'pt_BR:settings.type.ALERT', 'Config. de alertas', ''),
-(49296, 'pt_BR:general.error.accountStatusProcessing', 'Erro crítico no processamento das contas.\n\nPor favor, contacte a administração', ''),
-(49297, 'pt_BR:invoice.accepted', 'A fatura eletrônica foi aceita', ''),
-(49298, 'pt_BR:currency.aRate.initDate', 'Data de inicialização para índice-A', ''),
-(49299, 'pt_BR:brokerCommissionContract.accepted', 'O contrato de comissão de corretor foi aceito', ''),
-(49300, 'pt_BR:loan.queryStatus.UNRECOVERABLE', 'Irrecuperável', ''),
-(49301, 'pt_BR:mobile.payment.error.maxAmountPerDay.at', 'Você já atingiu o valor máximo no dia {1}', ''),
-(49302, 'pt_BR:customField.validation.maxLength', 'Tamanho máximo', ''),
-(49303, 'pt_BR:brokerCommissionContract.startDate', 'Data de início', ''),
-(49304, 'pt_BR:permission.brokerMembers', 'Corretagem', ''),
-(49305, 'pt_BR:guaranteeType.pendingGuaranteeExpiration', 'Prazo de resposta para garantias pendentes', ''),
-(49306, 'pt_BR:permission.memberReceiptPrinterSettings.manage', 'Gerenciar impressão de recibos', ''),
-(49307, 'pt_BR:adImport.status.MISSING_PUBLICATION_PERIOD', 'O período de publicação está faltando', ''),
-(49308, 'pt_BR:serviceOperation.ADVERTISEMENTS', 'Busca de anúncios', ''),
-(49309, 'pt_BR:cardType.cardSecurityCode.NOT_USED', 'Não utilizado', ''),
-(49310, 'pt_BR:reports.stats.keydevelopments.throughTime.years.xAxis', 'Anos', ''),
-(49311, 'pt_BR:paymentObligation.logs', 'Detalhes das alterações', ''),
-(49312, 'pt_BR:certification.guarantees', 'Garantias', ''),
-(49313, 'pt_BR:externalTransferProcess.error.noTransferTypeToPay', 'Não há tipos de pagamento possíveis', ''),
-(49314, 'pt_BR:invoice.search.direction', 'Tipo', ''),
-(49315, 'pt_BR:settings.local.chargebacks', 'Estorno de pagamentos', ''),
-(49316, 'pt_BR:profile.action.manageExternalAccess', 'Acesso externo', ''),
-(49317, 'pt_BR:settings.action', 'Ação', ''),
-(49318, 'pt_BR:permission.adminMemberGuarantees.viewGuarantees', 'Ver garantias', ''),
-(49319, 'pt_BR:paymentObligation.sellerName', 'Nome do comprador', ''),
-(49320, 'pt_BR:customField.loanGroup.showInSearch', 'Exibir nas buscas', ''),
-(49321, 'pt_BR:settings.access.usernameGeneration.NONE', 'Manual pelo membro', ''),
-(49322, 'pt_BR:profile.action.authorizedPayments', 'Pagamentos autorizados', ''),
-(49323, 'pt_BR:loanGroup.removed', 'O grupo de empréstimos foi removido', ''),
-(49324, 'pt_BR:reports.members.accounts.balances', 'Balanços das contas', ''),
-(49325, 'pt_BR:transactionFee.title.broker.modify', 'Modificar comissão de corretor', ''),
-(49326, 'pt_BR:profile.action.byBroker.title', 'Ações de corretor para {0}', ''),
-(49327, 'pt_BR:loan.title.repayment', 'Pagamento de empréstimo', ''),
-(49328, 'pt_BR:settings.access.title', 'Configurações de acesso', ''),
-(49329, 'pt_BR:receiptPrinterSettings.created', 'A configuração de impressora de recibos foi criada', ''),
-(49330, 'pt_BR:permission.systemInvoices.view', 'Ver', ''),
-(49331, 'pt_BR:transferType.transactionHierarchyVisibility.ADMIN', 'Somente para administradores', ''),
-(49332, 'pt_BR:loanGroup.inserted', 'Grupo de empréstimos inserido', ''),
-(49333, 'pt_BR:customImage.thumbnail', 'Miniatura', ''),
-(49334, 'pt_BR:menu.member.personal.pos.editPos', 'Editar pos', ''),
-(49335, 'pt_BR:fieldMapping.action.changeOrder', 'Alterar ordem de mapeamento dos campos', ''),
-(49336, 'pt_BR:general.error.indexedRecordNotFound', 'Um registro indexado não foi encontrado.\n\nPor favor, peça à administração para recriar os índices de busca', ''),
-(49337, 'pt_BR:loan.calculate', 'Calcular', ''),
-(49338, 'pt_BR:serviceClient.noResults', 'Não há clientes de serviços web', ''),
-(49339, 'pt_BR:infoText.new', 'Criar novo', ''),
-(49340, 'pt_BR:permission.adminMemberTransactionFeedbacks', 'Qualificações de transação', ''),
-(49341, 'pt_BR:guarantee.sellerUsername', 'Usuário do vendedor', ''),
-(49342, 'pt_BR:payment.firstPaymentDate', 'Primeiro pagamento em', ''),
-(49343, 'pt_BR:transferType.conciliabled', 'Conciliável', ''),
-(49344, 'pt_BR:customField.size.DEFAULT', 'Padrão', ''),
-(49345, 'pt_BR:transfer.relatedTransfers', 'Transações relacionadas', ''),
-(49346, 'pt_BR:account.type', 'Conta', ''),
-(49347, 'pt_BR:registrationAgreement.title.list', 'Termos de adesão', ''),
-(49348, 'pt_BR:currency.aRate.creationValue', 'Índice-A na criação da unidade', ''),
-(49349, 'pt_BR:invoice.title.details', 'Detalhes da fatura eletrônica', ''),
-(49350, 'pt_BR:defaultBrokerCommission.validity.always', 'Sempre', ''),
-(49351, 'pt_BR:paymentObligation.publish', 'Publicar', ''),
-(49352, 'pt_BR:changeGroup.member.changed', 'O grupo do membro foi alterado', ''),
-(49353, 'pt_BR:paymentFilter.allPaymentFilters', 'Todos os filtros de pagamento', ''),
-(49354, 'pt_BR:tranasctionFee.count', 'Número de transações ou dias', ''),
-(49355, 'pt_BR:connectedUsers.disconnectToolTip', 'Desconectar usuário', ''),
-(49356, 'pt_BR:infoText.inserted', 'A mensagem informativa foi inserida', ''),
-(49357, 'pt_BR:settings.message.pendingPaymentAuthorized', 'Pagamento pendente autorizado', ''),
-(49358, 'pt_BR:accountType.limitType', 'Tipo de limite', ''),
-(49359, 'pt_BR:menu.admin.guarantees.listGuaranteeTypes', 'Tipos de garantias', ''),
-(49360, 'pt_BR:customImage.choose', 'Escolha uma imagem', ''),
-(49361, 'pt_BR:loan.expirationDailyInterestRepaymentType', 'Tipo de pagamento para juros de vencimento', ''),
-(49362, 'pt_BR:permission.adminMemberInvoices.accept', 'Aceitar fatura eletrônica', ''),
-(49363, 'pt_BR:loan.queryStatus.IN_PROCESS', 'Em processo', ''),
-(49364, 'pt_BR:settings.message.maxTransactionPasswordTries', 'Excedido o no. máx. de tentativas de senha de transação', ''),
-(49365, 'pt_BR:settings.local.maxImageWidth', '', ''),
-(49366, 'pt_BR:global.month.APRIL', 'Abril', ''),
-(49367, 'pt_BR:authorizationLevel.authorizer.ADMIN', 'Administrador', ''),
-(49368, 'pt_BR:reference.summary.allTime', 'Desde o início', ''),
-(49369, 'pt_BR:webshop.error.paymentDisabled', 'O pagamento para loja virtual não está ativo para este usuário', ''),
-(49370, 'pt_BR:global.params', 'Parâmetros', ''),
-(49371, 'pt_BR:transactionPassword.generate', 'Obter senha de transação', ''),
-(49372, 'pt_BR:profile.action.transactionFeedbacks', 'Qualificações de transações', ''),
-(49373, 'pt_BR:transfer.commision.broker.notcommision', 'Não existe comissões', ''),
-(49374, 'pt_BR:reports.stats.activity.singlePeriod.percentageNoTrade.yAxis', '% membros que não transacionam', ''),
-(49375, 'pt_BR:invoice.title.print', 'Informações da fatura eletrônica', ''),
-(49376, 'pt_BR:memberImport.processed', 'Os membros foram importados com sucesso', ''),
-(49377, 'pt_BR:reports.stats.keydevelopments.throughTime.show', 'Mostrar', ''),
-(49378, 'pt_BR:payment.status.PENDING', 'Aguardando autorização', ''),
-(49379, 'pt_BR:adImport.title.summary', 'Sumário da importação de anúncios', ''),
-(49380, 'pt_BR:permission.memberReceiptPrinterSettings', 'Configuração da impressão de recibos', ''),
-(49381, 'pt_BR:conversionSimulation.result', 'Resultados da simulação de conversão', ''),
-(49382, 'pt_BR:settings.access.externalPaymentPassword', 'Senha solicitada no pagamento externo', ''),
-(49383, 'pt_BR:reports.stats.finances.singlePeriod.expenditure.title', 'Saída conta de sistema', ''),
-(49384, 'pt_BR:notificationPreferences.paidSmsLeft', 'Você tem {0} mensagens SMS pagas restantes (vencimento em {1})', ''),
-(49385, 'pt_BR:login.accessOptions', 'Opções de acesso', ''),
-(49386, 'pt_BR:message.search.noResults', 'Você não possui mensagens para os filtros selecionados', ''),
-(49387, 'pt_BR:memberRecord.lastModified', 'Modificado em', ''),
-(49388, 'pt_BR:memberRecordType.removed', 'O tipo de registro de membro foi removido', ''),
-(49389, 'pt_BR:permission.operatorGuarantees.issueGuarantees', 'Emitir garantias', ''),
-(49390, 'pt_BR:group.account.removeConfirmation', 'Remover conta do grupo?', ''),
-(49391, 'pt_BR:loan.queryStatus.PENDING_AUTHORIZATION', 'Pendente de autorização', ''),
-(49392, 'pt_BR:settings.local.csv.valueSeparator.COMMA', 'Vírgula', ''),
-(49393, 'pt_BR:ticket.status', 'Estado', ''),
-(49394, 'pt_BR:menu.admin.contentManagement.staticFiles', 'Arquivos estáticos', ''),
-(49395, 'pt_BR:quickAccess.accountInfo', 'Extrato(s)', ''),
-(49396, 'pt_BR:externalTransferImport.error.removing', 'A importação de transações não pode ser removido porque possui transações conferidas ou processadas', ''),
-(49397, 'pt_BR:createMember.password', 'Senha', ''),
-(49398, 'pt_BR:memberPos.assign.invalidMember', 'O membro digitado não existe. Por favor escolha outro.', ''),
-(49399, 'pt_BR:pos.search.noResults', 'Nenhum pos encontrado', ''),
-(49400, 'pt_BR:permission.adminMemberAccounts.scheduledInformation', 'Ver pagamentos agendados', ''),
-(49401, 'pt_BR:certification.title.search', 'Busca de certificações', ''),
-(49402, 'pt_BR:permission.adminMemberPayments.cancelAuthorizedAsMember', 'Cancelar pagamento autorizado como membro', ''),
-(49403, 'pt_BR:reports.current.invoices.SYSTEM_INCOMING.count', 'Número de faturas eletrônicas de entrada no sistema', ''),
-(49404, 'pt_BR:conversionSimulation.amount', 'Valor a converter', ''),
-(49405, 'pt_BR:settings.local.transactionNumber.padLength', 'Tamanho do identificador', ''),
-(49406, 'pt_BR:smsMailing.by', 'Enviado por', ''),
-(49407, 'pt_BR:errors.notAllowed.loanInPast', 'Empréstimos concedidos no passado não são possíveis caso os índices estejam ativados.\nIsto é um erro de configuração; por favor contate o administrador do sistema.', ''),
-(49408, 'pt_BR:externalAccountHistory.button.toImportList', 'Ir para importação de lista', ''),
-(49409, 'pt_BR:settings.message.newPendingPaymentByReceiver', 'Novo pagamento para o recebedor autorizar', ''),
-(49410, 'pt_BR:accountType.modified', 'O tipo de conta foi modificado', ''),
-(49411, 'pt_BR:ad.publicationPeriod.end', 'Data de vencimento', ''),
-(49412, 'pt_BR:changePassword.expired', 'Sua senha expirou.\n\nPara continuar você deve mudá-la.', ''),
-(49413, 'pt_BR:permission.systemInfoTexts.view', 'Ver', ''),
-(49414, 'pt_BR:transferType.error.removing', 'Esse tipo de transação não pode ser removida porque ainda existem transações desse tipo', ''),
-(49415, 'pt_BR:reports.current.n_permads', 'Número de anúncios permanentes', ''),
-(49416, 'pt_BR:cardType.modified', 'O tipo de cartão foi modificado', ''),
-(49417, 'pt_BR:group.settings.passwordPolicy.NONE', 'Não reforçar senha', ''),
-(49418, 'pt_BR:brokerCommissionContract.title.view', 'Detalhes do contrato de comissão de corretor', ''),
-(49419, 'pt_BR:pendingMember.resendEmail', 'Re-enviar e-mail (o último foi dia {0})', ''),
-(49420, 'pt_BR:permission.systemAccountFees', 'Taxas de conta', ''),
-(49421, 'pt_BR:externalTransferProcess.paymentDescription', '{0}, de {1}', ''),
-(49422, 'pt_BR:accountFee.title.logDetails', 'Detalhes da execução da taxa de conta', ''),
-(49423, 'pt_BR:global.tooltip.exportCSV', 'Exportar para CSV', ''),
-(49424, 'pt_BR:reports.stats.keydevelopments.grossProduct.title', 'Progressos no produto bruto (= soma dos valores das transações)', ''),
-(49425, 'pt_BR:scheduledPayment.accountType', 'Conta', ''),
-(49426, 'pt_BR:reports.stats.activity.comparePeriods.numberTransactions', 'Número de transações por membro', ''),
-(49427, 'pt_BR:permission.memberDocuments', 'Documentos', ''),
-(49428, 'pt_BR:smsLog.type.MAILING', 'SMS de difusão', ''),
-(49429, 'pt_BR:receiptPrinterSettings.remove.confirm', 'Você tem certeza que deseja excluir esta configuração de impressora de recibos?', ''),
-(49430, 'pt_BR:customField.memberRecord.showInList', 'Exibir nas listas', ''),
-(49431, 'pt_BR:transfer.guarantee', 'Garantias relacionadas', ''),
-(49432, 'pt_BR:ad.maxPicturesMessage', 'O anúncio já tem o número máximo de imagens permitidas', ''),
-(49433, 'pt_BR:memberImport.initialCreditTransferType', 'Tipo de pagamento para saldos positivos', ''),
-(49434, 'pt_BR:reports.stats.activity.developments', 'Progressos', ''),
-(49435, 'pt_BR:global.search.NORMAL', 'Simples', ''),
-(49436, 'pt_BR:settings.local.language.GREEK', 'Grego', ''),
-(49437, 'pt_BR:payment.setDate', 'Pagar no passado', ''),
-(49438, 'pt_BR:smsMailing.mailingType.FREE_FROM_BROKER', 'Difusão gratuita de corretor', ''),
-(49439, 'pt_BR:externalTransferType.description', 'Descrição', ''),
-(49440, 'pt_BR:brokering.change.confirmation.withBroker', '{1} já possui {2} como corretor.\nVocê deseja alterar o corretor para {0}?', ''),
-(49441, 'pt_BR:settings.log.scheduledTaskLevel.ERRORS', 'Apenas erros', ''),
-(49442, 'pt_BR:pos.unassignPos.confirmation', 'Desatribuir POS do membro?', ''),
-(49443, 'pt_BR:global.weekDay.SUNDAY', 'Domingo', ''),
-(49444, 'pt_BR:reports.members.date.current', 'Estado atual', ''),
-(49445, 'pt_BR:transactionFee.brokerGroups', 'Grupos de corretores', ''),
-(49446, 'pt_BR:reports.stats.general.payments', 'pagamentos', ''),
-(49447, 'pt_BR:permission.operatorPayments.authorize', 'Autorizar ou negar', ''),
-(49448, 'pt_BR:settings.local.csv.recordSeparator.CR_LF', 'DOS (char 10 + char 13)', ''),
-(49449, 'pt_BR:settings.local.decimalInputMethod.LTR', 'Esquerda para a direita (deve-se digitar o separador decimal)', ''),
-(49450, 'pt_BR:permission.memberInvoices.sendToMember', 'Enviar para membro', ''),
-(49451, 'pt_BR:loan.grant.confirmation.fees', 'Se você conceder esse empréstimo, as seguintes taxas serão aplicadas:', ''),
-(49452, 'pt_BR:customField.possibleValue.title.insert', 'Inserir valor', ''),
-(49453, 'pt_BR:guaranteeType.model.WITH_PAYMENT_OBLIGATION', 'Com obrigações de pagamento', ''),
-(49454, 'pt_BR:error.rateParameters.initExpirationBeforeEmission', 'Combinação dos valores de inicialização do indice-A levam a uma data de emissão que é posterior a data de expiração seguinte dos valores de inicialização do  índice-D.', ''),
-(49455, 'pt_BR:transactionFee.subject.SYSTEM', 'Conta de sistema', ''),
-(49456, 'pt_BR:reports.members.ads.active', 'Ativo', ''),
-(49457, 'pt_BR:permission.systemStatus', 'Estado do sistema', ''),
-(49458, 'pt_BR:menu.admin.alerts.member', 'Avisos de membro', ''),
-(49459, 'pt_BR:pos.removed', 'O POS foi removido', ''),
-(49460, 'pt_BR:group.copySettingsFrom', 'Copiar configurações de', ''),
-(49461, 'pt_BR:permission.adminMembers.managePending', 'Gerenciar membros pendentes', ''),
-(49462, 'pt_BR:transfer.paymentCount', 'Nº de parcelas', ''),
-(49463, 'pt_BR:quickAccess.searchAds', 'Procurar anúncios', ''),
-(49464, 'pt_BR:message.type.REFERENCE', 'Referência recebida', ''),
-(49465, 'pt_BR:alert.system.applicationShutdown', 'Aplicação finalizada', ''),
-(49466, 'pt_BR:permission.adminMemberCards.cancel', 'Cancelar', ''),
-(49467, 'pt_BR:global.weekDay.WEDNESDAY', 'Quarta-feira', ''),
-(49468, 'pt_BR:help.title.home', 'Início', ''),
-(49469, 'pt_BR:customField.title.modify.operator', 'Modificar campo customizado de operador', ''),
-(49470, 'pt_BR:paymentObligation.title.searchPaymentObligations', 'Busca de obrigações de pagamento', ''),
-(49471, 'pt_BR:reports.stats.systemAccountFilter', 'Conta de sistema', ''),
-(49472, 'pt_BR:customImage.system.mobileSplash_medium', 'Mobile: Imagem inicial media', ''),
-(49473, 'pt_BR:document.title.modify', 'Modificar documento', ''),
-(49474, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.numberOfNewMembers.short', 'Novo', ''),
-(49475, 'pt_BR:permission.systemAdCategories.file', 'Exportar / importar para arquivo', ''),
-(49476, 'pt_BR:brokerCommissionContract.status', 'Estado', ''),
-(49477, 'pt_BR:theme.style.LOGIN', 'Página de login', ''),
-(49478, 'pt_BR:group.settings.passwordPolicy', 'Política de senha', ''),
-(49479, 'pt_BR:transactionFee.chargeType.D_RATE', 'Índice-D', ''),
-(49480, 'pt_BR:reports.stats.activity.throughTime.percentageNoTrade', 'Percentual de membros que não transacionam', ''),
-(49481, 'pt_BR:settings.mailTranslation.title', 'Tradução dos e-mails', ''),
-(49482, 'pt_BR:transactionFee.name', 'Nome', ''),
-(49483, 'pt_BR:guaranteeType.authorizedBy.NONE', 'Não necessita autorização', ''),
-(49484, 'pt_BR:settings.message.externalChannelPaymentRequestExpiredReceiver', 'Solicitação de pagamento pelo canal externo expirada pelo recebedor', ''),
-(49485, 'pt_BR:group.account.title.modify', 'Modificar configurações de conta para o grupo {0}', ''),
-(49486, 'pt_BR:permission.adminAdminRecords.delete', 'Apagar', ''),
-(49487, 'pt_BR:settings.local.emailRequired', 'E-mail obrigatório para membros', ''),
-(49488, 'pt_BR:customImage.system.pending', 'Pagamento externo pendente', ''),
-(49489, 'pt_BR:createMember.public.awaitingMailValidation', 'Obrigado por cadastrar-se.\n\nPara validar seu endereço de e-mail, um mail está sendo enviado, com instruções sobre como prosseguir', ''),
-(49490, 'pt_BR:guarantee.creditFee', 'Taxa de crédito', ''),
-(49491, 'pt_BR:global.up', 'Subir', ''),
-(49492, 'pt_BR:invoice.status.DENIED', 'Negada', ''),
-(49493, 'pt_BR:reference.transactionFeedback.saved', 'A qualificação foi salva', ''),
-(49494, 'pt_BR:permission.systemGroups.manageBroker', 'Gerenciar grupos de corretores', ''),
-(49495, 'pt_BR:reports.stats.general.transferType.chooseOne', 'Escolha um tipo de transferência', ''),
-(49496, 'pt_BR:externalTransferImport.imported', 'O arquivo foi importado com sucesso', ''),
-(49497, 'pt_BR:menu.member.preferences', 'Opções', ''),
-(49498, 'pt_BR:loanGroup.name', 'Nome do grupo', ''),
-(49499, 'pt_BR:customImage.system.message_read', 'Ícone de mensagem lida', ''),
-(49500, 'pt_BR:permission.adminMemberPos.unblockPin', 'Desbloquear senha externa', ''),
-(49501, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.title', 'Avanços no número de membros', ''),
-(49502, 'pt_BR:alert.system.maxIncorrectLoginAttempts', 'O no. máximo de tentativas de acesso ({0}) com nome de usuário incorreto foi atingido a partir do IP {1}', ''),
-(49503, 'pt_BR:document.visibility.MEMBER', 'Membro', ''),
-(49504, 'pt_BR:alert.system.ADMIN_TRANSACTION_PASSWORD_BLOCKED_BY_TRIES', 'Senha de transação de administrador bloqueada pelo número de tentativas inválidas', ''),
-(49505, 'pt_BR:group.settings.smsAdditionalChargedPeriod', 'Período de expiração do pacote pago', ''),
-(49506, 'pt_BR:customImage.system.noPicture', 'Sem imagens', ''),
-(49507, 'pt_BR:reference.feedbackComments', 'Qualificação do comprador', ''),
-(49508, 'pt_BR:sms.error.type.NO_SMS_LEFT', 'Sem mensgens disponíveis', ''),
-(49509, 'pt_BR:changePin.newPin', 'Nova senha externa (PIN)', ''),
-(49510, 'pt_BR:reports.members.ads.permanent_ads', 'Anúncios permanentes', ''),
-(49511, 'pt_BR:permission.operatorReports.showAccountInformation', 'Exibir informações da conta', ''),
-(49512, 'pt_BR:global.cancel', 'Cancelar', ''),
-(49513, 'pt_BR:externalAccount.error.removing', 'A conta externa não foi removida porque está sendo usada atualmente', ''),
-(49514, 'pt_BR:quickAccess.searchMembers', 'Procurar membros', ''),
-(49515, 'pt_BR:group.account.inserted', 'A conta de grupo foi inserida', ''),
-(49516, 'pt_BR:group.permissions', 'Editar as permissões', ''),
-(49517, 'pt_BR:ad.externalPublication', 'Publicação externa', ''),
-(49518, 'pt_BR:transactionFee.whichBroker.DESTINATION', 'Corretor do membro que está recebendo', ''),
-(49519, 'pt_BR:guaranteeType.feeType.VARIABLE_ACCORDING_TO_TIME', '% anual', ''),
-(49520, 'pt_BR:settings.message.general.title', 'Notificações gerais', ''),
-(49521, 'pt_BR:pos.unassigned', 'O POS foi desatribuído do membro', ''),
-(49522, 'pt_BR:customField.control.TEXTAREA', 'Área de texto', ''),
-(49523, 'pt_BR:settings.mail.smtpServer', 'Nome do host', ''),
-(49524, 'pt_BR:home.admin.status.connectedMembers', 'Número de membros conectados', ''),
-(49525, 'pt_BR:payment.confirmation.cancel', 'Você está prestes a cancelar este pagamento.\n\nPor favor, clique em OK para confirmar', ''),
-(49526, 'pt_BR:theme.select.message', 'Escolha o tema', ''),
-(49527, 'pt_BR:customizedFile.type.STYLE', 'Estilo', ''),
-(49528, 'pt_BR:permission.adminMemberBulkActions', 'Ações em massa', ''),
-(49529, 'pt_BR:profile.action.memberPos', 'Gerenciar POS', ''),
-(49530, 'pt_BR:home.status.openInvoices', 'Você tem {0} fatura(s) eletrônica(s) em aberto', ''),
-(49531, 'pt_BR:permission.adminMemberPos.view', 'Ver', ''),
-(49532, 'pt_BR:permission.brokerRemarks.manage', 'Gerenciar', ''),
-(49533, 'pt_BR:permission.adminAdminAccess.transactionPassword', 'Gerenciar senha de transação', ''),
-(49534, 'pt_BR:group.settings.externalAdPublication.DISABLED', 'Desabilitada', ''),
-(49535, 'pt_BR:settings.message.scheduledPaymentsCancelledToOther', '', ''),
-(49536, 'pt_BR:reports.stats.keydevelopments.throughTime.selectMonths', 'Selecione meses e anos', ''),
-(49537, 'pt_BR:transfer.aRate', 'Índice-A', ''),
-(49538, 'pt_BR:fieldMapping.title.modify', 'Modificar mapeamento de campo', ''),
-(49539, 'pt_BR:payment.confirmation.fees', 'As seguintes taxas serão aplicadas se você aceitar:', ''),
-(49540, 'pt_BR:brokerCommission.stopConfirmation', 'Interromper a cobrança dessa comissão de corretor significa ajustar seu valor para 0 e fechar todos os contratos relativos a ela. \nVocê tem certeza de que deseja fazer isso?', ''),
-(49541, 'pt_BR:settings.alert.givenVeryBadRefs', 'Referências "Péssimo" dadas', ''),
-(49542, 'pt_BR:memberRecordType.title.insert', 'Novo tipo de registro de membro', ''),
-(49543, 'pt_BR:permission.systemCustomImages.manage', 'Gerenciar', ''),
-(49544, 'pt_BR:permission.systemSettings.manageLocal', 'Gerenciar configurações de local', ''),
-(49545, 'pt_BR:menu.member.account.requestPayment', 'Solicitar pagamento', ''),
-(49546, 'pt_BR:changePin.title.of', 'Alterar a senha externa (PIN) de {0}', ''),
-(49547, 'pt_BR:guaranteeType.fee.paidBy', 'Pago por', ''),
-(49548, 'pt_BR:customField.action.newPossibleValue', 'Novo valor possível', ''),
-(49549, 'pt_BR:transferType.invalidDestinationType', 'A moeda da conta de destino não pode ser diferente da moeda da conta de origem', ''),
-(49550, 'pt_BR:customImage.uploaded', 'A imagem foi enviada, caso não seja exibida recarregue a página.', ''),
-(49551, 'pt_BR:permission.adminMemberAccess', 'Acesso', ''),
-(49552, 'pt_BR:theme.remove.error', 'O tema não pôde ser removido', ''),
-(49553, 'pt_BR:settings.log.transactionLevel', 'Nível do log de transações', ''),
-(49554, 'pt_BR:customField.title.insert.operator', 'Novo campo customizado de operador', ''),
-(49555, 'pt_BR:global.ok', 'Ok', ''),
-(49556, 'pt_BR:account.dRate', 'Índice-D', ''),
-(49557, 'pt_BR:conversionSimulation.aRate', 'Índice-A', ''),
-(49558, 'pt_BR:category.status.ACTIVE', 'Ativa', ''),
-(49559, 'pt_BR:paymentObligation.error.certificationAmountExceeded', 'Valor excedido para a certificação em {0}', ''),
-(49560, 'pt_BR:settings.log.webServiceLevel', 'Nível de log de serviços web', ''),
-(49561, 'pt_BR:changePin.title.my', 'Alterar a minha senha externa (PIN)', ''),
-(49562, 'pt_BR:global.no', 'Não', ''),
-(49563, 'pt_BR:group.nature', 'Tipo', ''),
-(49564, 'pt_BR:accountFee.manual', 'Manual', ''),
-(49565, 'pt_BR:adImport.successfulAds', 'Anúncios ok', ''),
-(49566, 'pt_BR:certification.title.new', 'Nova certificação', ''),
-(49567, 'pt_BR:profile.action.changeBroker', 'Selecionar corretor', ''),
-(49568, 'pt_BR:payment.action.block', 'Bloquear', ''),
-(49569, 'pt_BR:settings.type.ACCESS', 'Config. de acesso', ''),
-(49570, 'pt_BR:creditLimit.modified', 'O limite de crédito foi modificado', ''),
-(49571, 'pt_BR:permission.memberReports.view', 'Ver', ''),
-(49572, 'pt_BR:defaultBrokerCommission.error.maxValueExceeded', '{0}: o valor não pode ser maior do que {1}', ''),
-(49573, 'pt_BR:paymentRequest.error.noChannels', 'Não existe nenhum canal para enviar uma solicitação de pagamento.', ''),
-(49574, 'pt_BR:smsMailing.groups', 'Grupos', ''),
-(49575, 'pt_BR:reports.stats.keydevelopments.transactionAmount.highest.short', 'Mais alta', ''),
-(49576, 'pt_BR:changeGroup.operator.confirmPermanentRemove', 'Remover o operador permanentemente?', ''),
-(49577, 'pt_BR:member.brokerName', 'Nome do corretor', ''),
-(49578, 'pt_BR:document.removed', 'O documento foi removido', ''),
-(49579, 'pt_BR:session.loggedAs', 'Usuário: {0}', ''),
-(49580, 'pt_BR:sms.type.GENERAL.description', 'Geral', ''),
-(49581, 'pt_BR:customField.title.insert.memberRecord', 'Novo campo customizado para registro de membro {0}', ''),
-(49582, 'pt_BR:guarantee.createGuarantee', 'Criar garantia', ''),
-(49583, 'pt_BR:memberImport.confirm', 'Importar', ''),
-(49584, 'pt_BR:guaranteeType.feeType.PERCENTAGE', '%', ''),
-(49585, 'pt_BR:invoice.status.CANCELLED', 'Cancelada', ''),
-(49586, 'pt_BR:externalAccountHistory.title', 'Transações de {0}', ''),
-(49587, 'pt_BR:memberPos.numberOfCopies', 'Número de cópias', ''),
-(49588, 'pt_BR:accountHistory.title.of', 'Transações de {0} em {1}', ''),
-(49589, 'pt_BR:ad.result.by', 'Publicado por {0}', ''),
-(49590, 'pt_BR:permission.brokerCards', 'Cartões', ''),
-(49591, 'pt_BR:customImage.system.incomplete', 'Pagamento externo não conciliado', ''),
-(49592, 'pt_BR:payment.manualDate', 'Data de pagamento', ''),
-(49593, 'pt_BR:permission.adminMemberGroups', 'Grupos de membros', ''),
-(49594, 'pt_BR:notificationPreferences.acceptFreeMailing', 'Receber mensagens SMS de difusão gratuitas', ''),
-(49595, 'pt_BR:guarantee.paymentObligations', 'Obrigações de pagamento', ''),
-(49596, 'pt_BR:reports.stats.taxes.paid.legend', 'Exibir estatísticas de taxas', ''),
-(49597, 'pt_BR:settings.message.adExpiration', 'Vencimento do anúncio', ''),
-(49598, 'pt_BR:reports.stats.keydevelopments.highestAmountPerTransaction', 'Maior valor por transação', ''),
-(49599, 'pt_BR:messageCategory.removeConfirmation', 'Remover categoria de mensagem?', ''),
-(49600, 'pt_BR:permission.brokerPos.discard', 'Descartar', ''),
-(49601, 'pt_BR:posweb.client.cardSecurityCode', 'Código de segurança', ''),
-(49602, 'pt_BR:permission.brokerPos.view', 'Ver', ''),
-(49603, 'pt_BR:accountFeeLog.amount', 'Valor', ''),
-(49604, 'pt_BR:accountHistory.title.my', 'Transações de {1}', ''),
-(49605, 'pt_BR:externalTransfer.description', 'Descrição', ''),
-(49606, 'pt_BR:reports.stats.activity.comparePeriods.grossProduct', 'Produto bruto por membro', ''),
-(49607, 'pt_BR:certification.issuerName', 'Nome do emissor', ''),
-(49608, 'pt_BR:externalAccountHistory.error.cannotDeleteExternalTransfer', 'Apenas pagamentos pendentes podem ser deletados', ''),
-(49609, 'pt_BR:pos.error.unvailable', 'Esse POS não está disponível para ser associado a um membro', ''),
-(49610, 'pt_BR:adminTasks.indexes.type.Member', 'Membros', ''),
-(49611, 'pt_BR:channel.internalName', 'Nome interno', ''),
-(49612, 'pt_BR:reports.stats.activity.whatToShow.DISTRIBUTION', 'Distribuição', ''),
-(49613, 'pt_BR:permission.systemErrorLog.view', 'Ver', ''),
-(49614, 'pt_BR:externalTransferImport.period.end', 'Até o dia', ''),
-(49615, 'pt_BR:reports.stats.keydevelopments.throughTime.quarters', 'Ao longo dos trimestres', ''),
-(49616, 'pt_BR:alert.member.PIN_BLOCKED_BY_TRIES', 'Senha externa (PIN) bloqueado por tentativas inválidas', ''),
-(49617, 'pt_BR:reports.stats.activity.developments.numberOfTransactions', 'Número de transações', ''),
-(49618, 'pt_BR:reports.members.date.empty', 'Data e hora deve ser informada', ''),
-(49619, 'pt_BR:customField.possibleValue.field', 'Campo', ''),
-(49620, 'pt_BR:receiptPrinterSettings.title.new', 'Nova configuração de impressora de recibos', ''),
-(49621, 'pt_BR:alert.system.rateInitializationStarted', 'Tarefa de inicialização de indice na moeda {0} iniciado para os seguintes indices: \n{1}\nVeja a mensagem enviada para você.', ''),
-(49622, 'pt_BR:brokerCommissionContract.status.ACCEPTED', 'Aceito', ''),
-(49623, 'pt_BR:menu.member.personal.contacts', 'Contatos', ''),
-(49624, 'pt_BR:customField.possibleValue.enabled', 'Ativo', ''),
-(49625, 'pt_BR:settings.access.usernameGeneration', 'Geração de nome de usuário', ''),
-(49626, 'pt_BR:group.settings.passwordLength', 'Tamanho da senha', ''),
-(49627, 'pt_BR:member.bulkActions.error.emptyQuery', 'Você deve selecionar ao menos um filtro', ''),
-(49628, 'pt_BR:brokerCommission.type.commissionContract', 'Contrato de comissão', ''),
-(49629, 'pt_BR:reports.members.ads.expired_ads', 'Anúncios vencidos', ''),
-(49630, 'pt_BR:menu.admin.settings.channels', 'Channels', ''),
-(49631, 'pt_BR:permission.memberAds.publish', 'Publicar', ''),
-(49632, 'pt_BR:reports.stats.paymentfilter', 'Filtro de pagamentos', ''),
-(49633, 'pt_BR:externalAccount.title.modify', 'Modificar conta externa', ''),
-(49634, 'pt_BR:help.title.advertisements', 'Anúncios', ''),
-(49635, 'pt_BR:reports.stats.activity.keyParams', 'Parâmetros-chave para a atividade', ''),
-(49636, 'pt_BR:member.lastLogin', 'Último acesso', ''),
-(49637, 'pt_BR:transactionPassword.error.permissionDenied', 'Você não tem pemissões suficientes para gerar a senha de transação', ''),
-(49638, 'pt_BR:customField.member.access.BROKER', 'Corretor', ''),
-(49639, 'pt_BR:changeGroup.action.remove', 'Remover permanentemente', ''),
-(49640, 'pt_BR:mailPreferences.systemInvoices', 'Faturas de sistema', ''),
-(49641, 'pt_BR:guarantee.amountToCharge', 'A ser cobrado', ''),
-(49642, 'pt_BR:global.pagination.tooltip.next', 'Próxima página', ''),
-(49643, 'pt_BR:memberRecord.search.keywords', 'Palavras-chave', ''),
-(49644, 'pt_BR:paymentObligation.expire', 'Vencimento', ''),
-(49645, 'pt_BR:reports.current.n_schedads', 'Número de anúncios agendados', ''),
-(49646, 'pt_BR:group.defaultAcceptFreeMailing', 'Aceitar SMS de difusão gratuitos por padrão', ''),
-(49647, 'pt_BR:profile.action.payment', 'Fazer pagamento', ''),
-(49648, 'pt_BR:ad.title', 'Título', ''),
-(49649, 'pt_BR:changePassword.newPasswordConfirmation', 'Confirme a nova senha', ''),
-(49650, 'pt_BR:currency.inserted', 'A moeda foi inserida', ''),
-(49651, 'pt_BR:loan.status.REPAID', 'Pago', ''),
-(49652, 'pt_BR:permission.brokerMemberPayments.blockScheduledAsMember', 'Bloquear pagamento agendado como membro', ''),
-(49653, 'pt_BR:settings.local.language.DUTCH', 'Holandês', ''),
-(49654, 'pt_BR:pos.status.ACTIVE', 'Ativo', ''),
-(49655, 'pt_BR:member.broker', 'Corretor', ''),
-(49656, 'pt_BR:session.firstLogin', 'Primeiro acesso', ''),
-(49657, 'pt_BR:groupFilter.groups', 'Grupos', ''),
-(49658, 'pt_BR:alert.type.MEMBER', 'Membro', ''),
-(49659, 'pt_BR:mobile.payment.title.confirm', 'Confirmar Pagamento', ''),
-(49660, 'pt_BR:menu.member.broker.brokerCommissionContracts', 'Contratos de comissões', ''),
-(49661, 'pt_BR:sms.type.INFO_TEXT_ERROR', 'Erro em mensagem informativa', ''),
-(49662, 'pt_BR:alert.system.rateInitializationFailed', 'Tarefa de inicialização de indice na moeda {0} falhou na transação nº {1} devido a uma exceção levantada.\nVeja os logs de erros para detalhes.', ''),
-(49663, 'pt_BR:settings.message.pendingPaymentCanceled', 'Pagamento pendente cancelado', ''),
-(49664, 'pt_BR:guaranteeType.removed', 'O tipo de garantia foi excluído', ''),
-(49665, 'pt_BR:operator.search.noResults', 'Nenhum operador encontrado', ''),
-(49666, 'pt_BR:group.settings.passwordTries.deactivationTime.number', 'Tempo de desativação (qtde.) após no. máx. de tentativas de senha', ''),
-(49667, 'pt_BR:changeChannels.disableChannels', 'Desativar canais', ''),
-(49668, 'pt_BR:permission.module.type.MEMBER', 'Permissões de membro de {0}', ''),
-(49669, 'pt_BR:receiptPrinterSettings.new', 'Criar novo', ''),
-(49670, 'pt_BR:paymentObligation.pack.selection', 'Para selecionar um conjunto de obrigações de pagamento, você deve filtrar por moeda e comprador', ''),
-(49671, 'pt_BR:posweb.client.loginPassword', 'Senha', ''),
-(49672, 'pt_BR:reports.members.presentation', 'Relatórios de transações de membro', ''),
-(49673, 'pt_BR:externalTransfer.status.COMPLETE_PENDING', 'Completo e pendente', ''),
-(49674, 'pt_BR:permission.systemLoanGroups.view', 'Ver', ''),
-(49675, 'pt_BR:transfersAwaitingAuthorization.onlyWithoutBroker', 'Somente se corretores não puderem autorizar', ''),
-(49676, 'pt_BR:menu.admin.alerts.errorLogHistory', 'Histórico de erros', ''),
-(49677, 'pt_BR:reports.stats.keydevelopments.numberOfAds.active.short', 'Ativo', ''),
-(49678, 'pt_BR:customField.member.visibilityAccess', 'Exibir no perfil para', ''),
-(49679, 'pt_BR:smsMailing.title.send', 'Enviar nova mensagem SMS de difusão', ''),
-(49680, 'pt_BR:loanPayment.title.search', 'Procurar pagamentos de empréstimo', ''),
-(49681, 'pt_BR:group.settings.maxAdPublicationTime.number', 'Tempo máx. de publicação do anúncio (qtde.)', ''),
-(49682, 'pt_BR:invoice.status.EXPIRED', 'Vencida', ''),
-(49683, 'pt_BR:reports.stats.taxes.totalSum', 'Soma total', ''),
-(49684, 'pt_BR:permission.adminMemberInvoices.cancelAsMember', 'Cancelar fatura eletrônica como membro', ''),
-(49685, 'pt_BR:customField.inserted', 'O campo customizado foi inserido', ''),
-(49686, 'pt_BR:transferAuthorization.action.DENY', 'Negado', ''),
-(49687, 'pt_BR:transfer.description', 'Descrição', ''),
-(49688, 'pt_BR:changePin.error.sameAsLoginOrTransactionPassword', 'A senha externa (PIN) não pode ser igual às senhas de login ou transação', ''),
-(49689, 'pt_BR:settings.message.remark', 'Comentário', ''),
-(49690, 'pt_BR:settings.message.transactionFeedbackRequest', 'Requisição para qualificar de transação', ''),
-(49691, 'pt_BR:receiptPrinterSettings.localPrinter', 'Imprimir neste computador com', ''),
-(49692, 'pt_BR:createMember.public.awaitingPassword', 'Obrigado por cadastrar-se!\n\nVocê receberá sua senha por e-mail em alguns instantes', ''),
-(49693, 'pt_BR:changeGroup.error.remove', 'Este usuário não pode ser removido permanentemente, pois já esteve ativo no sistema.\nVocê pode movê-lo para um grupo removido.', ''),
-(49694, 'pt_BR:posLog.status', 'Estado', ''),
-(49695, 'pt_BR:transfer.from', 'De', ''),
-(49696, 'pt_BR:account.hideWhenNoCreditLimit', 'Ocultar quando não há limite de crédito', ''),
-(49697, 'pt_BR:settings.local.adResultDisplay', 'Exibir resultado da lista de anúncios', ''),
-(49698, 'pt_BR:profile.action.manageReferences', 'Gerenciar referências', ''),
-(49699, 'pt_BR:group.account.allAccountsOnGroup', 'Todas as contas possíveis já estão associadas ao grupo', ''),
-(49700, 'pt_BR:transactionFee.modified', 'A taxa de transação foi modificada', ''),
-(49701, 'pt_BR:memberRecord.search.fromDate', 'Data de criação', ''),
-(49702, 'pt_BR:sms.error.type.NO_PHONE', 'Não foi definido o telefone celular', ''),
-(49703, 'pt_BR:reports.stats.general.appliedFilters', 'Filtros usados', ''),
-(49704, 'pt_BR:group.initialGroupShow', 'Mostrar como', ''),
-(49705, 'pt_BR:customImage.system.mobileLogo', 'Logotipo de acesso móvel', ''),
-(49706, 'pt_BR:disconnect.disconnected', 'O usuário foi desconectado', ''),
-(49707, 'pt_BR:theme.stylesToExport', 'Estilos exportados', ''),
-(49708, 'pt_BR:reports.stats.activity.histogram.logins.yAxis', 'Número de membros', ''),
-(49709, 'pt_BR:posweb.searchTransactions.print', 'Clique aqui ou aperte F4 para imprimir', ''),
-(49710, 'pt_BR:global.datePattern.day', 'dd', ''),
-(49711, 'pt_BR:profile.action.simulateConversion', 'Simular conversão', ''),
-(49712, 'pt_BR:alert.search.date.end', 'Até a data', ''),
-(49713, 'pt_BR:smsLog.mailingType', 'Tipo de difusão', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(49714, 'pt_BR:home.status.newPayments', 'Você recebeu {0} novos pagamentos desde o último login', ''),
-(49715, 'pt_BR:customField.operator.visibility', 'Visibilidade para o operador', ''),
-(49716, 'pt_BR:menu.admin.usersGroups', 'Usuários e grupos', ''),
-(49717, 'pt_BR:permission.adminMemberAccounts.creditLimit', 'Ajustar limite de crédito', ''),
-(49718, 'pt_BR:reports.stats.activity.throughTime.loginTimes.yAxis', 'Acessos / membro', ''),
-(49719, 'pt_BR:settings.message.adminMemberAlert', 'Alertas de membros', ''),
-(49720, 'pt_BR:menu.admin.ads.importAds', 'Importar anúncios', ''),
-(49721, 'pt_BR:defaultBrokerCommission.status.ACTIVE', 'Ativa', ''),
-(49722, 'pt_BR:externalTransfer.amount', 'Valor', ''),
-(49723, 'pt_BR:group.selectInitialGroup', 'Selecionar ao registrar um membro', ''),
-(49724, 'pt_BR:message.type.CERTIFICATION', 'Certificações', ''),
-(49725, 'pt_BR:transactionFee.maxAmount', 'Valor máximo', ''),
-(49726, 'pt_BR:payment.recipientName', 'Nome completo (destinatário)', ''),
-(49727, 'pt_BR:customField.title.order.memberRecord', 'Ajustar ordem de campo customizado para registro de membro {0}', ''),
-(49728, 'pt_BR:global.search.all', 'Todas', ''),
-(49729, 'pt_BR:menu.operator.member.ads', 'Anúncios', ''),
-(49730, 'pt_BR:loanPayment.summary.count', 'Qtde.', ''),
-(49731, 'pt_BR:menu.admin.messages.smsMailings', 'SMS de difusão', ''),
-(49732, 'pt_BR:profile.action.paymentAsMemberToMember', 'Pagamento de membro para membro', ''),
-(49733, 'pt_BR:group.customizedFiles.noResults', 'O grupo não tem arquivos customizados', ''),
-(49734, 'pt_BR:smsMailing.mailingType.PAID_FROM_BROKER', 'Difusão paga de corretor', ''),
-(49735, 'pt_BR:global.weekDay.THURSDAY', 'Quinta-feira', ''),
-(49736, 'pt_BR:alert.member.pinBlockedByTries', 'A senha externa (PIN) foi bloqueada por exceder {0} tentativas no canal {1}, no membro {2}', ''),
-(49737, 'pt_BR:memberImport.status.INVALID_RECORD_FIELD', 'Valor inválido para {0}: {1}', ''),
-(49738, 'pt_BR:permission.brokerCards.cancel', 'Cancelar', ''),
-(49739, 'pt_BR:customImage.title.system', 'Imagens de sistema', ''),
-(49740, 'pt_BR:settings.log.webServiceLevel.DETAILED', 'Rastreamento detalhado (inclusive parâmetros)', ''),
-(49741, 'pt_BR:brokerCommission.unsuspendConfirmation', 'Deseja liberar essa comissão que estava suspensa?', ''),
-(49742, 'pt_BR:global.totalAmount', 'Valor total', ''),
-(49743, 'pt_BR:reports.stats.activity.throughTime.loginTimes.col1', 'Acessos / membro', ''),
-(49744, 'pt_BR:fieldMapping.field.MEMBER_ID', 'Identificador', ''),
-(49745, 'pt_BR:accountFeeLog.skippedMembers', 'Membros não cobrados', ''),
-(49746, 'pt_BR:group.description', 'Descrição', ''),
-(49747, 'pt_BR:card.expirationPeriod.to', 'Até', ''),
-(49748, 'pt_BR:member.action.create.selectGroup', 'Selecione o grupo de membro', ''),
-(49749, 'pt_BR:pos.status.PENDING', 'Pendente', ''),
-(49750, 'pt_BR:settings.log.scheduledTaskLevel', 'Nível do log de tarefas agendadas', ''),
-(49751, 'pt_BR:profile.action.brokerSimulateConversion', 'Simular conversão para membros', ''),
-(49752, 'pt_BR:profile.userOnline', 'Conectado', ''),
-(49753, 'pt_BR:member.search.date', 'Ativação', ''),
-(49754, 'pt_BR:guaranteeType.error.issueFeeTransferType', 'O tipo de pagamento para a taxa de emissão é obrigatório', ''),
-(49755, 'pt_BR:paymentObligation.expirationDate', 'Data de vencimento', ''),
-(49756, 'pt_BR:loan.repayment.interest', 'Juros', ''),
-(49757, 'pt_BR:permission.adminMemberAccess.changeChannelsAccess', 'Alterar acesso a canais', ''),
-(49758, 'pt_BR:message.action.RESTORE', 'Restaurar', ''),
-(49759, 'pt_BR:certification.status.SUSPENDED', 'Suspensa', ''),
-(49760, 'pt_BR:settings.local.maxThumbnailSize', 'Tamanho máx. de miniatura das imagens', ''),
-(49761, 'pt_BR:permission.systemMemberPermissions.view', 'Ver', ''),
-(49762, 'pt_BR:ticket.date', 'Data', ''),
-(49763, 'pt_BR:settings.neverAlertMessage', '0 nunca avisa', ''),
-(49764, 'pt_BR:changePin.error.alreadyUsed', 'A senha externa (PIN) informada já foi utilizada no passado', ''),
-(49765, 'pt_BR:member.bulkActions.changeBroker', 'Alterar corretor', ''),
-(49766, 'pt_BR:group.title.list', 'Grupos de permissão', ''),
-(49767, 'pt_BR:payment.status', 'Estado', ''),
-(49768, 'pt_BR:settings.log.webServiceLevel.ERRORS', 'Apenas erros', ''),
-(49769, 'pt_BR:message.action.new', 'Nova mensagem', ''),
-(49770, 'pt_BR:adCategory.alterOrder', 'Alterar ordem', ''),
-(49771, 'pt_BR:externalTransferImport.removed', 'A importação de transações foi removida', ''),
-(49772, 'pt_BR:permission.operatorMessages.view', 'Ver', ''),
-(49773, 'pt_BR:settings.log.accountFeeFile', 'Enderço/nome do arquivo de log de taxas de conta', ''),
-(49774, 'pt_BR:loan.grant.setDate', 'Conceder no passado', ''),
-(49775, 'pt_BR:member.bulkActions.changeChannels.confirmation', 'Você tem certeza que quer mudar os canais de acesso para todos os membros incluidos no resultado deste filtro?', ''),
-(49776, 'pt_BR:memberPos.changePin.newPin2', 'Confirme o PIN', ''),
-(49777, 'pt_BR:memberPos.changePin.newPin1', 'Digite o PIN', ''),
-(49778, 'pt_BR:currency.title.insert', 'Nova moeda', ''),
-(49779, 'pt_BR:card.search.noResults', 'Nenhum cartão foi encontrado', ''),
-(49780, 'pt_BR:settings.local.showCountersInAdCategories', 'Exibir contadores nas categorias de anúncio', ''),
-(49781, 'pt_BR:certification.delete', 'Excluir', ''),
-(49782, 'pt_BR:global.weekDay.FRIDAY', 'Sexta-feira', ''),
-(49783, 'pt_BR:payment.actions', 'Ações', ''),
-(49784, 'pt_BR:permission.systemDocuments.view', 'Ver', ''),
-(49785, 'pt_BR:loan.type.WITH_INTEREST', 'Com taxas', ''),
-(49786, 'pt_BR:global.amount.type.FIXED', 'Fixo', ''),
-(49787, 'pt_BR:global.weekDay.SATURDAY', 'Sábado', ''),
-(49788, 'pt_BR:payment.error.maxAmountOnDayExceeded', 'Você já excedeu o valor máximo para esse tipo de pagamento hoje ({0})', ''),
-(49789, 'pt_BR:webshop.confirm.transactionPassword', 'Para confirmar este pagament, por favor, informe sua senha de transação', ''),
-(49790, 'pt_BR:defaultBrokerCommission.title', 'Configurações de comissão de {0}', ''),
-(49791, 'pt_BR:theme.theme', 'Tema', ''),
-(49792, 'pt_BR:channel.webServiceUrl', 'URL para o serviço web', ''),
-(49793, 'pt_BR:customField.member.access.NONE', 'Nenhum', ''),
-(49794, 'pt_BR:loan.grant.error.upperCreditLimit', 'O empréstimo não pôde ser concedido porque ele poderia deixar a conta do membro com saldo maior do que o permitido pelo seu limite de crédito superior', ''),
-(49795, 'pt_BR:theme.selected', 'O tema foi selecionado.\nVocê pode ter que limpar o cache de seu navegador e recarregar a página para poder visualizar as modificações', ''),
-(49796, 'pt_BR:group.customizedFiles.removeConfirmation', 'Deixar de customizar esse arquivo?', ''),
-(49797, 'pt_BR:group.settings.pinLength', 'Tamanho da senha externa', ''),
-(49798, 'pt_BR:registrationAgreement.new', 'Novo termo de adesão', ''),
-(49799, 'pt_BR:transferType.requiresFeedback', 'Requer qualificação de transações', ''),
-(49800, 'pt_BR:conversionSimulation.result.graph.title', 'Curva de tempo do valor da taxa', ''),
-(49801, 'pt_BR:infoText.errorRemoving', 'Esta mensagem informativa não pode ser removida.', ''),
-(49802, 'pt_BR:reports.current.invoices.MEMBER.count', 'Número de faturas eletrônicas de membro', ''),
-(49803, 'pt_BR:card.activateWarning.confirmation', 'Atenção: qualquer outro cartão ativo será cancelado.', ''),
-(49804, 'pt_BR:settings.message.externalChannelPaymentRequestExpiredPayer', 'Solicitação de pagamento pelo canal externo expirada pelo pagador', ''),
-(49805, 'pt_BR:transactionFee.fMinimal', 'valor mínimo', ''),
-(49806, 'pt_BR:global.loading', 'Carregando. Por favor, aguarde...', ''),
-(49807, 'pt_BR:externalTransferImport.noFile.message', 'Selecione o arquivo para importação', ''),
-(49808, 'pt_BR:guaranteeType.transferType.select', 'Selecione o tipo de pagamento', ''),
-(49809, 'pt_BR:profile.member.addPicture', 'Adicionar imagem', ''),
-(49810, 'pt_BR:permission.operatorContacts', 'Lista de contatos', ''),
-(49811, 'pt_BR:member.bulkActions.generateCard.confirmation', 'Você tem certeza que deseja gerar cartões para todos os membros que satisfazem ao filtro?', ''),
-(49812, 'pt_BR:menu.admin.accounts.currencies', 'Gerenciar moedas', ''),
-(49813, 'pt_BR:permission.systemThemes.remove', 'Remover', ''),
-(49814, 'pt_BR:externalAccount.removed', 'A conta externa foi removida', ''),
-(49815, 'pt_BR:settings.access.usernameGeneration.RANDOM', 'Número aleatório gerado', ''),
-(49816, 'pt_BR:customField.validation.validatorClass', 'Classe validadora', ''),
-(49817, 'pt_BR:loan.status.PENDING_AUTHORIZATION', 'Pendente de autorização', ''),
-(49818, 'pt_BR:ad.search.withImagesOnly', 'Somente com imagens', ''),
-(49819, 'pt_BR:permission.systemAdCategories', 'Categorias de anúncios', ''),
-(49820, 'pt_BR:permission.memberReports', 'Relatórios de membro', ''),
-(49821, 'pt_BR:transferType.error.minMaxPerDayAmount', '', ''),
-(49822, 'pt_BR:guaranteeType.authorizedBy.BOTH', 'Ambos', ''),
-(49823, 'pt_BR:guarantee.inserted', 'A garantia foi criada com sucesso', ''),
-(49824, 'pt_BR:group.action.personalMessage', 'Enviar mensagem pessoal para membros', ''),
-(49825, 'pt_BR:reports.stats.activity.comparePeriods.grossProduct.title', 'Produto bruto por membro (comparando dois períodos)', ''),
-(49826, 'pt_BR:message.trashPurgeNotification', 'Mensagens deixadas na lixeira por {0} {1} serão removidas', ''),
-(49827, 'pt_BR:global.timePeriod.MINUTES', 'Minuto(s)', ''),
-(49828, 'pt_BR:reports.stats.transferTypeFilter', 'Filtro de tipos de transações', ''),
-(49829, 'pt_BR:fileMapping.inserted', 'Mapeamento de arquivo inserido', ''),
-(49830, 'pt_BR:global.system', 'Sistema', ''),
-(49831, 'pt_BR:alert.system.ACCOUNT_FEE_CANCELLED', 'Taxa de conta cancelada', ''),
-(49832, 'pt_BR:permission.systemAdminGroups', 'Grupos de administradores', ''),
-(49833, 'pt_BR:accountType.action.new', 'Inserir nova conta', ''),
-(49834, 'pt_BR:channel.supportsPaymentRequest', 'Permite requisição de pagamento', ''),
-(49835, 'pt_BR:document.binaryFile', 'Arquivo', ''),
-(49836, 'pt_BR:receipt.posweb.transactions.transfers', 'Pagamentos processados', ''),
-(49837, 'pt_BR:customImage.system.message_unread', 'Ícone de mensagem não lida', ''),
-(49838, 'pt_BR:currency.modified', 'A moeda foi modificada', ''),
-(49839, 'pt_BR:customField.confirmUnhide', 'Você desmarcou a opção de ocultação para este campo.\nSalvar este campo significa que para todos os membros\na informação existente neste campo será visivel.\n\nVocê tem certeza?', ''),
-(49840, 'pt_BR:channel.credentials.DEFAULT', 'Padrão (senha de login e depois senha de transação)', ''),
-(49841, 'pt_BR:menu.member.preferences.notifications', 'Notificações', ''),
-(49842, 'pt_BR:reports.stats.activity.comparePeriods.numberTransactions.row1.short', 'membros que transacionam', ''),
-(49843, 'pt_BR:transferType.transactionHierarchyVisibility.BROKER', 'Para administradores e corretores', ''),
-(49844, 'pt_BR:payment.confirmation.doExternal', 'Por favor, verifique os dados acima e clique em confirmar para fazer o pagamento', ''),
-(49845, 'pt_BR:group.settings.maxAdPublicationTime', 'Tempo máx. de publicação do anúncio', ''),
-(49846, 'pt_BR:transactionFee.deductAmount.true', 'Deduzir do valor total', ''),
-(49847, 'pt_BR:smsMailing.mailingType.INDIVIDUAL', 'Mensagem individual', ''),
-(49848, 'pt_BR:menu.member.broker.listMembers', 'Membros', ''),
-(49849, 'pt_BR:customField.memberRecord.brokerAccess.NONE', 'Nenhum', ''),
-(49850, 'pt_BR:guaranteeType.action.new', 'Novo tipo de garantia', ''),
-(49851, 'pt_BR:reports.members_reports.account_type', 'Tipo de conta', ''),
-(49852, 'pt_BR:brokering.title.list.of', 'Membros registrados de {0}', ''),
-(49853, 'pt_BR:settings.log.webServiceLevel.SIMPLE', 'Rastreamento simples (sem parâmetros)', ''),
-(49854, 'pt_BR:reports.stats.keydevelopments.periodType.COMPARED_PERIODS', 'Comparação entre períodos', ''),
-(49855, 'pt_BR:transfer.chargebackOf', 'Estorno de', ''),
-(49856, 'pt_BR:pos.title', 'POS', ''),
-(49857, 'pt_BR:loan.title.loanGroup.members', 'Membros do grupo de empréstimos', ''),
-(49858, 'pt_BR:permission.systemMessageCategories.view', 'Ver', ''),
-(49859, 'pt_BR:error.email', 'Houve um erro durante o envio do e-mail', ''),
-(49860, 'pt_BR:menu.admin.usersGroups.importMembers', 'Importar membros', ''),
-(49861, 'pt_BR:transactionFee.aFIsZero', '0% em índice-A = ...', ''),
-(49862, 'pt_BR:receiptPrinterSettings.paymentAdditionalMessage', 'Mensagem adicional em recibos de pagamento', ''),
-(49863, 'pt_BR:loan.queryStatus.OPEN', 'Aberto', ''),
-(49864, 'pt_BR:reports.current.system_account', 'Contas de sistema', ''),
-(49865, 'pt_BR:group.settings.channels', 'Acesso aos canais', ''),
-(49866, 'pt_BR:adImport.lineNumber', 'Nº linha', ''),
-(49867, 'pt_BR:profile.action.invoiceAsMemberToSystem', 'Fatura de membro para sistema', ''),
-(49868, 'pt_BR:adImport.status.MISSING_DESCRIPTION', 'A descrição está faltando', ''),
-(49869, 'pt_BR:group.active', 'Ativar grupo', ''),
-(49870, 'pt_BR:customField.possibleValue.removed', 'O valor foi removido', ''),
-(49871, 'pt_BR:smsLog.count', 'SMS enviados', ''),
-(49872, 'pt_BR:brokering.title.list.my', 'Membros registrados', ''),
-(49873, 'pt_BR:permission.operatorPayments.blockScheduled', 'Bloquear pagamento agendado', ''),
-(49874, 'pt_BR:externalTransferType.action.DISCARD_LOAN', 'Descartar empréstimo', ''),
-(49875, 'pt_BR:settings.type.MAIL', 'Config. de e-mail', ''),
-(49876, 'pt_BR:customField.modified', 'O campo customizado foi modificado', ''),
-(49877, 'pt_BR:createMember.public.validated', 'Obrigado por cadastrar-se.\n\nVocê pode acessar o sistema com o login {0}', ''),
-(49878, 'pt_BR:card.title.create', 'Criar cartão para {0}', ''),
-(49879, 'pt_BR:receipt.transfer.to', 'Para: {0}', ''),
-(49880, 'pt_BR:virtualKeyboard.capsLock', 'Caixa alta', ''),
-(49881, 'pt_BR:accountFeeLog.finishDate', 'Concluído em', ''),
-(49882, 'pt_BR:settings.access.externalPaymentPassword.LOGIN_PASSWORD', 'Senha de acesso', ''),
-(49883, 'pt_BR:alert.search.date.begin', 'A partir da data', ''),
-(49884, 'pt_BR:createMember.created.pending', 'O membro foi criado, mas  o e-mail deve ser verificado para completar a ativação', ''),
-(49885, 'pt_BR:mailPreferences.applicationErrors', 'Erros de aplicação', ''),
-(49886, 'pt_BR:customizedFile.title.search.css', 'Folhas de estilo customizadas', ''),
-(49887, 'pt_BR:permission.adminMemberCards.view', 'Ver', ''),
-(49888, 'pt_BR:reports.stats.taxes.maxMember', 'Quantidade máxima para um membro', ''),
-(49889, 'pt_BR:changeGroup.member.permanentlyRemoved', 'Você não pode alterar o grupo porque o membro foi permanentemente removido', ''),
-(49890, 'pt_BR:payment.status.BLOCKED', 'Bloqueado', ''),
-(49891, 'pt_BR:customField.member.access.MEMBER_NOT_OPERATOR', 'Membro, não operador', ''),
-(49892, 'pt_BR:customField.operator.visibility.EDITABLE', 'Visível e editável', ''),
-(49893, 'pt_BR:group.settings.defaultAdPublicationTime.number', 'Tempo de publicação padrão do anúncio (qtde.)', ''),
-(49894, 'pt_BR:permission.adminMemberGroups.view', 'Ver', ''),
-(49895, 'pt_BR:createMember.passwordConfirmation', 'Confirme a senha', ''),
-(49896, 'pt_BR:paymentRequest.title.new.singleChannel', 'Solicitar pagamento por {0}', ''),
-(49897, 'pt_BR:customField.title.list.loan', 'Campos customizados de empréstimo', ''),
-(49898, 'pt_BR:accountType.title.modify.system', 'Modificar tipo de conta de sistema', ''),
-(49899, 'pt_BR:paymentObligation.status.PUBLISHED', 'Publicada', ''),
-(49900, 'pt_BR:global.month.AUGUST', 'Agosto', ''),
-(49901, 'pt_BR:permission.adminMemberMessages', 'Mensagens', ''),
-(49902, 'pt_BR:createMember.initialGroup.preface.byBroker', 'Por favor, selecione o grupo para o novo membro', ''),
-(49903, 'pt_BR:card.action.activate', 'Ativar', ''),
-(49904, 'pt_BR:image.remove', 'Remover', ''),
-(49905, 'pt_BR:permission.operatorLoans', 'Empréstimos', ''),
-(49906, 'pt_BR:invoice.performedBy', 'Efetuado por', ''),
-(49907, 'pt_BR:groupFilter.customizedFiles.noResults', 'O filtro de grupos não tem arquivos customizados', ''),
-(49908, 'pt_BR:customImage.system.edit', 'Ícone editar', ''),
-(49909, 'pt_BR:pos.status.ASSIGNED', 'Atribuído', ''),
-(49910, 'pt_BR:certification.buyer', 'Comprador', ''),
-(49911, 'pt_BR:sms.type.REQUEST_PAYMENT_ERROR', 'Erro na solicitação de pagamento', ''),
-(49912, 'pt_BR:payment.error.upperCreditLimit', 'O pagamento não pôde ser realizado. Para mais detalhes contate a administração.', ''),
-(49913, 'pt_BR:certification.cancel', 'Cancelar', ''),
-(49914, 'pt_BR:accountFeeLog.totalAmount', 'Valor total', ''),
-(49915, 'pt_BR:profile.action.message', 'Enviar mensagem', ''),
-(49916, 'pt_BR:settings.message.transactionFeedbackReply', 'Réplica de qualificação de transação', ''),
-(49917, 'pt_BR:menu.member.account.loans', 'Empréstimos', ''),
-(49918, 'pt_BR:reports.simulations.dRateConfigSimulation.endD', 'Terminar em D =', ''),
-(49919, 'pt_BR:reports.stats.keydevelopments.numberOfAds.expired.short', 'Vencido', ''),
-(49920, 'pt_BR:reports.stats.keydevelopments.throughTime.months', 'Ao longo dos meses', ''),
-(49921, 'pt_BR:settings.type.LOCAL', 'Config. locais', ''),
-(49922, 'pt_BR:customField.payment.access.DESTINATION_MEMBER', 'Somente para o membro de destino', ''),
-(49923, 'pt_BR:reports.stats.keydevelopments.periodType.THROUGH_TIME', 'Ao longo do tempo', ''),
-(49924, 'pt_BR:loanGroup.title.view', 'Detalhes do grupo de empréstimos', ''),
-(49925, 'pt_BR:icon.title.notConciliated', 'Não conciliado', ''),
-(49926, 'pt_BR:message.title.send', 'Enviar mensagem', ''),
-(49927, 'pt_BR:menu.admin.usersGroups.groups', 'Grupos de permissão', ''),
-(49928, 'pt_BR:customField.title.modify.ad', 'Modificar campo customizado de anúncio', ''),
-(49929, 'pt_BR:certification.status.ACTIVE', 'Atica', ''),
-(49930, 'pt_BR:global.selectAll', 'Selecionar tudo', ''),
-(49931, 'pt_BR:conversionSimulation.result.graph.xAxis', 'Data', ''),
-(49932, 'pt_BR:receipt.posweb.transactions.transfer', '{0} {1} {2} {3}', ''),
-(49933, 'pt_BR:group.settings.showPosWebPaymentDescription', 'Exibir o campo de descrição de pagamentos via PosWeb', ''),
-(49934, 'pt_BR:notificationPreferences.title.name', 'Preferências de notificação de {0}', ''),
-(49935, 'pt_BR:settings.log.webServiceFile', 'Endereço/nome do arquivo de log de serviços web', ''),
-(49936, 'pt_BR:customField.ad.visibility.BROKER', 'Corretores e administradores', ''),
-(49937, 'pt_BR:accountFeeLog.neverRan', 'Nunca executada', ''),
-(49938, 'pt_BR:accountHistory.credits.amount', 'Total de créditos', ''),
-(49939, 'pt_BR:changeGroup.member.changed.mailError', 'O grupo do membro foi alterado, porém, o e-mail de ativação não pôde ser enviado', ''),
-(49940, 'pt_BR:posweb.title.login', 'Acesso ao POS-Web', ''),
-(49941, 'pt_BR:fileMapping.noFileMapping.message', 'Não existe ainda o mapeamento de arquivo para esta conta.\nClique aqui para configurá-lo', ''),
-(49942, 'pt_BR:certification.title.modify', 'Modificar certificação', ''),
-(49943, 'pt_BR:global.search.ADVANCED', 'Avançada', ''),
-(49944, 'pt_BR:settings.access.modified', 'As configurações de acesso foram modificadas', ''),
-(49945, 'pt_BR:admin.action.create', 'Criar administrador', ''),
-(49946, 'pt_BR:settings.local.emailUnique', 'E-mail deve ser único', ''),
-(49947, 'pt_BR:menu.admin.accounts.authorizedLoans', 'Empréstimos autorizados', ''),
-(49948, 'pt_BR:customField.title.modify.loan', 'Modificar campo customizado de empréstimo', ''),
-(49949, 'pt_BR:invoice.invalid.paymentAmount', 'O valor total da fatura deve ser igual ao valor da soma das parcelas', ''),
-(49950, 'pt_BR:invoice.cancelConfirmationMessage', 'Cancelar fatura eletrônica para {0} de {1}\n\nPor favor, clique em OK para confirmar', ''),
-(49951, 'pt_BR:permission.operatorAccount.scheduledInformation', 'Ver pagamentos agendados', ''),
-(49952, 'pt_BR:scheduledPayment.title.print', 'Informações do pagamento agendado', ''),
-(49953, 'pt_BR:paymentObligation.status.REJECTED', 'Rejeitada', ''),
-(49954, 'pt_BR:customField.possibleValue.removeConfirmation', 'Remover esse valor?', ''),
-(49955, 'pt_BR:permission.adminMembers.changeProfile', 'Alterar perfil', ''),
-(49956, 'pt_BR:menu.member.account.selfPayment', 'Transferência entre contas próprias', ''),
-(49957, 'pt_BR:document.description', 'Descrição', ''),
-(49958, 'pt_BR:permission.systemRegistrationAgreements.view', 'Ver', ''),
-(49959, 'pt_BR:alert.member.INITIAL_CREDIT_FAILED', 'Erro na concessão de crédito inicial', ''),
-(49960, 'pt_BR:login.error.alreadyConnected', 'Você já está conectado', ''),
-(49961, 'pt_BR:changePin.pinLengthRange', 'Escolha uma senha externa (PIN) com tamanho entre {0} e {1} caracteres', ''),
-(49962, 'pt_BR:settings.message.transactionFeedbackAdminComments', 'Comentários da administração sobre uma qualificação de transação', ''),
-(49963, 'pt_BR:login.form.title', 'Acesso', ''),
-(49964, 'pt_BR:reports.stats.finances.income', 'Entrada', ''),
-(49965, 'pt_BR:loan.repayment.transactionPassword.repayOnly', 'Para pagar este empréstimo você deve fornecer sua senha de transação', ''),
-(49966, 'pt_BR:permission.brokerAccounts.information', 'Ver informações de conta', ''),
-(49967, 'pt_BR:transactionPassword.status.user', 'Estado', ''),
-(49968, 'pt_BR:card.title.print', 'Resultado da pesquisa de cartões', ''),
-(49969, 'pt_BR:permission.adminMemberPayments.paymentAsMemberToSystem', 'Pagamentos de membros para sistema', ''),
-(49970, 'pt_BR:receipt.transfer.installment', '{0}  {1}  {2}', ''),
-(49971, 'pt_BR:permission.adminMemberMessages.view', 'Ver', ''),
-(49972, 'pt_BR:reports.stats.general.histogram', 'Histograma', ''),
-(49973, 'pt_BR:permission.adminMemberBrokerings', 'Corretagens', ''),
-(49974, 'pt_BR:member.groupFilter', 'Comunidade', ''),
-(49975, 'pt_BR:ad.title.of', 'Anúncios de {0}', ''),
-(49976, 'pt_BR:global.tooltip.remove', 'Remover', ''),
-(49977, 'pt_BR:guarantee.name', 'Nome', ''),
-(49978, 'pt_BR:reports.stats.activity.histogram.numberTransactions.yAxis', 'Número de membros', ''),
-(49979, 'pt_BR:settings.message.paymentObligationRegistered', 'Obrigação de pagamento cadastrada', ''),
-(49980, 'pt_BR:pos.actions.discard', 'Descartar', ''),
-(49981, 'pt_BR:loan.status.UNRECOVERABLE', 'Irrecuperável', ''),
-(49982, 'pt_BR:permission.brokerMessages', 'Mensagens pessoais', ''),
-(49983, 'pt_BR:permission.basic.inviteMember', 'Convidar membro', ''),
-(49984, 'pt_BR:guarantee.guaranteeType', 'Tipo de garantia', ''),
-(49985, 'pt_BR:fileMapping.decimalPlaces', 'Número de casas decimais', ''),
-(49986, 'pt_BR:loanPayment.title.print', 'Resultado dos pagamentos de empréstimo', ''),
-(49987, 'pt_BR:externalAccount.modified', 'A conta externa foi modificada', ''),
-(49988, 'pt_BR:reports.stats.throughTheTime', 'Ao longo do tempo', ''),
-(49989, 'pt_BR:fieldMapping.action.new', 'Inserir novo mapeamento de campo', ''),
-(49990, 'pt_BR:group.rootUrl', 'URL raiz da aplicação', ''),
-(49991, 'pt_BR:brokerCommissionContract.member', 'Membro', ''),
-(49992, 'pt_BR:reports.stats.activity.singlePeriod.percentageNoTrade.title', 'Percentual de membros que não transacionam (período simples)', ''),
-(49993, 'pt_BR:card.card', 'Cartão', ''),
-(49994, 'pt_BR:reports.stats.activity.singlePeriod.numberTransactions.yAxis', 'no. de transações', ''),
-(49995, 'pt_BR:menu.member.account.accountInformation', 'Informações de conta', ''),
-(49996, 'pt_BR:ad.title.my', 'Meus anúncios', ''),
-(49997, 'pt_BR:customImage.title.new.style', 'Nova imagem de folha de estilo', ''),
-(49998, 'pt_BR:settings.local.containerUrl', 'URL da página container global', ''),
-(49999, 'pt_BR:memberImport.membersWithErrors', 'Membros com erro', ''),
-(50000, 'pt_BR:paymentObligation.seller', 'Comprador', ''),
-(50001, 'pt_BR:payment.selectTransferType', 'Selecione o tipo de transação', ''),
-(50002, 'pt_BR:card.update.confirmation', 'Confirmação', ''),
-(50003, 'pt_BR:global.total', 'Total', ''),
-(50004, 'pt_BR:conversionSimulation.aRate.present', 'Índice-A atual', ''),
-(50005, 'pt_BR:permission.adminMemberLoanGroups.manage', 'Gerenciar', ''),
-(50006, 'pt_BR:selectChannels.selected', 'Acesso aos canais modificado', ''),
-(50007, 'pt_BR:creditLimit.title', 'Limite de crédito', ''),
-(50008, 'pt_BR:translationMessage.removed', 'A chave de tradução foi removida', ''),
-(50009, 'pt_BR:sms.type.INFO_TEXT_ERROR.description', 'Erro em mensagem informativa', ''),
-(50010, 'pt_BR:accountFee.transferType', 'Tipo de transação gerado', ''),
-(50011, 'pt_BR:menu.member.operators.customFields', 'Campos customizados', ''),
-(50012, 'pt_BR:mobile.payment.error.invalid', 'Pagamento inválido', ''),
-(50013, 'pt_BR:invoice.accept.header', 'Você está prestes a aceitar uma fatura e realizar o seguinte pagamento:', ''),
-(50014, 'pt_BR:menu.member.guarantees', 'Garantias', ''),
-(50015, 'pt_BR:alert.member.deniedInvoices', 'O membro tem {0} faturas eletrônicas negadas', ''),
-(50016, 'pt_BR:externalTransferImport.chooseFile', 'Arquivo de transações', ''),
-(50017, 'pt_BR:paymentObligation.history', 'Histórico', ''),
-(50018, 'pt_BR:settings.access.adminTimeout', 'Tempo de expiração da sessão do administrador', ''),
-(50019, 'pt_BR:sms.type.HELP_ERROR.description', 'Erro na ajuda', ''),
-(50020, 'pt_BR:errors.lessEquals', '{0} deve ser menor ou igual a {1}', ''),
-(50021, 'pt_BR:reports.stats.keydevelopments.grossProduct', 'Produto bruto', ''),
-(50022, 'pt_BR:accountFee.groups', 'Grupos', ''),
-(50023, 'pt_BR:group.settings.smsAdditionalCharged', 'Número de mensagens adicionais no pacote pago', ''),
-(50024, 'pt_BR:conversionSimulation.aRate.targeted', 'Índice-A desejado', ''),
-(50025, 'pt_BR:permission.memberGuarantees', 'Garantias', ''),
-(50026, 'pt_BR:theme.version', 'Versão', ''),
-(50027, 'pt_BR:reports.transactions_report.credits', 'Créditos', ''),
-(50028, 'pt_BR:global.no.defined', 'Não definido', ''),
-(50029, 'pt_BR:adInterest.category', 'Categoria de anúncios', ''),
-(50030, 'pt_BR:defaultBrokerCommission.title.my', 'Configurações de comissão', ''),
-(50031, 'pt_BR:notificationPreferences.allowChargingSms', 'Autorizar cobrança por mensagem SMS', ''),
-(50032, 'pt_BR:menu.about', 'Sobre', ''),
-(50033, 'pt_BR:guaranteeType.answerTodayMessage', '0 deve ser respondida hoje', ''),
-(50034, 'pt_BR:settings.local.language.RUSSIAN', 'Russo', ''),
-(50035, 'pt_BR:group.title.settings.brokering', 'Configurações de corretagem', ''),
-(50036, 'pt_BR:memberPos.title', 'POS do membro', ''),
-(50037, 'pt_BR:loanGroup.memberAdded', 'O membro foi adicionado a esse grupo de empréstimos', ''),
-(50038, 'pt_BR:customField.action.changeOrder', 'Alterar ordem dos campos', ''),
-(50039, 'pt_BR:permission.adminMemberSmsMailings.freeSmsMailings', 'Enviar mensagens gratuitas', ''),
-(50040, 'pt_BR:message.actionPerformed.MOVE_TO_TRASH', 'As mensagens foram movidas para a lixeira', ''),
-(50041, 'pt_BR:loanGroup.modified', 'Grupo de empréstimos modificado', ''),
-(50042, 'pt_BR:menu.admin.personal', 'Pessoal', ''),
-(50043, 'pt_BR:alert.title.system', 'Avisos de sistema', ''),
-(50044, 'pt_BR:settings.message.scheduledPaymentProcessed', 'Pagamento agendado: processamento bem sucedido', ''),
-(50045, 'pt_BR:guaranteeType.error.loanTransferType', 'O tipo de pagamento para o empréstimo é obrigatório', ''),
-(50046, 'pt_BR:settings.log.accountFeeLevel', 'Nível do log de taxas de conta', ''),
-(50047, 'pt_BR:webshop.payment.cancelConfirmation', 'Confirmar', ''),
-(50048, 'pt_BR:accountFeeLog.acceptedInvoices', 'Faturas aceitas', ''),
-(50049, 'pt_BR:customField.member.updateAccess', 'Editável por', ''),
-(50050, 'pt_BR:serviceClient.title.modify', 'Modificar cliente de serviços web', ''),
-(50051, 'pt_BR:global.tooltip.edit', 'Modificar', ''),
-(50052, 'pt_BR:reports.stats.finances.ThroughTime.expenditure', 'Saída', ''),
-(50053, 'pt_BR:menu.admin.ads.search', 'Produtos e serviços', ''),
-(50054, 'pt_BR:permission.memberReferences.give', 'Dar', ''),
-(50055, 'pt_BR:pos.description', 'Descrição', ''),
-(50056, 'pt_BR:reports.simulations.choose.dRateConfig', 'Configuração do Índice-D', ''),
-(50057, 'pt_BR:settings.message.brokeringRemoved', 'Corretagem removida manualmente', ''),
-(50058, 'pt_BR:fileMapping.modified', 'Mapeamento de arquivo modificado', ''),
-(50059, 'pt_BR:multiDropDown.multiItemsMessage', '#items# itens selecionados', ''),
-(50060, 'pt_BR:global.hide', 'Ocultar', ''),
-(50061, 'pt_BR:reports.stats.comparedPeriods', 'Comparação entre períodos', ''),
-(50062, 'pt_BR:activities.invoices', 'Faturas eletrônicas', ''),
-(50063, 'pt_BR:reports.stats.keydevelopments.transactionAmount', 'Valor por transação', ''),
-(50064, 'pt_BR:pos.assigned', 'POS atribuído ao membro {0}', ''),
-(50065, 'pt_BR:pos.actions.unblock', 'Desbloquear', ''),
-(50066, 'pt_BR:accountFee.noMatchingMembers', 'Nenhum membro coincide com os filtros da pesquisa', ''),
-(50067, 'pt_BR:group.settings.viewLoansByGroup', 'Ver empréstimos cedidos ao grupo de empréstimos', ''),
-(50068, 'pt_BR:accountFee.error.multipleVolumeFees', 'Existem mais de uma taxas sobre volume transacionado para esta conta.\n\nPor favor, contate a administração', ''),
-(50069, 'pt_BR:brokerCommissionContract.status.SUSPENDED', 'Suspenso', ''),
-(50070, 'pt_BR:session.lastLogin', 'Último acesso: {0}', ''),
-(50071, 'pt_BR:permission.adminMembers.remove', 'Remover permanentemente', ''),
-(50072, 'pt_BR:changePassword.error.mustBeNumeric', 'A senha pode conter apenas números', ''),
-(50073, 'pt_BR:cardType.securityCodeBlockTime', 'Tempo de bloqueio da senha de segurança', ''),
-(50074, 'pt_BR:settings.access.poswebTimeout', 'Tempo de expiração da sessão PosWeb', ''),
-(50075, 'pt_BR:customImage.system.quickAccess_messages', 'Acesso rápido: mensagens', ''),
-(50076, 'pt_BR:card.status.ACTIVE', 'Ativo', ''),
-(50077, 'pt_BR:sms.error.type.SEND_ERROR', 'Erro desconhecido', ''),
-(50078, 'pt_BR:document.inserted', 'O documento foi inserido', ''),
-(50079, 'pt_BR:infoText.modified', 'A mensagem informativa foi modificada', ''),
-(50080, 'pt_BR:loanPayment.repaidAmount', 'Pago', ''),
-(50081, 'pt_BR:infoText.start', 'Ativação', ''),
-(50082, 'pt_BR:guarantee.action.accept', 'Autorizar', ''),
-(50083, 'pt_BR:alert.removed', 'Os avisos selecionados foram removidos', ''),
-(50084, 'pt_BR:adCategory.inserted', 'A categoria foi inserida', ''),
-(50085, 'pt_BR:reports.stats.activity.throughTime.percentageNoTrade.yAxis', '% dos que não estão transacionando', ''),
-(50086, 'pt_BR:global.timePeriod.SECONDS', 'Segundo(s)', ''),
-(50087, 'pt_BR:global.search', 'Procurar', ''),
-(50088, 'pt_BR:translationMessage.title.insert', 'Nova chave de tradução', ''),
-(50089, 'pt_BR:alert.member.ACCOUNT_ACTIVATION_FAILED', 'Ativação de conta falhou', ''),
-(50090, 'pt_BR:createAdmin.passwordConfirmation', 'Confirme a senha', ''),
-(50091, 'pt_BR:reports.stats.activity.throughTime.nAll', 'no. Todos', ''),
-(50092, 'pt_BR:menu.operator.member.references', 'Referências', ''),
-(50093, 'pt_BR:invoice.description', 'Descrição', ''),
-(50094, 'pt_BR:global.preview', 'Pré-visualizar', ''),
-(50095, 'pt_BR:payment.status.CANCELED', 'Cancelado', ''),
-(50096, 'pt_BR:permission.systemErrorLog.manage', 'Gerenciar', ''),
-(50097, 'pt_BR:adCategory.error.importing', 'Houve um erro ao importar as categorias', ''),
-(50098, 'pt_BR:permission.operatorAds', 'Anúncios', ''),
-(50099, 'pt_BR:currency.enableDRate', 'Ativar índice-D', ''),
-(50100, 'pt_BR:pos.error.noAssignPermission', 'Você não ter permissão para associar um POS a um membro', ''),
-(50101, 'pt_BR:permission.brokerLoans.view', 'Ver', ''),
-(50102, 'pt_BR:reports.current.member_account_information', 'Contas de membro', ''),
-(50103, 'pt_BR:menu.admin.ads', 'Anúncios', ''),
-(50104, 'pt_BR:help.title.documents', 'Documentos', ''),
-(50105, 'pt_BR:reports.members_reports.select_payment_filter', 'Selecione filtro de pagamentos', ''),
-(50106, 'pt_BR:reports.stats.finances.ThroughTime.expenditure.yAxis', 'Saída', ''),
-(50107, 'pt_BR:reports.stats.activity.singlePeriod.loginTimes.yAxis', 'Acessos / membro', ''),
-(50108, 'pt_BR:message.toGroups', 'Para grupo(s)', ''),
-(50109, 'pt_BR:connectedUsers.loggedAt', 'Conectado em', ''),
-(50110, 'pt_BR:smsMailing.text', 'Texto', ''),
-(50111, 'pt_BR:accountFeeLog.status', 'Estado', ''),
-(50112, 'pt_BR:guaranteeType.feePayers.SELLER', 'Vendedor', ''),
-(50113, 'pt_BR:error.systemOverloaded', 'O sistema está acima de sua capacidade no momento.\n\nPor favor, tente novamente em alguns minutos.', ''),
-(50114, 'pt_BR:member.bulkActions.brokerChanged', '{0} membros foram alterados para o corretor {2}.\n{1} membros não foram alterados, pois já possuíam {2} como corretor', ''),
-(50115, 'pt_BR:transactionFee.fromAllGroups', 'De todos os grupos', ''),
-(50116, 'pt_BR:reference.level.BAD', 'Ruim', ''),
-(50117, 'pt_BR:adImport.status.INVALID_PUBLICATION_START', 'A data de início de publicação é inválida: {0}', ''),
-(50118, 'pt_BR:settings.log.traceLevel.DETAILED', 'Rastreamento detalhado (inclusive parâmetros)', ''),
-(50119, 'pt_BR:adImport.status', 'Estado', ''),
-(50120, 'pt_BR:transferType.to', 'Para', ''),
-(50121, 'pt_BR:changePassword.passwordLengthRange', 'Escolha uma senha com tamanho entre {0} e {1} caracteres', ''),
-(50122, 'pt_BR:customField.type.FLOAT', 'Número decimal', ''),
-(50123, 'pt_BR:guaranteeType.paymentObligationList', 'Obrigações de pagamento', ''),
-(50124, 'pt_BR:loan.firstOpenPayment', 'Primeiro pagamento em aberto', ''),
-(50125, 'pt_BR:changeGroup.member.permanentlyRemovedMessage', 'O membro foi permanentemente removido', ''),
-(50126, 'pt_BR:errorLog.stackTrace', 'Detalhes de erro java', ''),
-(50127, 'pt_BR:transactionFee.removeConfirmation', 'Remover essa taxa de transação?', ''),
-(50128, 'pt_BR:reports.stats.paymentfilters', 'Filtros de pagamentos', ''),
-(50129, 'pt_BR:errors.unique', '{0} não é único', ''),
-(50130, 'pt_BR:permission.adminMemberGuarantees.cancelCertificationsAsMember', 'Cancelar certificações', ''),
-(50131, 'pt_BR:group.settings.maxAdsPerMember', 'No. máx. de anúncios por membro', ''),
-(50132, 'pt_BR:externalTransferType.action.IGNORE', 'Ignorar', ''),
-(50133, 'pt_BR:permission.adminMemberAds', 'Produtos e serviços', ''),
-(50134, 'pt_BR:remark.date', 'Data', ''),
-(50135, 'pt_BR:permission.brokerPos.unblockPin', 'Desbloquear senha externa', ''),
-(50136, 'pt_BR:reports.stats.keydevelopments.throughTime.months.title', 'Progresso ao longo do tempo', ''),
-(50137, 'pt_BR:authorizationLevel.adminGroups', 'Groupos de administradores', ''),
-(50138, 'pt_BR:changeGroup.admin.permanentlyRemoved', 'Você não pode alterar o grupo porque o administrador foi permanentemente removido', ''),
-(50139, 'pt_BR:settings.local.sms.customField', 'Campo de perfil que representa o telefone celular', ''),
-(50140, 'pt_BR:memberRecordType.layout.LIST', 'Lista', ''),
-(50141, 'pt_BR:payment.title.memberToSystem', 'Pagamento para o sistema', ''),
-(50142, 'pt_BR:permission.systemMessageCategories', 'Categorias de mensagens', ''),
-(50143, 'pt_BR:externalTransferProcess.error.noLoanToDiscard', 'Não há empréstimos abertos para o descarte', ''),
-(50144, 'pt_BR:serviceClient.action.new', 'Novo cliente de serviços web', ''),
-(50145, 'pt_BR:translationMessage.title.export', 'Exportar para arquivo de propriedades', ''),
-(50146, 'pt_BR:accountFee.title.memberSearch', 'Busca de membros', ''),
-(50147, 'pt_BR:certification.unlock', 'Ativar', ''),
-(50148, 'pt_BR:reports.members_reports.transactions.memberGroupsRequired', 'É necessário selecionar pelo menos um grupo de membros', ''),
-(50149, 'pt_BR:customizedFile.title.search.static', 'Arquivos estáticos customizados', ''),
-(50150, 'pt_BR:transfer.title.details', 'Detalhes da transação', ''),
-(50151, 'pt_BR:rates.error.reinitValidation.noEditDuringRateReinit', 'Você não pode iniciar uma nova tarefa de reinicialização para indices caso outra ainda esteja sendo executada.', ''),
-(50152, 'pt_BR:permission.systemAlerts.manageSystemAlerts', 'Gerenciar avisos de sistema', ''),
-(50153, 'pt_BR:payment.action.cancel', 'Cancelar pagamento', ''),
-(50154, 'pt_BR:reports.members_reports.account_type.all', 'Todos os tipos de conta', ''),
-(50155, 'pt_BR:member.bulkActions.changeBroker.confirmation', 'Você tem certeza que deseja mudar o corretor de todos os membros que satisfazem ao filtro?', ''),
-(50156, 'pt_BR:menu.member.personal.changePassword', 'Alterar senha', ''),
-(50157, 'pt_BR:transferAuthorization.action', 'Ação', ''),
-(50158, 'pt_BR:permission.systemTranslation.view', 'Ver', ''),
-(50159, 'pt_BR:invite.sent', 'E-mail de convite enviado para {0}', ''),
-(50160, 'pt_BR:loan.grant.firstExpirationDate', 'Primeira data de vencimento', ''),
-(50161, 'pt_BR:loan.status.RECOVERED', 'Recuperado', ''),
-(50162, 'pt_BR:channel.usePin', 'Usar PIN', ''),
-(50163, 'pt_BR:permission.systemChannels.view', 'Ver', ''),
-(50164, 'pt_BR:permission.systemTranslation.manageMailTranslation', 'Tradução de e-mails', ''),
-(50165, 'pt_BR:permission.brokerReports', 'Relatórios', ''),
-(50166, 'pt_BR:permission.memberAccess', 'Acesso', ''),
-(50167, 'pt_BR:guarantee.expires', 'Vencimento', ''),
-(50168, 'pt_BR:permission.systemReports.statistics', 'Estatísticas', ''),
-(50169, 'pt_BR:permission.brokerMemberAccess.changeChannelsAccess', 'Alterar acesso a canais', ''),
-(50170, 'pt_BR:reports.current.n_adsaccount', 'Número de membros ativos com anúncios ativos', ''),
-(50171, 'pt_BR:pos.new', 'Criar novo POS', ''),
-(50172, 'pt_BR:guaranteeType.name', 'Nome', ''),
-(50173, 'pt_BR:group.settings.maxAdDescriptionSize', 'Tamanho máx. para descrição do anúncio', ''),
-(50174, 'pt_BR:loanPayment.search.period', 'Período', ''),
-(50175, 'pt_BR:card.updateCard.error.blockedTransactionPassword', 'Senha de transação bloqueada', ''),
-(50176, 'pt_BR:reports.stats.activity.topten.grossProduct', 'Produto bruto', ''),
-(50177, 'pt_BR:permission.adminMembers.changeGroup', 'Alterar grupo', ''),
-(50178, 'pt_BR:accountFee.amount', 'Valor', ''),
-(50179, 'pt_BR:memberRecordType.removeConfirmation', 'Remover este tipo de registro de membro?', ''),
-(50180, 'pt_BR:settings.message.pendingGuaranteeIssuer', 'Garantia pendente de autorização do emissor', ''),
-(50181, 'pt_BR:smsMailing.variables', 'Variaveis', ''),
-(50182, 'pt_BR:card.changeSecurityCode.error.obvious', 'O código de segurança é muito simples. Ele não pode ser sequencial ou igual a qualquer campo do perfil', ''),
-(50183, 'pt_BR:accountType.currency', 'Moeda', ''),
-(50184, 'pt_BR:customImage.system.quickAccess_makePayment', 'Acesso rápido: fazer pagamento', ''),
-(50185, 'pt_BR:adminTasks.indexes.type.all', 'Todos', ''),
-(50186, 'pt_BR:permission.module.type.ADMIN_MEMBER', 'Permissões de administração de membros de {0}', ''),
-(50187, 'pt_BR:reports.stats.activity.throughTime.numberTransactions.col4', 'no. Todos', ''),
-(50188, 'pt_BR:reports.stats.activity.throughTime.numberTransactions.col3', 'no. Membros negociando', ''),
-(50189, 'pt_BR:reports.stats.activity.throughTime.numberTransactions.col2', 'Número de transações Todos', ''),
-(50190, 'pt_BR:reports.stats.activity.throughTime.numberTransactions.col1', 'Número de transações', ''),
-(50191, 'pt_BR:smsMailing.new', 'Enviar novo', ''),
-(50192, 'pt_BR:group.removeConfirmation', 'Remover esse grupo?', ''),
-(50193, 'pt_BR:errorLog.title.search', 'Procurar logs de erro no histórico', ''),
-(50194, 'pt_BR:permission.memberOperators.manage', 'Gerenciar operadores', ''),
-(50195, 'pt_BR:permission.operatorAccount.simulateConversion', 'Simular conversão', ''),
-(50196, 'pt_BR:invite.errorSending', 'Erro ao enviar e-mail para {0}', ''),
-(50197, 'pt_BR:scheduledPayment.transferNumber', '{0} de {1}', ''),
-(50198, 'pt_BR:settings.log.traceWritesOnly', 'Gerar log somente se algum dado foi modificado', ''),
-(50199, 'pt_BR:profile.member.maxPictures', 'Quantidade máxima de imagens atingida', ''),
-(50200, 'pt_BR:menu.admin.usersGroups.memberRecordTypes', 'Tipos de registro de membro', ''),
-(50201, 'pt_BR:adCategory.import.confirmation', 'Tem certeza que deseja importar as categorias de anúncio do arquivo selecionado?', ''),
-(50202, 'pt_BR:reports.simulations.dRate.config.graph.yAxis', 'Taxa', ''),
-(50203, 'pt_BR:permission.brokerRemarks.view', 'Ver', ''),
-(50204, 'pt_BR:reports.stats.activity.singlePeriod.grossProduct.row1.short', 'com entradas', ''),
-(50205, 'pt_BR:scheduledPayment.title.details', 'Detalhes do pagamento agendado', ''),
-(50206, 'pt_BR:alert.type', 'Tipo', ''),
-(50207, 'pt_BR:settings.access.transactionPasswordChars', 'Caracteres possíveis na senha de transação', ''),
-(50208, 'pt_BR:reports.stats.keydevelopments.highestAmountPerTransaction.yAxis', 'Maior valor / trans.', ''),
-(50209, 'pt_BR:accountHistory.credits.count', 'Nº de créditos', ''),
-(50210, 'pt_BR:alert.member.loginBlockedByTries', 'O acesso do usuário está temporariamente bloqueado por exceder a quantidade máxima de tentativas. O endereço IP do membro é {1}', ''),
-(50211, 'pt_BR:accountType.removed', 'A conta foi removida', ''),
-(50212, 'pt_BR:smsMailing.type.FREE', 'Gratuita', ''),
-(50213, 'pt_BR:menu.operator.guarantees.searchCertifications', 'Certificações', ''),
-(50214, 'pt_BR:currency.error.pattern', 'Deve incluir #amount#, o qual será substituido pela quantia atual.', ''),
-(50215, 'pt_BR:customImage.system.next', 'Ícone de próxima página', ''),
-(50216, 'pt_BR:settings.message.invoiceAccepted', 'Fatura eletrônica aceita', ''),
-(50217, 'pt_BR:permission.brokerMessages.sendToMembers', 'Enviar mensagem para membros registrados', ''),
-(50218, 'pt_BR:permission.adminMemberAccess.disconnectOperator', 'Desconectar operador', ''),
-(50219, 'pt_BR:serviceClient.removed', 'O cliente de serviços web foi removido', ''),
-(50220, 'pt_BR:permission.systemReports.aRateConfigSimulation', 'Simulação da configuração do índice-A', ''),
-(50221, 'pt_BR:reports.stats.finances.singlePeriod.expenditure', 'Saída', ''),
-(50222, 'pt_BR:permission.systemAdminPermissions.manage', 'Gerenciar', ''),
-(50223, 'pt_BR:externalTransfer.title.new', 'Novo pagamento externo', ''),
-(50224, 'pt_BR:menu.admin.messages.messages', 'Mensagens', ''),
-(50225, 'pt_BR:permission.systemGroups.manageMember', 'Gerenciar grupos de membros', ''),
-(50226, 'pt_BR:account.transactionPasswordRequired', 'Exigir senha de transação', ''),
-(50227, 'pt_BR:adImport.status.TOO_MANY_CATEGORY_LEVELS', 'Muitos níveis de categoria (máx.=3)', ''),
-(50228, 'pt_BR:messageCategory.removed', 'A categoria de mensagem foi removida', ''),
-(50229, 'pt_BR:paymentObligation.delete', 'Excluir', ''),
-(50230, 'pt_BR:reports.transactions_report.incoming', 'De entrada', ''),
-(50231, 'pt_BR:reports.stats.activity.singlePeriod.loginTimes.row1', 'Acessos por membro', ''),
-(50232, 'pt_BR:home.admin.jumpToProfile.title', 'Ir para perfil do membro', ''),
-(50233, 'pt_BR:messageCategory.inserted', 'A categoria de mensagem foi inserida', ''),
-(50234, 'pt_BR:group.account.modified', 'A conta de grupo foi modificada', ''),
-(50235, 'pt_BR:permission.memberInvoices.view', 'Ver', ''),
-(50236, 'pt_BR:serviceClient.credentialsRequired', 'Credentials required', ''),
-(50237, 'pt_BR:accountHistory.filter', 'Tipo de pagamento', ''),
-(50238, 'pt_BR:paymentObligation.removeConfirmation', 'Você confirma a exclusão desta obrigação de pagamento?', ''),
-(50239, 'pt_BR:message.sendTo.GROUP', 'Grupo(s)', ''),
-(50240, 'pt_BR:permission.memberPreferences', 'Opções', ''),
-(50241, 'pt_BR:scheduledPayment.transfer', 'Parcela', ''),
-(50242, 'pt_BR:reference.transactionFeedback.replyComments.saved', 'A réplica da qualificação foi salva', ''),
-(50243, 'pt_BR:loan.grant.manualDate', 'Data de concessão', ''),
-(50244, 'pt_BR:externalTransfer.status', 'Estado', ''),
-(50245, 'pt_BR:permission.adminMemberTransactionFeedbacks.manage', 'Gerenciar', ''),
-(50246, 'pt_BR:permission.adminMemberPayments.chargeback', 'Estornar pagamento para membros', ''),
-(50247, 'pt_BR:reports.stats.activity.comparePeriods.percentageNoTrade.row1', 'Percentual de membros que não transacionam', ''),
-(50248, 'pt_BR:icon.title.conciliated', 'Pagamento conciliado', ''),
-(50249, 'pt_BR:adImport.status.INVALID_PRICE', 'O preço é inválido: {0}', ''),
-(50250, 'pt_BR:menu.admin.accounts.systemPayment', 'Pagamento para sistema', ''),
-(50251, 'pt_BR:memberRecord.action.new', 'Novo registro de {0}', ''),
-(50252, 'pt_BR:menu.admin.settings.file', 'Importar / Exportar', ''),
-(50253, 'pt_BR:settings.message.mail', 'Atributos para notificações enviadas por e-mail', ''),
-(50254, 'pt_BR:settings.alert.amountIncorrectLogin', 'Tentativas de acesso incorretas', ''),
-(50255, 'pt_BR:accountHistory.debits.amount', 'Total de débitos', ''),
-(50256, 'pt_BR:reference.summary.last30days', 'Últimos 30 dias', ''),
-(50257, 'pt_BR:createMember.registrationAgreementButton', 'Eu concordo com os termos de adesão acima', ''),
-(50258, 'pt_BR:receiptPrinter.error.applet', 'A applet da impressora de recibos não pôde ser inicializada.\n\nCertifique-se que o plugin do Java esteja instalado e que a applet do jZebra tenha sido autorizada a rodar.', ''),
-(50259, 'pt_BR:global.pagination.single.page', '{0} resultado(s)', ''),
-(50260, 'pt_BR:posweb.error.notEnoughCredits', 'O pagamento não pôde ser realizado', ''),
-(50261, 'pt_BR:invoice.action.accept', 'Aceitar', ''),
-(50262, 'pt_BR:customField.memberRecord.memberRecordType', 'Tipo', ''),
-(50263, 'pt_BR:pos.actions.changePin', 'Alterar Pin', ''),
-(50264, 'pt_BR:conversionSimulation.result.nofees', 'Nenhuma taxa encontrada', ''),
-(50265, 'pt_BR:posLog.by', 'Por', ''),
-(50266, 'pt_BR:customField.member.indexing.MEMBERS_AND_ADS', 'Membros e anúncios', ''),
-(50267, 'pt_BR:permission.adminAdminRecords.modify', 'Modificar', ''),
-(50268, 'pt_BR:loanGroup.action.grantLoan', 'Conceder empréstimo', ''),
-(50269, 'pt_BR:reports.stats.keydevelopments.throughTime.months.xAxis', 'Meses', ''),
-(50270, 'pt_BR:externalTransfer.member', 'Membro', ''),
-(50271, 'pt_BR:customField.operator.visibility.NOT_VISIBLE', 'Não visível', ''),
-(50272, 'pt_BR:menu.admin.reports.sms', 'Registros de SMS', ''),
-(50273, 'pt_BR:externalTransfer.action.MARK_AS_CHECKED', 'Marcar como verificada', ''),
-(50274, 'pt_BR:invoice.denied', 'A fatura eletrônica foi negada', ''),
-(50275, 'pt_BR:help.title.invoices', 'Faturas eletrônicas', ''),
-(50276, 'pt_BR:notificationPreferences.selectAll', 'Todos', ''),
-(50277, 'pt_BR:ticket.status.EXPIRED', 'Expirado', ''),
-(50278, 'pt_BR:pos.status.BLOCKED', 'Bloqueado', ''),
-(50279, 'pt_BR:member.title.bulkActions.filter', 'Filtro de membros para ações em massa', ''),
-(50280, 'pt_BR:reports.stats.keydevelopments.grossProduct.allTransactions.short', 'Tudo', ''),
-(50281, 'pt_BR:permission.systemMemberRecordTypes.view', 'Ver', ''),
-(50282, 'pt_BR:receipt.posweb.transactions.member', '{0}', ''),
-(50283, 'pt_BR:group.inserted', 'O grupo foi inserido', ''),
-(50284, 'pt_BR:memberRecordType.inserted', 'O tipo de registro de membro foi inserido', ''),
-(50285, 'pt_BR:rates.reinit.reinit', 'Reinicializar?', ''),
-(50286, 'pt_BR:payment.status.PROCESSED', 'Processado', ''),
-(50287, 'pt_BR:help.title.passwords', 'Senhas', ''),
-(50288, 'pt_BR:accountFeeLog.finished', 'Concluída', ''),
-(50289, 'pt_BR:mobile.home.viewPayments', 'Ver Pagamentos', ''),
-(50290, 'pt_BR:notificationPreferences.noPaidSmsLeft', 'Você não possui nenhuma mensagem paga adicional', ''),
-(50291, 'pt_BR:reports.stats.taxes.title', 'Estatísticas de taxas', ''),
-(50292, 'pt_BR:loan.status.AUTHORIZATION_DENIED', 'Autorização negada', ''),
-(50293, 'pt_BR:notificationPreferences.enableSmsOperations', 'Permitir operações por SMS', ''),
-(50294, 'pt_BR:payment.cancel.transactionPassword', 'Para cancelar este pagamento, você deve fornecer sua senha de transação', ''),
-(50295, 'pt_BR:profile.pendingEmail.resent', 'O e-mail de verificação foi enviado para {0}', ''),
-(50296, 'pt_BR:conversionSimulation.transferType', 'Tipo de transação', ''),
-(50297, 'pt_BR:admin.title.search', 'Procurar administradores', ''),
-(50298, 'pt_BR:document.action.new.dynamic', 'Novo documento dinâmico', ''),
-(50299, 'pt_BR:guaranteeType.removeConfirmation', 'Você tem certeza que deseja excluir o tipo de garantia?', ''),
-(50300, 'pt_BR:infoText.title.new', 'Nova mensagem informativa', ''),
-(50301, 'pt_BR:settings.message.brokerRemovedRemarkComments', 'Comentário da observação de corretor removido', ''),
-(50302, 'pt_BR:settings.log.traceLevel', 'Nível do log de ações', ''),
-(50303, 'pt_BR:permission.operatorReferences', 'Referências', ''),
-(50304, 'pt_BR:fieldMapping.field.TYPE', 'Tipo de pagamento', ''),
-(50305, 'pt_BR:profile.pendingEmail', 'A mudança para {0} está pendente de confirmação', ''),
-(50306, 'pt_BR:permission.adminMemberAds.view', 'Ver', ''),
-(50307, 'pt_BR:alert.title.search', 'Histórico de avisos', ''),
-(50308, 'pt_BR:settings.log.scheduledTaskFile', 'Endereço/nome do arquivo de log de tarefas agendadas', ''),
-(50309, 'pt_BR:reports.stats.general.notUsed', 'não utilizado', ''),
-(50310, 'pt_BR:document.nature', 'Tipo', ''),
-(50311, 'pt_BR:transferType.inserted', 'O tipo de transação foi inserido', ''),
-(50312, 'pt_BR:pin.unblock.button', 'Desbloquear senha externa (PIN)', ''),
-(50313, 'pt_BR:permission.systemCustomImages.view', 'Ver', ''),
-(50314, 'pt_BR:activities.rates', 'Índices', ''),
-(50315, 'pt_BR:ad.status.ACTIVE', 'Ativo', ''),
-(50316, 'pt_BR:alert.member.initialCreditFailed', 'A concessão do crédito inicial falhou para {0}', ''),
-(50317, 'pt_BR:channel.title.modify', 'Modificar canal', ''),
-(50318, 'pt_BR:accountFee.invoiceMode.ALWAYS', 'Sempre (não cobrar o membro automaticamente)', ''),
-(50319, 'pt_BR:permission.adminMemberAccess.disconnect', 'Desconectar membro', ''),
-(50320, 'pt_BR:customField.allSelectedLabel', 'Todas', ''),
-(50321, 'pt_BR:loan.showProjection', 'Exibir', ''),
-(50322, 'pt_BR:paymentObligation.title.view', 'Detalhes da obrigação de pagamento', ''),
-(50323, 'pt_BR:alert.system.INDEX_REBUILD_END', 'Conclusão de reconstrução de índice de busca', ''),
-(50324, 'pt_BR:externalTransferImport.title.import', 'Importar transações de {0}', ''),
-(50325, 'pt_BR:global.weekDay.MONDAY', 'Segunda-feira', ''),
-(50326, 'pt_BR:menu.admin.customFields.memberFields', 'Membro', ''),
-(50327, 'pt_BR:accountFeeLog.status.INVOICE', 'Fatura', ''),
-(50328, 'pt_BR:member.bulkActions.changeGroup.confirmation', 'Você tem certeza que deseja mudar o grupo de todos os membros que satisfazem ao filtro?', ''),
-(50329, 'pt_BR:cardType.title.list', 'Tipos de cartão', ''),
-(50330, 'pt_BR:loan.confirmation.header', 'Você está prestes a conceder este empréstimo:', ''),
-(50331, 'pt_BR:fileMapping.negativeAmountValue', 'Valor negativo', ''),
-(50332, 'pt_BR:sms.type.PAYMENT', 'Pagamento direto', ''),
-(50333, 'pt_BR:errors.passwords', 'As senhas não são iguais', ''),
-(50334, 'pt_BR:alert.system.errorProcessingAccountStatus', 'Erro crítico no processamento do estado de conta. Detalhes do pagamento: data: {0}, de {1}, para {2}, valor {3}', ''),
-(50335, 'pt_BR:transactionFee.aRateRelation', 'Relação entre taxa e índice-A', ''),
-(50336, 'pt_BR:transferType.showScheduledPaymentsToDestination', 'Mostrar pagamentos agendados ao destinatário', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(50337, 'pt_BR:settings.mail.activationMessageWithPassword', 'Mensagem quando a senha é gerada', ''),
-(50338, 'pt_BR:reports.stats.activity.histogram.logins.title', 'Acessos por membro, histograma', ''),
-(50339, 'pt_BR:transfer.guarantee.details', 'Clique aqui para detalhes.', ''),
-(50340, 'pt_BR:home.admin.status.connectedBrokers', 'Número de corretores conectados', ''),
-(50341, 'pt_BR:defaultBrokerCommission.validity', 'Validade', ''),
-(50342, 'pt_BR:adminTasks.onlineState.confirmOffline', 'Definir o sistema como inativo irá desconectar todos os usuários conectados (exceto você) e prevenir que nenhum usuário se conecte, exceto adminsitradores com permissões de definir o sistema como ativo novamente.\n\nVocê tem certeza que quer definir o sistema como inativo?', ''),
-(50343, 'pt_BR:transactionFee.title.broker.insert', 'Inserir comissão de corretor', ''),
-(50344, 'pt_BR:settings.local.title', 'Configurações de local', ''),
-(50345, 'pt_BR:receipt.transfer.textBefore', '----------------', ''),
-(50346, 'pt_BR:memberPos.resultPageSize', 'Resultados por página', ''),
-(50347, 'pt_BR:guarantee.seller', 'Vendedor', ''),
-(50348, 'pt_BR:adImport.file', 'Arquivo CSV', ''),
-(50349, 'pt_BR:menu.admin.alerts.alertHistory', 'Histórico de avisos', ''),
-(50350, 'pt_BR:menu.admin.accounts.scheduledPayments', 'Pagamentos agendados', ''),
-(50351, 'pt_BR:groups.name', 'Nome', ''),
-(50352, 'pt_BR:pendingMember.search.date', 'Data', ''),
-(50353, 'pt_BR:reports.stats.activity.throughTime.loginTimes.title', 'Acessos por membro ao longo do tempo', ''),
-(50354, 'pt_BR:cardType.showCardSecurityCode', 'Exibir o código de segurança', ''),
-(50355, 'pt_BR:message.error.memberCannotReceive', 'A mensagem não pôde ser enviada pois o membro escolheu não receber mensagens', ''),
-(50356, 'pt_BR:profile.action.manageNotifications', 'Gerenciar notificações', ''),
-(50357, 'pt_BR:card.user.of', 'Cartões do {0}', ''),
-(50358, 'pt_BR:paymentObligationLog.date', 'Data', ''),
-(50359, 'pt_BR:loanPayment.summary.recoveredPayments', 'Parcelas recuperadas', ''),
-(50360, 'pt_BR:customField.pattern', 'Padrão de entrada', ''),
-(50361, 'pt_BR:ticket.status.OK_PENDING', 'Sucesso / Pendente', ''),
-(50362, 'pt_BR:errorLog.path', 'Endereço', ''),
-(50363, 'pt_BR:transferType.transferListenerClass', 'Classe Java para notificação de pagamentos processados', ''),
-(50364, 'pt_BR:errors.minLength', '{0} não pode ser menor do que {1} caracteres', ''),
-(50365, 'pt_BR:adminTasks.indexes.status.CORRUPT', 'Corrompido', ''),
-(50366, 'pt_BR:guarantee.sellerName', 'Nome do vendedor', ''),
-(50367, 'pt_BR:posweb.bannerText', 'POS web', ''),
-(50368, 'pt_BR:transferType.availability.PAYMENT', 'Pagamento direto', ''),
-(50369, 'pt_BR:channel.removeConfirmation', 'Você tem certeza que deseja remover este canal?', ''),
-(50370, 'pt_BR:receipt.posweb.transactions.noTransfers', 'Nenhum pagamento', ''),
-(50371, 'pt_BR:settings.message.scheduledPaymentFailedToPayer', 'Pagamento agendado: falha ao processar (para quem pagou)', ''),
-(50372, 'pt_BR:group.settings.transactionPassword', 'Senha de transação', ''),
-(50373, 'pt_BR:memberImport.status.INVALID_CUSTOM_FIELD_VALUE_MAX_LENGTH', '{0} é invalido: o tamanho máximo é {1}.', ''),
-(50374, 'pt_BR:permission.adminMemberGroups.manageAccountSettings', 'Gerenciar configuração de contas', ''),
-(50375, 'pt_BR:adImport.title.import', 'Importar anúncios', ''),
-(50376, 'pt_BR:settings.local.language.SPANISH', 'Espanhol', ''),
-(50377, 'pt_BR:permission.systemThemes.export', 'Exportar', ''),
-(50378, 'pt_BR:settings.message.scheduledPaymentFailedToPayee', 'Pagamento agendado de fatura: falha ao processar (para quem recebeu)', ''),
-(50379, 'pt_BR:loan.repayment.paymentNumber', 'Número do pagamento', ''),
-(50380, 'pt_BR:loan.repayment.manualDate', 'Data de pagamento', ''),
-(50381, 'pt_BR:paymentObligation.cancel', 'Cancelar', ''),
-(50382, 'pt_BR:paymentObligation.description', 'Descrição', ''),
-(50383, 'pt_BR:transfer.to', 'Para', ''),
-(50384, 'pt_BR:permission.adminMemberRecords.view', 'Ver', ''),
-(50385, 'pt_BR:reports.stats.finances.singlePeriod.overview.yAxis', 'Quantidade', ''),
-(50386, 'pt_BR:login.transactionPassword', 'Senha de transação', ''),
-(50387, 'pt_BR:global.searchResults', 'Resultados da busca', ''),
-(50388, 'pt_BR:ticket.status.PENDING', 'Pendente', ''),
-(50389, 'pt_BR:receipt.transfer.from', 'De: {0}', ''),
-(50390, 'pt_BR:customImage.system.quickAccess_searchMembers', 'Acesso rápido: procurar membros', ''),
-(50391, 'pt_BR:permission.adminAdmins.view', 'Ver', ''),
-(50392, 'pt_BR:currency.name', 'Nome', ''),
-(50393, 'pt_BR:reports.stats.taxes.numberOfCharges', 'Cobranças', ''),
-(50394, 'pt_BR:adminTasks.indexes.status.MISSING', 'Faltando', ''),
-(50395, 'pt_BR:menu.operator.help', 'Ajuda', ''),
-(50396, 'pt_BR:mobile.payment.transactionPassword', 'Senha de transação', ''),
-(50397, 'pt_BR:permission.systemMessageCategories.manage', 'Gerenciar', ''),
-(50398, 'pt_BR:brokerCommissionContract.title.list', 'Contratos de comissão de corretor', ''),
-(50399, 'pt_BR:message.action.MARK_AS_UNREAD', 'Marcar como não lida', ''),
-(50400, 'pt_BR:settings.local.numberLocale.PERIOD_AS_DECIMAL', '1,234.56', ''),
-(50401, 'pt_BR:changePin.error.invalidTransactionPassword', 'Senha de transação incorreta', ''),
-(50402, 'pt_BR:reports.stats.general.selectMulti', 'Selecione um ou mais', ''),
-(50403, 'pt_BR:transfer.processDate', 'Processado em', ''),
-(50404, 'pt_BR:message.sendTo.BROKERED_MEMBERS', 'Membros do corretor', ''),
-(50405, 'pt_BR:memberImport.status.INVALID_CUSTOM_FIELD_VALUE_UNIQUE', '{0} é invalido: {1} não é unico.', ''),
-(50406, 'pt_BR:certification.error.certificationActiveExists', 'Já existe uma certificação para o comprador e moeda selecionados', ''),
-(50407, 'pt_BR:permission.operatorReports', 'Relatórios', ''),
-(50408, 'pt_BR:authorizationLevel.error.maxLevel', 'Não é possível inserir mais do que {0} níveis de autorização', ''),
-(50409, 'pt_BR:message.type.AD_EXPIRATION', 'Vencimento de anúncios', ''),
-(50410, 'pt_BR:permission.adminMemberLoans.manageExpiredStatus', 'Gerenciar o estado de empréstimos vencidos', ''),
-(50411, 'pt_BR:accountFeeLog.status.ACCEPTED_INVOICE', 'Fatura aceita', ''),
-(50412, 'pt_BR:transactionPassword.reset.confirmMessage', 'Você tem certeza de que deseja reinicializar a senha de transação do membro?', ''),
-(50413, 'pt_BR:help.title.contacts', 'Contatos', ''),
-(50414, 'pt_BR:mobile.payment.error.notEnoughCredits', 'Você não tem créditos suficientes para realizar o pagamento', ''),
-(50415, 'pt_BR:customField.control.TEXT', 'Caixa de texto', ''),
-(50416, 'pt_BR:createOperator.passwordConfirmation', 'Confirme a senha', ''),
-(50417, 'pt_BR:reports.members_reports.include_no_traders', 'Incluir membros sem transações', ''),
-(50418, 'pt_BR:document.nature.DYNAMIC', 'Dinâmico', ''),
-(50419, 'pt_BR:brokering.title.print', 'Membros registrados', ''),
-(50420, 'pt_BR:transfer.title.children', 'Detalhes da transação gerada', ''),
-(50421, 'pt_BR:account.iRate', 'Indice-I', ''),
-(50422, 'pt_BR:mobile.home.doPayment', 'Fazer pagamento', ''),
-(50423, 'pt_BR:menu.member.search.ads', 'Produtos e serviços', ''),
-(50424, 'pt_BR:menu.admin.externalAccounts.fileMappings', 'Mapeamentos de arquivos', ''),
-(50425, 'pt_BR:reports.members.ads.active_ads', 'Anúncios ativos', ''),
-(50426, 'pt_BR:settings.message.adminPaymentFromSystemToSystem', 'Pagamentos do sistema para o sistema', ''),
-(50427, 'pt_BR:reports.stats.general.p', 'Valor-p', ''),
-(50428, 'pt_BR:permission.systemAdCategories.manage', 'Gerenciar', ''),
-(50429, 'pt_BR:permission.systemStatus.viewConnectedAdmins', 'Ver administradores conectados', ''),
-(50430, 'pt_BR:memberRecord.title.flat', '{0} para {1}', ''),
-(50431, 'pt_BR:permission.systemGroupFilters.manage', 'Gerenciar', ''),
-(50432, 'pt_BR:payment.title.brokerMemberToMember', 'Pagamento entre membros', ''),
-(50433, 'pt_BR:permission.brokerMemberRecords.view', 'Ver', ''),
-(50434, 'pt_BR:menu.admin.accounts.transfersAuthorizations', 'Busca de autorizações', ''),
-(50435, 'pt_BR:menu.admin.help.manual.stats', 'Manual de estatísticas', ''),
-(50436, 'pt_BR:message.actionPerformed.RESTORE', 'As mensagens foram restauradas', ''),
-(50437, 'pt_BR:guarantee.myWithBuyerOnly', 'Somente minhas garantias com comprador', ''),
-(50438, 'pt_BR:group.settings.maxAdImagesPerMember', 'Qtde. máx. de imagens por anúncio', ''),
-(50439, 'pt_BR:reports.current.invoices.SYSTEM_INCOMING.amount', 'Soma das faturas eletrônicas de entrada no sistema', ''),
-(50440, 'pt_BR:settings.message.pendingPaymentDenied', 'Pagamento pendente negado', ''),
-(50441, 'pt_BR:permission.adminAdminRecords.create', 'Criar', ''),
-(50442, 'pt_BR:menu.operator.logout', 'Sair', ''),
-(50443, 'pt_BR:menu.admin.contentManagement.systemImages', 'Imagens de sistema', ''),
-(50444, 'pt_BR:payment.status.DENIED', 'Negado', ''),
-(50445, 'pt_BR:transactionFee.allBrokerGroups', 'Todos os grupos de corretores', ''),
-(50446, 'pt_BR:settings.message.posPinBlocked', 'Senha externa (PIN) do canal POS bloqueada por excesso de tentativas inválidas', ''),
-(50447, 'pt_BR:customizedFile.title.customize.page', 'Personalizar página do aplicativo', ''),
-(50448, 'pt_BR:createOperator.action.saveAndNew', 'Salvar e inserir outro operador', ''),
-(50449, 'pt_BR:transfer.date', 'Data', ''),
-(50450, 'pt_BR:paymentObligationLog.by', 'Alterado por', ''),
-(50451, 'pt_BR:card.status', 'Estado', ''),
-(50452, 'pt_BR:reports.stats.activity.histogram.logins.xAxis', 'Acessos/membro', ''),
-(50453, 'pt_BR:reports.stats.general.graph.selectNone', 'Não selecionar nenhum gráfico', ''),
-(50454, 'pt_BR:settings.message.expiredGuarantee', 'Certificação negada', ''),
-(50455, 'pt_BR:customField.type.DATE', 'Data', ''),
-(50456, 'pt_BR:profile.action.advertisementsActions', 'Anúncios', ''),
-(50457, 'pt_BR:settings.mailTranslation.modified', 'A tradução dos e-mails foi modificada', ''),
-(50458, 'pt_BR:channel.credentials.LOGIN_PASSWORD', 'Senha de login', ''),
-(50459, 'pt_BR:login.error.blocked', 'Seu acesso está temporariamente bloqueado', ''),
-(50460, 'pt_BR:loan.title.search.group', 'Empréstimos do grupo {0}', ''),
-(50461, 'pt_BR:reports.simulations.aRate.config.combinedGraph.yAxis', 'Taxa', ''),
-(50462, 'pt_BR:adInterest.title.modify', 'Modificar interesse em anúncios', ''),
-(50463, 'pt_BR:smsMailing.systemName', 'Nome do sistema', ''),
-(50464, 'pt_BR:account.lowUnitsMessage', 'Mensagem de poucas unidades', ''),
-(50465, 'pt_BR:externalTransferType.inserted', 'O tipo de pagamento foi inserido', ''),
-(50466, 'pt_BR:transactionPassword.blocked', 'A senha de transação agora está bloqueada', ''),
-(50467, 'pt_BR:reports.stats.activity.comparePeriods.numberTransactions.row2', 'Número de transações sobre todos os membro', ''),
-(50468, 'pt_BR:reports.stats.activity.comparePeriods.numberTransactions.row1', 'Número de transações por membro que realiza transações', ''),
-(50469, 'pt_BR:accountHistory.conciliation.all', 'Todas', ''),
-(50470, 'pt_BR:transferType.fields.action.new', 'Inserir novo campo', ''),
-(50471, 'pt_BR:transactionFee.chargeType.A_RATE', 'índice-A', ''),
-(50472, 'pt_BR:customField.ad.indexed', 'Incluir na busca por palavras-chave', ''),
-(50473, 'pt_BR:brokering.list.noResults', 'Nenhum membro registrado de acordo com o filtro', ''),
-(50474, 'pt_BR:createAdmin.action.saveAndOpenProfile', 'Salvar e abrir perfil', ''),
-(50475, 'pt_BR:permission.adminMemberLoanGroups', 'Associação a grupo de empréstimos', ''),
-(50476, 'pt_BR:document.title.insert', 'Inserir novo documento', ''),
-(50477, 'pt_BR:changeGroup.error.remove.hasBalance', 'O membro não pode ser removido porque sua conta não possui saldo zero em {0}', ''),
-(50478, 'pt_BR:group.settings.emailValidation.BROKER', 'Corretor', ''),
-(50479, 'pt_BR:menu.admin.usersGroups.membersBulkAction', 'Ações em massa', ''),
-(50480, 'pt_BR:card.member', 'Membro', ''),
-(50481, 'pt_BR:loan.confirmation.transactionPassword', 'Para confirmar este empréstimo, você deve informar a sua senha de transação', ''),
-(50482, 'pt_BR:accountType.limitType.UNLIMITED', 'Ilimitado', ''),
-(50483, 'pt_BR:global.iRate.steps', 'passos', ''),
-(50484, 'pt_BR:changeGroup.error.remove.hasOpenLoans', 'O membro não pode ser removido porque possui empréstimos não pagos', ''),
-(50485, 'pt_BR:certification.status.CANCELLED', 'Cancelada', ''),
-(50486, 'pt_BR:account.balance', 'Saldo da conta', ''),
-(50487, 'pt_BR:multiDropDown.noItemsMessage', 'Nenhum item selecionado', ''),
-(50488, 'pt_BR:customizedFile.action.customizeNew', 'Personalizar novo arquivo', ''),
-(50489, 'pt_BR:permission.systemAdCategories.view', 'Ver', ''),
-(50490, 'pt_BR:admin.adminUsername', 'Nome de usuário do administrador', ''),
-(50491, 'pt_BR:alert.system.accountFeeRunning', 'A taxa de conta {0} está sendo executada', ''),
-(50492, 'pt_BR:customField.member.access.MEMBER_NOT_REGISTRATION', 'Membro sem ser no cadastro', ''),
-(50493, 'pt_BR:remark.title', 'Observações de {0}', ''),
-(50494, 'pt_BR:mobile.home.creditLimit', 'Limite: {0}', ''),
-(50495, 'pt_BR:changePin.error.invalidPassword', 'Senha incorreta', ''),
-(50496, 'pt_BR:reports.stats.activity.whatToShow.THROUGH_TIME', 'Ao longo do tempo', ''),
-(50497, 'pt_BR:settings.local.language', 'Linguagem', ''),
-(50498, 'pt_BR:memberRecordType.modified', 'O tipo de registro de membro foi modificado', ''),
-(50499, 'pt_BR:receiptPrinterSettings.localPrinter.defaultBrowserPrinting', 'Impressão padrão do navegador', ''),
-(50500, 'pt_BR:permission.brokerMemberPayments.paymentAsMemberToSystem', 'Pagamento como membro para sistema', ''),
-(50501, 'pt_BR:customField.member.access.ADMIN', 'Administrador', ''),
-(50502, 'pt_BR:home.status.unreadMessages', 'Você tem {0} mensagens não lidas', ''),
-(50503, 'pt_BR:memberImport.accountType', 'Tipo de conta', ''),
-(50504, 'pt_BR:paymentObligation.status.CANCELED', 'Cancelada', ''),
-(50505, 'pt_BR:permission.memberCards.cancel', 'Cancelar', ''),
-(50506, 'pt_BR:message.type.BROKERING', 'Alertas de corretagem', ''),
-(50507, 'pt_BR:cardType.removeConfirmation', 'Remover este tipo de cartão?', ''),
-(50508, 'pt_BR:customField.payment.listAccess', 'Exibir na lista de resultados', ''),
-(50509, 'pt_BR:memberImport.status.SUCCESS', 'Sucesso', ''),
-(50510, 'pt_BR:adImport.status.MISSING_CATEGORY', 'A categoria está faltando', ''),
-(50511, 'pt_BR:settings.local.csv.recordSeparator', 'Quebra de linha', ''),
-(50512, 'pt_BR:permission.adminMemberBrokerings.viewMembers', 'Ver lista de membros (como corretor)', ''),
-(50513, 'pt_BR:adCategory.title.order.description', 'Arraste os campos para alterar a ordem', ''),
-(50514, 'pt_BR:sms.type.REQUEST_PAYMENT.description', 'Solicitação de pagamento', ''),
-(50515, 'pt_BR:menu.admin.personal.mailPreferences', 'Notificações por E-Mail', ''),
-(50516, 'pt_BR:payment.error.noTransferType', 'Não há um tipo de transação possível para esse pagamento.\nPor favor, contate a administração', ''),
-(50517, 'pt_BR:card.action.cancel', 'Cancelar', ''),
-(50518, 'pt_BR:settings.mail.smtp', 'Parâmetros do servidor SMTP', ''),
-(50519, 'pt_BR:loan.title.printDetails', 'Detalhes do empréstimo', ''),
-(50520, 'pt_BR:accountFee.chargeMode.NEGATIVE_VOLUME_PERCENTAGE', 'Percentual sobre volume negativo', ''),
-(50521, 'pt_BR:pos.assignPos.confirmation', 'Atribuir o POS ao membro?', ''),
-(50522, 'pt_BR:menu.operator.member.transactionFeedbacks', 'Qualificações de transações', ''),
-(50523, 'pt_BR:guarantee.editGuaranteeType', 'Editar o tipo de garantia', ''),
-(50524, 'pt_BR:customizedFile.type.STATIC_FILE', 'Estático', ''),
-(50525, 'pt_BR:error.unknownImageType', 'Formato de imagem desconhecido.\nOs formatos possíveis são {0}', ''),
-(50526, 'pt_BR:ad.category.choose', 'Selecione uma categoria', ''),
-(50527, 'pt_BR:channel.credentials', 'Credenciais', ''),
-(50528, 'pt_BR:message.rootType.MEMBER', 'Membros', ''),
-(50529, 'pt_BR:permission.brokerMembers.managePending', 'Gerenciar membros pendentes', ''),
-(50530, 'pt_BR:permission.operatorPayments.paymentToSelf', 'Auto-pagamento', ''),
-(50531, 'pt_BR:cardType.defaultExpiration', 'Expiração', ''),
-(50532, 'pt_BR:loanPayment.number', 'Número', ''),
-(50533, 'pt_BR:reports.members.show_btn', 'Exibir relatório', ''),
-(50534, 'pt_BR:settings.log.accountFeeLevel.OFF', 'Desligado', ''),
-(50535, 'pt_BR:notificationPreferences.my.title.name', 'Opções de notificação', ''),
-(50536, 'pt_BR:permission.systemCustomFields.manage', 'Gerenciar', ''),
-(50537, 'pt_BR:permission.brokerMembers.changeProfile', 'Alterar perfil', ''),
-(50538, 'pt_BR:settings.local.maxThumbnailWidth', '', ''),
-(50539, 'pt_BR:customField.member.error.indexingVisibility', 'Para incluir na busca por palavras-chave, a visibilidade do campo deve ser para ''outros membros''', ''),
-(50540, 'pt_BR:smsMailing.search.noResults', 'Não há mensagens SMS de difusão', ''),
-(50541, 'pt_BR:customField.title.order.loanGroup', 'Ajustar ordem de campo customizado de grupo de empréstimos', ''),
-(50542, 'pt_BR:loanGroup.error.memberAlreadyInList', 'O membro já pertence ao grupo', ''),
-(50543, 'pt_BR:smsMailing.type.PAID', 'Paga', ''),
-(50544, 'pt_BR:accountType.nature.SYSTEM', 'Sistema', ''),
-(50545, 'pt_BR:settings.mail.subject', 'Assunto', ''),
-(50546, 'pt_BR:member.bulkActions.channelsChangedForAll', 'Todos os membros correspondentes ao filtro ({0}) foram alterados.', ''),
-(50547, 'pt_BR:invoice.from', 'De', ''),
-(50548, 'pt_BR:externalAccount.title.list', 'Lista de Contas Externas', ''),
-(50549, 'pt_BR:transactionPassword.status.user.PENDING', 'Pendente', ''),
-(50550, 'pt_BR:translationMessage.imported', 'O arquivo de propriedades foi importado', ''),
-(50551, 'pt_BR:settings.type.LOG', 'Config. de log', ''),
-(50552, 'pt_BR:ad.title.search', 'Procurar produtos e serviços', ''),
-(50553, 'pt_BR:global.datePattern.hour', 'hh', ''),
-(50554, 'pt_BR:externalAccountHistory.error.cannotMarkExternalTransferAsChecked', 'Apenas pagamentos com todos campos preenchidos podem ser marcados como conferidos', ''),
-(50555, 'pt_BR:guarantee.modified', 'A garantia foi alterada com sucesso', ''),
-(50556, 'pt_BR:payment.calculatePayments', 'Calcular pagamentos', ''),
-(50557, 'pt_BR:memberRecord.title.edit', 'Editar registo de {0} para {1}', ''),
-(50558, 'pt_BR:menu.admin.contentManagement.manageTranslation', 'Arquivo de tradução', ''),
-(50559, 'pt_BR:settings.mail.accountDetails', 'Detalhes da conta', ''),
-(50560, 'pt_BR:loan.summary.remainingAmount', 'Valor restante total', ''),
-(50561, 'pt_BR:guaranteeType.feePayers.BUYER', 'Comprador', ''),
-(50562, 'pt_BR:permission.systemTasks.onlineState', 'Definir a disponibilidade do sistema', ''),
-(50563, 'pt_BR:transactionFee.initialAmount', 'Valor maior ou igual a', ''),
-(50564, 'pt_BR:brokerCommission.action.unsuspend', 'Liberar', ''),
-(50565, 'pt_BR:transactionPassword.status.user.BLOCKED', 'Bloqueada', ''),
-(50566, 'pt_BR:customField.title.order.admin', 'Ajustar ordem de campo customizado de administrador', ''),
-(50567, 'pt_BR:customField.title.order.description', 'Arraste os campos para alterar a ordem', ''),
-(50568, 'pt_BR:currency.aRate.initValue', 'Valor de inicialização do índice-A', ''),
-(50569, 'pt_BR:permission.brokerMemberRecords.delete', 'Apagar', ''),
-(50570, 'pt_BR:transfer.by', 'Executado por', ''),
-(50571, 'pt_BR:brokering.title.addMember', 'Adicionar membro', ''),
-(50572, 'pt_BR:transactionFee.title.simple.modify', 'Modificar taxa de transação', ''),
-(50573, 'pt_BR:settings.log.restFile', 'Endereço/nome do arquivo de log de serviços REST', ''),
-(50574, 'pt_BR:serviceClient.removeConfirmation', 'Você tem certeza que deseja remover este cliente?', ''),
-(50575, 'pt_BR:settings.local.extra', 'Outros', ''),
-(50576, 'pt_BR:defaultBrokerCommission.updated', 'Configurações de comissões atualizadas', ''),
-(50577, 'pt_BR:customField.type.DECIMAL', 'Número decimal', ''),
-(50578, 'pt_BR:createOperator.password', 'Senha', ''),
-(50579, 'pt_BR:errors.email', '{0} é um endereço de e-mail inválido', ''),
-(50580, 'pt_BR:settings.log.scheduledTaskLevel.DETAILED', 'Execução detalhada', ''),
-(50581, 'pt_BR:member.bulkActions.channelsNotChanged', 'Nenhum membro correspondente ao filtro ({0}) foi alterado.', ''),
-(50582, 'pt_BR:transactionFee.conditions', 'Condições de aplicabilidade', ''),
-(50583, 'pt_BR:conversionSimulation.result.initialAmount', 'Valor a converter', ''),
-(50584, 'pt_BR:permission.systemDocuments.manage', 'Gerenciar', ''),
-(50585, 'pt_BR:permission.adminMemberBulkActions.generateCard', 'Gerar cartão', ''),
-(50586, 'pt_BR:changeGroup.admin.confirmPermanentRemove', 'Remover permanentemente o administrador?', ''),
-(50587, 'pt_BR:smsMailing.error.noMobilePhone', 'O membro selecionado não possui telefone celular', ''),
-(50588, 'pt_BR:payment.authorizeConfirmationMessage', 'Você está prestes a autorizar este pagamento.\n\nPor favor, clique em OK para confirmar', ''),
-(50589, 'pt_BR:authorizationLevel.error.lowerLevelAmount', 'O valor deste nível não pode ser menor que o do nível anterior', ''),
-(50590, 'pt_BR:customField.possibleValue.error.removing', 'O valor não foi removido porque está sendo usado', ''),
-(50591, 'pt_BR:mailPreferences.payments', 'Pagamentos', ''),
-(50592, 'pt_BR:guarantee.generatedLoan', 'Empréstimo', ''),
-(50593, 'pt_BR:reports.stats.activity.histogram.numberTransactions.title', 'Número de transações por membro, histograma', ''),
-(50594, 'pt_BR:accountFeeLog.status.ERROR', 'Erro', ''),
-(50595, 'pt_BR:permission.adminMemberInvoices.sendAsMemberToSystem', 'Enviar como membro para sistema', ''),
-(50596, 'pt_BR:reports.stats.activity.developments.title', 'Progressos-chave na atividade do membro', ''),
-(50597, 'pt_BR:customImage.system.edit_gray', 'Ícone editar vazio', ''),
-(50598, 'pt_BR:permission.memberMessages', 'Mensagens', ''),
-(50599, 'pt_BR:activities.transactions.numberSell', 'Recebidas - qtde.', ''),
-(50600, 'pt_BR:ad.description.onlyNew', '(somente annuncios novos)', ''),
-(50601, 'pt_BR:permission.operatorReports.view', 'Visualizar relatórios de outros membros', ''),
-(50602, 'pt_BR:group.account.noResults', 'O grupo não tem contas associadas', ''),
-(50603, 'pt_BR:ad.title.modify', 'Modificar anúncio', ''),
-(50604, 'pt_BR:reports.stats.activity.singlePeriod.numberTransactions.title', 'Número de transações por membro (período simples)', ''),
-(50605, 'pt_BR:group.registrationAgreement', 'Termos de adesão', ''),
-(50606, 'pt_BR:paymentRequest.title.search', 'Busca de solicitações de pagamento', ''),
-(50607, 'pt_BR:guaranteeType.disabled.tooltip', 'Tipo de garantia inativo', ''),
-(50608, 'pt_BR:guarantee.expiresTo', 'Final do vencimento', ''),
-(50609, 'pt_BR:transactionFee.toAllGroups', 'Para todos os grupos', ''),
-(50610, 'pt_BR:permission.systemStatus.view', 'Ver estado do sistema', ''),
-(50611, 'pt_BR:infoText.removeConfirmation', 'Remover esta mensagem informativa?', ''),
-(50612, 'pt_BR:conversionSimulation.result.input.drate', 'Índice-D aplicado', ''),
-(50613, 'pt_BR:reports.stats.activity.topten.numberTransactions.title', 'Os dez maiores em transações por membro', ''),
-(50614, 'pt_BR:settings.local.language.CZECH', 'Tcheco', ''),
-(50615, 'pt_BR:permission.systemAccounts', 'Contas', ''),
-(50616, 'pt_BR:reference.paymentsAwaitingFeedback.noResults', 'No momento não há pagamentos necessitando de qualificação', ''),
-(50617, 'pt_BR:certificationLog.status', 'Estado', ''),
-(50618, 'pt_BR:payment.confirmation.appliedFees', 'Taxas aplicadas', ''),
-(50619, 'pt_BR:settings.message.newCommissionContract', 'Novo contrato de comissão', ''),
-(50620, 'pt_BR:activities.references.received', 'Recebida', ''),
-(50621, 'pt_BR:guarantee.status.CANCELLED', 'Cancelada', ''),
-(50622, 'pt_BR:adImport.newCategories', 'Novas categorias', ''),
-(50623, 'pt_BR:group.customizedFiles.title.modify', 'Modificar arquivo customizado para {0}', ''),
-(50624, 'pt_BR:loanPayment.summary.inProcessPayments', 'Parcelas em processo', ''),
-(50625, 'pt_BR:reports.stats.activity.throughTime.grossProduct.col4', 'no. Todos', ''),
-(50626, 'pt_BR:reports.stats.activity.throughTime.grossProduct.col3', 'no. com entrada', ''),
-(50627, 'pt_BR:guaranteeType.feeType.FIXED', 'Fixo', ''),
-(50628, 'pt_BR:reports.stats.activity.throughTime.grossProduct.col2', 'Produto bruto todos', ''),
-(50629, 'pt_BR:accountFeeLog.failedMembers', 'Erros', ''),
-(50630, 'pt_BR:reports.stats.activity.throughTime.grossProduct.col1', 'Produto bruto membros com entradas', ''),
-(50631, 'pt_BR:loan.repayment.repay', 'Pagar', ''),
-(50632, 'pt_BR:reference.title.given', 'Referências dadas por {0}', ''),
-(50633, 'pt_BR:receipt.transfer.scheduledFor', 'Agendado para: {0}', ''),
-(50634, 'pt_BR:group.title.modify.broker', 'Configurações de grupo de corretores', ''),
-(50635, 'pt_BR:payment.confirmation.header.scheduled', 'Você está prestes a agendar o seguinte pagamento:', ''),
-(50636, 'pt_BR:permission.adminMemberInvoices.deny', 'Rejeitar fatura eletrônica', ''),
-(50637, 'pt_BR:externalAccount.title.insert', 'Inserir conta externa', ''),
-(50638, 'pt_BR:card.activated', 'Cartão ativado', ''),
-(50639, 'pt_BR:externalTransfer.type', 'Tipo', ''),
-(50640, 'pt_BR:permission.memberCards.unblock', 'Desbloquear', ''),
-(50641, 'pt_BR:settings.message.certificationStatusChanged', 'Estado da certificação alterado', ''),
-(50642, 'pt_BR:group.settings.maxAdPublicationTime.field', 'Tempo máx. de publicação do anúncio (unid.)', ''),
-(50643, 'pt_BR:transfer.transactionNumber', 'Número da transação', ''),
-(50644, 'pt_BR:settings.neverExpiresMessage', '0 nunca vence', ''),
-(50645, 'pt_BR:message.action.choose', 'Executar ação com as mensagens selecionadas', ''),
-(50646, 'pt_BR:invoice.status.OPEN', 'Aberta', ''),
-(50647, 'pt_BR:error.queryParse', 'Você informou palavras-chave inválidas para a pesquisa', ''),
-(50648, 'pt_BR:cardLog.by', 'Alterado por', ''),
-(50649, 'pt_BR:errorLog.removed', 'Os erros selecionados foram removidos', ''),
-(50650, 'pt_BR:errors.invalid', '{0} é inválido', ''),
-(50651, 'pt_BR:customField.title.order.operator', 'Ajustar ordem de campo customizado de operador', ''),
-(50652, 'pt_BR:transactionFee.subject.FIXED_MEMBER', 'Membro fixo', ''),
-(50653, 'pt_BR:smsMailing.date', 'Data', ''),
-(50654, 'pt_BR:conversionSimulation.account', 'Conta', ''),
-(50655, 'pt_BR:error.ajax', 'Houve um erro durante o processamento de sua solicitação', ''),
-(50656, 'pt_BR:loanGroup.action.viewLoans', 'Ver empréstimos', ''),
-(50657, 'pt_BR:permission.adminMemberInvoices.acceptAsMemberFromSystem', 'Aceitar fatura eletrônica de sistema como membro', ''),
-(50658, 'pt_BR:customImage.title.custom', 'Imagens customizadas', ''),
-(50659, 'pt_BR:alert.system.adminLoginBlockedByPermissionDenieds', ' O acesso do administrador ''{0}'' ao sistema está temporariamente bloqueado por exceder o máximo de permissões negadas. O endereço IP é {2}', ''),
-(50660, 'pt_BR:alert.member.LOGIN_BLOCKED_BY_PERMISSION_DENIEDS', 'O máximo de permissões negadas foi alcançado por um membro', ''),
-(50661, 'pt_BR:customField.possibleValue.value', 'Valor', ''),
-(50662, 'pt_BR:reference.level', 'Valor', ''),
-(50663, 'pt_BR:transfer.scheduledFor', 'Agendado para', ''),
-(50664, 'pt_BR:rates.reinit.maintainLast', 'Manter configurações anteriores', ''),
-(50665, 'pt_BR:permission.brokerMessages.manage', 'Gerenciar', ''),
-(50666, 'pt_BR:reference.transactionFeedback.role.BUYER', 'Pagamentos realizados', ''),
-(50667, 'pt_BR:brokerCommissionContract.acceptConfirmation', 'Aceitar este contrato de comissão de corretor?', ''),
-(50668, 'pt_BR:customField.payment.type', 'Tipo', ''),
-(50669, 'pt_BR:guaranteeType.description', 'Descrição', ''),
-(50670, 'pt_BR:login.action.loginAsOperator', 'Acessar como operator', ''),
-(50671, 'pt_BR:permission.memberProfile.changeUsername', 'Alterar o próprio nome de usuário', ''),
-(50672, 'pt_BR:profile.member.brokerLink', 'Abrir perfil', ''),
-(50673, 'pt_BR:image.file', 'Arquivo', ''),
-(50674, 'pt_BR:loanGroup.title.insert', 'Novo grupo de empréstimos', ''),
-(50675, 'pt_BR:loan.paymentCount', 'Número de parcelas', ''),
-(50676, 'pt_BR:externalTransferImport.error.format.general', 'Erro ao importar transações: {0}', ''),
-(50677, 'pt_BR:reports.current.n_actvads', 'Número de anúncios ativos', ''),
-(50678, 'pt_BR:payment.error.pendingCommissionContract', 'O pagamento não pôde ser processado porque há um contrato de commissão pendente relativo à comissão: {0}', ''),
-(50679, 'pt_BR:pos.blockPos.confirmation', 'Bloquear o POS?', ''),
-(50680, 'pt_BR:message.reply.subject', 'Re: {0}', ''),
-(50681, 'pt_BR:permission.systemGroupFilters.view', 'Ver', ''),
-(50682, 'pt_BR:message.action.MOVE_TO_TRASH', 'Enviar para a lixeira', ''),
-(50683, 'pt_BR:payment.action.deny', 'Negar', ''),
-(50684, 'pt_BR:menu.member.help', 'Ajuda', ''),
-(50685, 'pt_BR:message.rootType', 'Tipo', ''),
-(50686, 'pt_BR:conversionSimulation.result.graph.subtitle', 'Valor da conversão: {0}', ''),
-(50687, 'pt_BR:activities.transactions.last30Days', 'Transações nos últimos 30 dias', ''),
-(50688, 'pt_BR:fieldMapping.field.MEMBER_USERNAME', 'Nome de usuário', ''),
-(50689, 'pt_BR:fileMapping.decimalSeparator.error.required', 'Separador decimal é necessário', ''),
-(50690, 'pt_BR:errors.periodInvalidBounds', 'A data de início de {0} deve ser menor que a de final', ''),
-(50691, 'pt_BR:invoice.title.of', 'Faturas eletrônicas de {0}', ''),
-(50692, 'pt_BR:fieldMapping.order', 'Ordem', ''),
-(50693, 'pt_BR:permission.brokerAccounts.scheduledInformation', 'Ver pagamentos agendados', ''),
-(50694, 'pt_BR:error.aRateParameters.noFutureInitEmission', 'Valor inicial e data levarão a datas de emissão futuras, o que não é permitido.', ''),
-(50695, 'pt_BR:externalAccount.systemAccount', 'Conta de sistema', ''),
-(50696, 'pt_BR:settings.message.buyerOnlyGuaranteeStatusChanged', 'Estado da garantia (apenas com comprador) alterado', ''),
-(50697, 'pt_BR:group.initialGroup', 'Grupo inicial', ''),
-(50698, 'pt_BR:reports.stats.activity.paymentFilterRequired', 'Para exibir essas estatísticas, é preciso haver pelo menos um filtro de pagamentos', ''),
-(50699, 'pt_BR:changeBroker.old', 'Corretor anterior', ''),
-(50700, 'pt_BR:cardType.cardSecurityCode', 'Código de segurança', ''),
-(50701, 'pt_BR:settings.message.loanGranted', 'Empréstimo concedido', ''),
-(50702, 'pt_BR:adCategory.error.removing', 'A categoria não pode ser removida.\n\nProvavelmente há anúncios que pertençam a ela', ''),
-(50703, 'pt_BR:document.name', 'Nome', ''),
-(50704, 'pt_BR:reference.title.transactionFeedbacks.of', 'Qualificações de transações de {0}', ''),
-(50705, 'pt_BR:createMember.initialGroup.title', 'Seleção de grupo', ''),
-(50706, 'pt_BR:contact.removed', 'O contato foi removido', ''),
-(50707, 'pt_BR:permission.module.type.OPERATOR', 'Permissões de operador de {0}', ''),
-(50708, 'pt_BR:invoice.title.my', 'Minhas faturas eletrônicas', ''),
-(50709, 'pt_BR:menu.operator.member.activities', 'Relatórios', ''),
-(50710, 'pt_BR:reference.title.summary.references.of', 'Referências de {0}', ''),
-(50711, 'pt_BR:permission.adminMemberPos.changePin', 'Alterar senha externa', ''),
-(50712, 'pt_BR:ad.search.tradeType.OFFER', 'Oferta', ''),
-(50713, 'pt_BR:reports.stats.show', 'Exibir', ''),
-(50714, 'pt_BR:createMember.public.alreadyExists', 'O nome de login já está em uso, por favor escolha outro nome.', ''),
-(50715, 'pt_BR:message.actionPerformed.DELETE', 'As mensagens selecionadas foram removidas', ''),
-(50716, 'pt_BR:reports.stats.activity.throughTime.percentageNoTrade.title', 'Percentual de membros não transacionando ao longo do tempo', ''),
-(50717, 'pt_BR:permission.systemExternalAccounts.check', 'Conferir pagamento', ''),
-(50718, 'pt_BR:menu.admin.settings.adminTasks', 'Tarefas de sistema', ''),
-(50719, 'pt_BR:reports.nocheckboxes', 'Você não selecionou nenhuma opção, não há nada para exibir', ''),
-(50720, 'pt_BR:changeGroup.confirmRemove', 'Alterar um membro para o grupo {0} irá remover\n\ntodos os anúncios, contatos e referências dele.\n\nVocê tem certeza?', ''),
-(50721, 'pt_BR:alert.member.DENIED_INVOICES', 'O membro negou muitas faturas', ''),
-(50722, 'pt_BR:message.sendTo.ADMIN', 'Administração', ''),
-(50723, 'pt_BR:reports.stats.keydevelopments.averageAmountPerTransaction', 'Valor médiano por transação', ''),
-(50724, 'pt_BR:serviceClient.permissions', 'Permissões', ''),
-(50725, 'pt_BR:reports.stats.mockwarning', 'ATENÇÃO: esses são dados simulados. Estatísticas reais serão fornecidas em uma atualização futura.', ''),
-(50726, 'pt_BR:smsMailing.mailingType.PAID_TO_GROUP', 'Difusão paga para grupo', ''),
-(50727, 'pt_BR:loanGroup.removeMemberConfirmation', 'Remover este membro do grupo de empréstimos?', ''),
-(50728, 'pt_BR:reports.stats.activity.histogram.numberTransactions.xAxis', 'Número de transações', ''),
-(50729, 'pt_BR:message.type.ACCESS', 'Acesso', ''),
-(50730, 'pt_BR:permission.adminMemberAccess.transactionPassword', 'Gerenciar senha de transação', ''),
-(50731, 'pt_BR:reports.stats.activity.comparePeriods.loginTimes.yAxis', 'Acessos / membro', ''),
-(50732, 'pt_BR:reports.stats.finances.ThroughTime.expenditure.title', 'Saída (através do tempo)', ''),
-(50733, 'pt_BR:permission.brokerAds.manage', 'Gerenciar', ''),
-(50734, 'pt_BR:reports.stats.activity.singlePeriod.loginTimes.title', 'Acessos por membro (período simples)', ''),
-(50735, 'pt_BR:permission.adminMemberAccess.changePassword', 'Alterar senha de acesso', ''),
-(50736, 'pt_BR:channel.displayName', 'Nome de exibição', ''),
-(50737, 'pt_BR:reports.current.number_open_loans', 'Número de empréstimos em aberto', ''),
-(50738, 'pt_BR:menu.member.account.systemPayment', 'Pagamento para o sistema', ''),
-(50739, 'pt_BR:brokerCommissionContract.startDate.from', 'Iniciando a partir de', ''),
-(50740, 'pt_BR:loan.repayment.remainingAmount', 'Valor restante', ''),
-(50741, 'pt_BR:profile.action.memberInfoActions', 'Informações de membro', ''),
-(50742, 'pt_BR:authorizationLevel.error.adminGroupRequired', 'Se o autorizador for um administrador, é necessário escolher um grupo de administradores', ''),
-(50743, 'pt_BR:guarantee.expirationTimeForIssuer', 'Vencimento para o vendedor', ''),
-(50744, 'pt_BR:permission.module.type.BASIC', 'Permissões básicas de {0}', ''),
-(50745, 'pt_BR:permission.adminMemberInvoices.sendAsMember', 'Enviar fatura eletrônica como membro', ''),
-(50746, 'pt_BR:contact.title.edit', 'Editar nota de contato', ''),
-(50747, 'pt_BR:errors.periodEndRequired', 'A data de fim de {0} é obrigatória', ''),
-(50748, 'pt_BR:guaranteeType.issueFee.readonly', 'Somente de leitura', ''),
-(50749, 'pt_BR:rates.reinit.type', 'Tipo', ''),
-(50750, 'pt_BR:reports.members_reports.account_type.selectAccountTypes', 'Selecione os tipos de conta', ''),
-(50751, 'pt_BR:pos.created', 'O POS foi criado', ''),
-(50752, 'pt_BR:fieldMapping.field.AMOUNT', 'Valor do pagamento', ''),
-(50753, 'pt_BR:settings.message.adminNewMember', 'Novo membro cadastrado', ''),
-(50754, 'pt_BR:alert.member.expiredLoan', 'Empréstimo vencido', ''),
-(50755, 'pt_BR:guarantee.buyer', 'Comprador', ''),
-(50756, 'pt_BR:permission.operatorInvoices.view', 'Visualizar', ''),
-(50757, 'pt_BR:global.select.empty', 'Selecione', ''),
-(50758, 'pt_BR:adImport.status.PUBLICATION_BEGIN_AFTER_END', 'A data de início de publicação é após a data de fim', ''),
-(50759, 'pt_BR:admin.adminName', 'Nome do administrador', ''),
-(50760, 'pt_BR:payment.title.systemMemberToSystem', 'Pagamento do membro {0} para o sistema', ''),
-(50761, 'pt_BR:alert.system.NULL_IRATE', 'Índice-I nulo inexperado encontrado', ''),
-(50762, 'pt_BR:accountHistory.conciliation.conciliated', 'Conciliado', ''),
-(50763, 'pt_BR:currency.title.list', 'Moedas', ''),
-(50764, 'pt_BR:memberRecordType.fields.action.new', 'Inserir novo campo customizado', ''),
-(50765, 'pt_BR:errors.required', '{0} é requerido', ''),
-(50766, 'pt_BR:theme.action.remove', 'Remover', ''),
-(50767, 'pt_BR:externalTransfer.removed', 'Transferência external removida', ''),
-(50768, 'pt_BR:errorLog.search.noResults', 'Nenhum erro encontrado', ''),
-(50769, 'pt_BR:menu.member.account.systemInvoice', 'Fatura para o sistema', ''),
-(50770, 'pt_BR:memberPos.changePin.confirmation', 'Alterar o PIN?', ''),
-(50771, 'pt_BR:smsMailing.member', 'Membro', ''),
-(50772, 'pt_BR:group.nature.ADMIN', 'Administrador', ''),
-(50773, 'pt_BR:paymentObligation.removed', 'A obrigação de pagamento foi excluída', ''),
-(50774, 'pt_BR:guaranteeType.registerGuarantee', 'Criar garantia', ''),
-(50775, 'pt_BR:profile.action.manageLoans', 'Ver empréstimos', ''),
-(50776, 'pt_BR:errorLog.title.view', 'Erros de aplicação', ''),
-(50777, 'pt_BR:menu.admin.accessDevices.cards.search', 'Busca cartões', ''),
-(50778, 'pt_BR:customizedFile.title.customize.help', 'Personalizar arquivo de ajuda', ''),
-(50779, 'pt_BR:message.type.FROM_MEMBER', 'Mensagens de membros', ''),
-(50780, 'pt_BR:customImage.system.quickAccess_searchAds', 'Acesso rápido: procurar anúncios', ''),
-(50781, 'pt_BR:reports.simulations.aRateConfigSimulation.transferType', 'Tipo de transação (para valores padrão)', ''),
-(50782, 'pt_BR:changeGroup.error.move.hasOpenLoans', 'O membro não pode ser movido porque possui empréstimos não pagos', ''),
-(50783, 'pt_BR:permission.adminMemberDocuments.manageStatic', 'Gerenciar documentos estáticos', ''),
-(50784, 'pt_BR:alert.member.SCHEDULED_PAYMENT_FAILED', 'Falha em pagamento agendado', ''),
-(50785, 'pt_BR:help.title.profiles', 'Perfil', ''),
-(50786, 'pt_BR:receiptPrinterSettings.helpMessage', 'O nome da impressora local deve ser o nome exato de uma impressora configurada no sistema operacional como genérica / somente texto ou como ''raw queue'', dependendo do sistema operacional.\nOs comandos de início e fim de documento dependem da marca / modelo da impressora. Eles são úteis, por exemplo, para cortar o papel ou emitir um alerta sonoro após a impressão. Para enviar caracteres ASCII específicos, utilize #código. Por exemplo, para o caractere ASCII 100, use #100. Como exemplo, impressoras de recibo Epson utilizam a sequência #27#105 para cortar o papel. Para quebras de linha, use &#92;n. Algumas impressoras precisam de algumas quebras de linha antes do corte de papel.\nPara mais detalhes, <a href="{0}">clique aqui</a>.', ''),
-(50787, 'pt_BR:memberRecord.by', 'Criado por', ''),
-(50788, 'pt_BR:menu.member.personal.transactionFeedbacks', 'Qualificações de transações', ''),
-(50789, 'pt_BR:alert.system.RATE_INITIALIZATION_FINISHED', 'Tarefa de reinicialização de indices finalizada', ''),
-(50790, 'pt_BR:permission.adminAdminRemarks.manage', 'Gerenciar', ''),
-(50791, 'pt_BR:errorLog.date', 'Data', ''),
-(50792, 'pt_BR:ad.title.print', 'Resultado da busca de anúncios', ''),
-(50793, 'pt_BR:help.title.member_records', 'Registros de membros', ''),
-(50794, 'pt_BR:loanGroup.action.create', 'Criar grupo de empréstimos', ''),
-(50795, 'pt_BR:brokerCommissionContract.status.CANCELLED', 'Cancelado', ''),
-(50796, 'pt_BR:message.error.emailNotSent', 'O membro não pôde receber a mensagem por problemas no envio de e-mail', ''),
-(50797, 'pt_BR:reports.current.loans', 'Empréstimos', ''),
-(50798, 'pt_BR:settings.message.value', 'Valor', ''),
-(50799, 'pt_BR:menu.admin.bookkeeping', 'Contabilidade', ''),
-(50800, 'pt_BR:mobile.home.reservedAmount', 'Reservado: {0}', ''),
-(50801, 'pt_BR:reports.stats.finances.singlePeriod.income', 'Entrada', ''),
-(50802, 'pt_BR:permission.memberGuarantees.buyWithPaymentObligations', 'Comprar com obrigações de pagamento', ''),
-(50803, 'pt_BR:payment.title.memberToSelf', 'Transferência entre minhas contas', ''),
-(50804, 'pt_BR:permission.memberDocuments.view', 'Ver', ''),
-(50805, 'pt_BR:brokering.notes', 'Notas', ''),
-(50806, 'pt_BR:settings.access.administrationWhitelist', 'Whitelist para acesso à administração', ''),
-(50807, 'pt_BR:menu.member.account', 'Conta', ''),
-(50808, 'pt_BR:infoText.noMatch', 'Não foi encontrada nenhuma mensagem informativa que corresponda aos critérios especificados.', ''),
-(50809, 'pt_BR:guaranteeType.error.forwardTransferType', 'O tipo de pagamento para o encaminhamento é obrigatório', ''),
-(50810, 'pt_BR:invite.message', 'Digite um endereço de e-mail, essa pessoa receberá um convite para experimentar o sistema', ''),
-(50811, 'pt_BR:document.modified', 'O documento foi modificado', ''),
-(50812, 'pt_BR:reports.stats.finances.singlePeriod.overview', 'Visão geral', ''),
-(50813, 'pt_BR:account.defaultUpperCreditLimit', 'Limite de crédito superior', ''),
-(50814, 'pt_BR:adInterest.type.OFFER', 'Oferta', ''),
-(50815, 'pt_BR:loan.repayment.setDate', 'Data retroativa', ''),
-(50816, 'pt_BR:loan.title.print', 'Resultado da busca de empréstimos', ''),
-(50817, 'pt_BR:group.account.action.new', 'Associar nova conta', ''),
-(50818, 'pt_BR:groupFilter.customizedFiles.action.new', 'Personalizar novo arquivo', ''),
-(50819, 'pt_BR:paymentRequest.error.sending', 'A solicitação de pagamento nao pôde ser enviada', ''),
-(50820, 'pt_BR:reports.stats.keydevelopments.throughTime.selectQuarters', 'Selecione trimestres e anos', ''),
-(50821, 'pt_BR:profile.action.records', 'Registros', ''),
-(50822, 'pt_BR:settings.local.maxIteratorResults', 'No. max. de linhas nos relatórios', ''),
-(50823, 'pt_BR:adCategory.modified', 'A categoria foi modificada', ''),
-(50824, 'pt_BR:customField.control.RICH_EDITOR', 'Editor de texto formatado', ''),
-(50825, 'pt_BR:permission.brokerMemberAccess.changePin', 'Alterar senha externa', ''),
-(50826, 'pt_BR:createMember.title.byBroker', 'Corretagem - Criar novo membro', ''),
-(50827, 'pt_BR:reports.stats.finances.overview', 'Visão geral', ''),
-(50828, 'pt_BR:permission.systemCustomizedFiles.manage', 'Gerenciar', ''),
-(50829, 'pt_BR:brokerCommission.error.suspending', 'Erro suspendendo a commissão de corretor!', ''),
-(50830, 'pt_BR:settings.local.language.CHINESE_SIMPLIFIED', 'Chinês (Simplificado)', ''),
-(50831, 'pt_BR:menu.operator.account.loanGroups', 'Grupos de Empréstimo', ''),
-(50832, 'pt_BR:transactionFee.subject.DESTINATION_BROKER', 'Corretor do membro que está recebendo (destino)', ''),
-(50833, 'pt_BR:smsLog.free', 'Gratuito', ''),
-(50834, 'pt_BR:reports.simulations.dRate.config.graph.title', 'Curva da configuração do Índice-D', ''),
-(50835, 'pt_BR:settings.message.sentInvoiceExpired', 'Fatura eletrônica enviada expirada', ''),
-(50836, 'pt_BR:notificationPreferences.sms', 'SMS', ''),
-(50837, 'pt_BR:receipt.posweb.transactions.header', '{0} Transações', ''),
-(50838, 'pt_BR:messageCategory.error.removing', 'A categoria de mensagem não pôde ser removida pois existem mensagens com essa categoria', ''),
-(50839, 'pt_BR:loan.expirationFeeRepaymentType', 'Tipo de pagamento para taxa de vencimento', ''),
-(50840, 'pt_BR:group.nature.BROKER', 'Corretor', ''),
-(50841, 'pt_BR:reports.stats.keydevelopments.highestAmountPerTransaction.title', 'Progressos no maior valor por transação', ''),
-(50842, 'pt_BR:group.settings.passwordExpiresAfter', 'Senha de acesso vencerá após', ''),
-(50843, 'pt_BR:admin.name', 'Nome', ''),
-(50844, 'pt_BR:permission.systemLoanGroups.manage', 'Gerenciar', ''),
-(50845, 'pt_BR:permission.systemThemes.select', 'Selecionar', ''),
-(50846, 'pt_BR:memberRecordType.description', 'Descrição', ''),
-(50847, 'pt_BR:payment.awaitingAuthorization', 'O pagamento foi submetido à autorização.\n Ele ficará com o estado de pendente até que seja autorizado e processado.', ''),
-(50848, 'pt_BR:login.password', 'Senha', ''),
-(50849, 'pt_BR:guaranteeType.model.WITH_BUYER_ONLY', 'Somente com comprador', ''),
-(50850, 'pt_BR:permission.brokerSmsMailings.paidSmsMailings', 'Enviar mensagens de difusão pagas', ''),
-(50851, 'pt_BR:externalTransferImport.title.search', 'Busca de imporações de {0}', ''),
-(50852, 'pt_BR:transferType.isLoan', 'É empréstimo', ''),
-(50853, 'pt_BR:createMember.forceChangePassword', 'Forçar que seja alterada no primeiro login', ''),
-(50854, 'pt_BR:customImage.name', 'Nome', ''),
-(50855, 'pt_BR:sms.type.HELP', 'Ajuda', ''),
-(50856, 'pt_BR:externalTransferType.title.modify', 'Modificar tipo de pagamento', ''),
-(50857, 'pt_BR:reports.stats.general.comparePeriods', 'Comparar dois períodos', ''),
-(50858, 'pt_BR:changeGroup.action.changeGroup', 'Alterar grupo', ''),
-(50859, 'pt_BR:reports.members_reports.details_level.TRANSACTIONS', 'Transações', ''),
-(50860, 'pt_BR:createMember.action.saveAndNew', 'Salvar e inserir novo membro', ''),
-(50861, 'pt_BR:permission.systemExternalAccounts.processPayment', 'Processar pagamentos', ''),
-(50862, 'pt_BR:createMember.assignBroker', 'Atribuir corretor', ''),
-(50863, 'pt_BR:profile.pendingEmail.link', 'Reenviar o e-mail de verificação', ''),
-(50864, 'pt_BR:home.status.hasPendingCommissionContracts', 'Há contratos de comissão pendentes. Você não poderá fazer pagamentos enquanto estiverem pendentes', ''),
-(50865, 'pt_BR:message.type.LOAN', 'Eventos de empréstimo', ''),
-(50866, 'pt_BR:customField.type', 'Tipo de dado', ''),
-(50867, 'pt_BR:mobile.viewPayments.transactionNumber', 'Num. da Transação', ''),
-(50868, 'pt_BR:pendingMember.emailResent', 'O e-mail de validação foi re-enviado', ''),
-(50869, 'pt_BR:global.tooltip.permissions', 'Editar permissões', ''),
-(50870, 'pt_BR:ad.id', 'Identificador', ''),
-(50871, 'pt_BR:loanPayment.status.EXPIRED', 'Vencido', ''),
-(50872, 'pt_BR:customImage.system.dropdown', 'Ícone de menu suspenso', ''),
-(50873, 'pt_BR:permission.systemPayments.cancel', 'Cancelar', ''),
-(50874, 'pt_BR:payment.authorize.transactionPassword', 'Para autorizar ou negar este pagamento, você deve fornecer sua senha de transação', ''),
-(50875, 'pt_BR:reports.stats.finances.keyParams', 'Parâmetros chave para estatísticas financeiras', ''),
-(50876, 'pt_BR:settings.local.csv.stringQuote.SINGLE_QUOTE', 'Aspas simples', ''),
-(50877, 'pt_BR:fileMapping.numberFormat.WITH_SEPARATOR', 'Com separador', ''),
-(50878, 'pt_BR:permission.memberProfile.view', 'Ver', ''),
-(50879, 'pt_BR:transactionPassword.status.user.NEVER_CREATED', 'Não gerada', ''),
-(50880, 'pt_BR:image.details.drag.hint', 'Arraste as imagens para ajustar ordem e preencha a legenda nos campos', ''),
-(50881, 'pt_BR:settings.message.commissionContractCancelled', 'Contrato de comissão cancelado', ''),
-(50882, 'pt_BR:changeGroup.error.remove.activeOperator', 'O operador não pode ser permanentemente removido porque ele já esteve ativo no sistema.\nTente move-lo para um grupo com o estado Removido', ''),
-(50883, 'pt_BR:settings.log.transactionLevel.OFF', 'Desligado', ''),
-(50884, 'pt_BR:invoice.cancelled', 'A fatura eletrônica foi cancelada', ''),
-(50885, 'pt_BR:connectedUsers.remoteAddress', 'Endereço IP', ''),
-(50886, 'pt_BR:global.back', 'Voltar', ''),
-(50887, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.numberOfMembers', 'Número de membros', ''),
-(50888, 'pt_BR:alert.system.adminLoginBlockedByTries', 'O acesso do administrador ''{0}'' está temporariamente bloqueado por exceder a quantidade máxima de tentativas. O endereço IP remoto é {2}', ''),
-(50889, 'pt_BR:webshop.payment.enterPasswordText', 'Senha', ''),
-(50890, 'pt_BR:permission.brokerAds.view', 'Ver', ''),
-(50891, 'pt_BR:registrationAgreement.title.modify', 'Modificar termo de adesão', ''),
-(50892, 'pt_BR:paymentObligation.expiration', 'Vencimento', ''),
-(50893, 'pt_BR:changeGroup.member.confirmPermanentRemove', 'Remover permanentemente o membro?', ''),
-(50894, 'pt_BR:element.search.keywords', 'Palavras-chave', ''),
-(50895, 'pt_BR:menu.admin.contentManagement.styleImages', 'Imagens de folha de estilo', ''),
-(50896, 'pt_BR:menu.member.account.transfersAuthorizations', 'Busca de autorizações', ''),
-(50897, 'pt_BR:customField.member.access.MEMBER', 'Membro', ''),
-(50898, 'pt_BR:menu.admin.messages.infoTexts', 'Mensagens informativas', ''),
-(50899, 'pt_BR:permission.operatorReports.viewMember', 'Visualizar meus relatórios', ''),
-(50900, 'pt_BR:transferType.availability.SELF_PAYMENT', 'Auto-pagamento', ''),
-(50901, 'pt_BR:menu.operator.guarantees.searchGuarantees', 'Garantias', ''),
-(50902, 'pt_BR:global.range.from', 'De', ''),
-(50903, 'pt_BR:menu.admin.translation.internalMessages', 'Notificações', ''),
-(50904, 'pt_BR:channel.enableSMS', 'Confire a configuração do canal SMS em', ''),
-(50905, 'pt_BR:changePassword.error.mustIncludeLettersNumbersSpecial', 'A senha deve conter letras, números e caracteres especiais', ''),
-(50906, 'pt_BR:permission.memberPayments.ticket', 'Gerar tickets de pagamento externo', ''),
-(50907, 'pt_BR:settings.message.commissionContractDenied', 'Contrato de comissão negado', ''),
-(50908, 'pt_BR:externalAccountHistory.button.newPayment', 'Novo pagamento', ''),
-(50909, 'pt_BR:group.settings.passwordLength.min', 'Tamanho mín. da senha', ''),
-(50910, 'pt_BR:guaranteeType.creditFeeTransferType', 'Taxa de crédito', ''),
-(50911, 'pt_BR:scheduledPayment.title.transfers', 'Parcelas do pagamento agendado', ''),
-(50912, 'pt_BR:menu.member.personal.pos.memberPos', 'Dispositivos POS', ''),
-(50913, 'pt_BR:payment.cancelOrDeny.transactionPassword', 'Para cancelar ou negar este pagamento, você deve fornecer sua senha de transação', ''),
-(50914, 'pt_BR:rates.error.rateNotEnabledForInit', 'Você tentou inicializar um indice, mas este indice não esta ativado. Você deve primeiramente ativalo na moeda.', ''),
-(50915, 'pt_BR:reports.transactions_report.number', 'Número', ''),
-(50916, 'pt_BR:paymentObligation.error.certificationActiveNotExists', 'Não foi possível criar uma obrigação de pagamento. Você não possui nenhuma certificação ativa em {0}.', ''),
-(50917, 'pt_BR:member.member', 'Membro', ''),
-(50918, 'pt_BR:permission.brokerMembers.manageDefaults', 'Gerenciar comissões padrões', ''),
-(50919, 'pt_BR:menu.operator.member', 'Operacao de Membros', ''),
-(50920, 'pt_BR:transactionFee.h', 'Porcentagem máxima', ''),
-(50921, 'pt_BR:card.actions', 'Ações', ''),
-(50922, 'pt_BR:loan.discarded', 'O descarte foi processado com sucesso', ''),
-(50923, 'pt_BR:menu.operator.account.systemPayment', 'Pagamento para o Sistema', ''),
-(50924, 'pt_BR:guaranteeType.issueFee', 'Taxa de emissão', ''),
-(50925, 'pt_BR:memberImport.initialDebits', 'Débitos', ''),
-(50926, 'pt_BR:transactionPassword.title', 'Senha de transação', ''),
-(50927, 'pt_BR:settings.message.invoiceReceived', 'Fatura eletrônica recebida', ''),
-(50928, 'pt_BR:message.type.AD_INTEREST', 'Interesse em anúncios', ''),
-(50929, 'pt_BR:permission.adminMemberSmsMailings.view', 'Ver', ''),
-(50930, 'pt_BR:reports.stats.period.periodMain', 'Período principal', ''),
-(50931, 'pt_BR:infoText.title.search', 'Procurar mensagem informativa', ''),
-(50932, 'pt_BR:menu.admin.usersGroups.messageToGroups', 'Mensagem para grupo', ''),
-(50933, 'pt_BR:settings.local.language.FRENCH', 'Francês', ''),
-(50934, 'pt_BR:theme.removed', 'O tema foi removido', ''),
-(50935, 'pt_BR:adImport.status.UNKNOWN_ERROR', 'Erro desconhecido', ''),
-(50936, 'pt_BR:guaranteeLog.status', 'Estado', ''),
-(50937, 'pt_BR:changePassword.passwordLength', 'Escolha uma senha com {0} caracteres', ''),
-(50938, 'pt_BR:reports.members_reports.incoming', 'De entrada', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(50939, 'pt_BR:reports.stats.general.submit', 'Exibir estatística', ''),
-(50940, 'pt_BR:mailPreferences.guarantees', 'Garantias', ''),
-(50941, 'pt_BR:permission.adminAdminRecords.view', 'Ver', ''),
-(50942, 'pt_BR:reports.simulations.dRateConfigSimulation.startD', 'Iniciar a partir de D =', ''),
-(50943, 'pt_BR:creditLimit.upper', 'Superior', ''),
-(50944, 'pt_BR:quickAccess.placeAd', 'Publicar anúncio', ''),
-(50945, 'pt_BR:permission.systemAccounts.information', 'Ver informações de contas de sistema', ''),
-(50946, 'pt_BR:guarantee.action.deny', 'Negar', ''),
-(50947, 'pt_BR:reports.members_reports.transactions.accountTypesRequired', 'É necessário selecionar pelo menos um tipo de conta', ''),
-(50948, 'pt_BR:reports.simulations.dRateConfigSimulation.title', 'Simulação da configuração do índice-D', ''),
-(50949, 'pt_BR:help.title.guarantees', 'Garantias', ''),
-(50950, 'pt_BR:menu.member.personal.messages', 'Mensagens', ''),
-(50951, 'pt_BR:reports.stats.keydevelopments.title', 'Estatísticas de progressos-chave', ''),
-(50952, 'pt_BR:memberImport.status.BALANCE_UPPER_THAN_CREDIT_LIMIT', 'O saldo é superior ao limite de crédito', ''),
-(50953, 'pt_BR:menu.admin.contentManagement.customImages', 'Imagens customizadas', ''),
-(50954, 'pt_BR:customField.control.CHECKBOX', 'Caixa de seleção', ''),
-(50955, 'pt_BR:theme.message.import', 'Importar tema a partir de um arquivo', ''),
-(50956, 'pt_BR:reference.title.received', 'Referências recebidas por {0}', ''),
-(50957, 'pt_BR:alert.system.ERROR_PROCESSING_ACCOUNT_STATUS', 'Erro crítico no processamento do estado de conta', ''),
-(50958, 'pt_BR:menu.operator.account.systemInvoice', 'Fatura para o Sistema', ''),
-(50959, 'pt_BR:card.blockCard.confirmation', 'Bloquear cartão?', ''),
-(50960, 'pt_BR:permission.systemExternalAccounts.checkPayment', 'Conferir pagamento', ''),
-(50961, 'pt_BR:permission.adminMemberAccounts.information', 'Ver informações', ''),
-(50962, 'pt_BR:category.name', 'Nome', ''),
-(50963, 'pt_BR:brokering.error.memberAlreadyInBrokering', 'O membro já é agenciado por este corretor', ''),
-(50964, 'pt_BR:member.bulkActions.generateCard', 'Gerar cartão', ''),
-(50965, 'pt_BR:paymentObligation.buyerUsername', 'Usuário do comprador', ''),
-(50966, 'pt_BR:paymentObligation.title.selectPaymentObligation', 'Selecionar obrigações de pagamento', ''),
-(50967, 'pt_BR:permission.memberPayments.paymentToSelf', 'Auto-pagamento', ''),
-(50968, 'pt_BR:certification.issuer', 'Emissor', ''),
-(50969, 'pt_BR:alert.member.LOGIN_BLOCKED_BY_TRIES', 'Login bloqueado por excesso de tentativas', ''),
-(50970, 'pt_BR:reference.removeConfirmation', 'Remover referência?', ''),
-(50971, 'pt_BR:permission.brokerPreferences', 'Preferências', ''),
-(50972, 'pt_BR:reports.stats.activity.whatToShow.COMPARE_PERIODS', 'Comparar dois períodos', ''),
-(50973, 'pt_BR:global.print', 'Imprimir', ''),
-(50974, 'pt_BR:permission.adminMemberPayments.cancelScheduledAsMember', 'Cancelar pagamento agendado como membro', ''),
-(50975, 'pt_BR:posweb.client.pin', 'PIN', ''),
-(50976, 'pt_BR:permission.adminAdminAccess.changePassword', 'Alterar senha', ''),
-(50977, 'pt_BR:image.details.success', 'Os detalhes da imagem foram salvos com sucesso', ''),
-(50978, 'pt_BR:reports.members_reports.system_invoices.paymentFilterRequired', 'Para mostrar faturas de sistema, é necessário escolher pelo menos um filtro de pagamento', ''),
-(50979, 'pt_BR:loanPayment.status.IN_PROCESS', 'Em processo', ''),
-(50980, 'pt_BR:changePassword.forceChange', 'Forçar alteração no próximo acesso', ''),
-(50981, 'pt_BR:permission.brokerMemberPayments.authorize', 'Autorizar', ''),
-(50982, 'pt_BR:reports.simulations.dRate.config.graph.xAxis', 'Índice-D (dias)', ''),
-(50983, 'pt_BR:group.settings.smsChargeAmount', 'Valor cobrado por SMS', ''),
-(50984, 'pt_BR:profile.action.disconnect', 'Desconectar usuário', ''),
-(50985, 'pt_BR:settings.message.guaranteeStatusChanged', 'Estado da garantia', ''),
-(50986, 'pt_BR:messageCategory.modified', 'A categoria de mensagem foi modificada', ''),
-(50987, 'pt_BR:permission.adminMemberInvoices.view', 'Ver faturas eletrônicas de membros', ''),
-(50988, 'pt_BR:card.cancelCard.confirmation', 'Cancelar cartão?', ''),
-(50989, 'pt_BR:permission.systemSettings.manageLog', 'Gerenciar configurações de log', ''),
-(50990, 'pt_BR:permission.adminAdminRemarks.view', 'Ver', ''),
-(50991, 'pt_BR:settings.alert.amountDeniedInvoices', 'Faturas eletrônicas negadas', ''),
-(50992, 'pt_BR:permission.systemTranslation.manageNotification', 'Notificações', ''),
-(50993, 'pt_BR:certification.error.changeStatus', 'Não foi possível alterar o estado da certificação para: {0}', ''),
-(50994, 'pt_BR:paymentObligation.maxPublishDate', 'Publicado até', ''),
-(50995, 'pt_BR:loan.status.DISCARDED', 'Descartado', ''),
-(50996, 'pt_BR:translationMessage.search.showOnlyEmpty', 'Apenas valores vazios', ''),
-(50997, 'pt_BR:translationMessage.action.new', 'Inserir nova chave', ''),
-(50998, 'pt_BR:fileMapping.className', 'Nome da classe', ''),
-(50999, 'pt_BR:permission.systemAccountFees.view', 'Ver', ''),
-(51000, 'pt_BR:customField.internalName', 'Nome interno', ''),
-(51001, 'pt_BR:accountFee.removeConfirmation', 'Remover esta taxa de conta?', ''),
-(51002, 'pt_BR:notificationPreferences.modified', 'Opções de notificação modificadas', ''),
-(51003, 'pt_BR:reports.stats.activity.developments.logins', 'Acessos', ''),
-(51004, 'pt_BR:pos.changeParameters.confirmation', 'Alterar os parâmetros do POS?', ''),
-(51005, 'pt_BR:global.clear', 'Limpar', ''),
-(51006, 'pt_BR:settings.local.identification', 'Identificação da instância do Cyclos', ''),
-(51007, 'pt_BR:pos.error.posIdExists', 'O identificador POS já existe. Por favor escolha outro valor.', ''),
-(51008, 'pt_BR:permission.memberProfile.changeName', 'Alterar o próprio nome', ''),
-(51009, 'pt_BR:mobile.home', 'Página principal', ''),
-(51010, 'pt_BR:help.title.user_management', 'Gerência de usuários', ''),
-(51011, 'pt_BR:currency.enableIRate', 'Ativar indice-I', ''),
-(51012, 'pt_BR:permission.systemRegistrationAgreements.manage', 'Gerenciar', ''),
-(51013, 'pt_BR:permission.brokerPos.assign', 'Atribuir', ''),
-(51014, 'pt_BR:permission.adminMembers', 'Membros', ''),
-(51015, 'pt_BR:group.settings.passwordLength.max', 'Tamanho máx. da senha', ''),
-(51016, 'pt_BR:card.status.securityCodeBlocked', 'O código de segurança do cartão está bloqueado', ''),
-(51017, 'pt_BR:createMember.public.errorSendingMail', 'Desculpa, ocorreu um erro ao enviar o e-mail de validação.\n\nPor favor, tente novamente mais tarde.', ''),
-(51018, 'pt_BR:permission.operatorReferences.manageMemberReferences', 'Gerenciar minhas referências', ''),
-(51019, 'pt_BR:externalTransfer.title.modify', 'Modificar tranferência externa', ''),
-(51020, 'pt_BR:document.formPage', 'Página de formulário', ''),
-(51021, 'pt_BR:payment.action.unblock', 'Desbloquear', ''),
-(51022, 'pt_BR:references.removeConfirmation', 'Remover esta referência?', ''),
-(51023, 'pt_BR:profile.modified.emailPending', 'O perfil foi modificado, mas um e-mail de confirmação foi enviado para {0} a fim de confirmar o novo endereço', ''),
-(51024, 'pt_BR:reports.stats.keydevelopments.transactionAmount.median.short', 'Médiano', ''),
-(51025, 'pt_BR:group.settings.enablePermanentAds', 'Permitir anúncios permanentes', ''),
-(51026, 'pt_BR:transferType.allowsScheduledPayments', 'Permite pagamentos agendados', ''),
-(51027, 'pt_BR:customField.memberRecord.brokerAccess.READ_ONLY', 'Apenas leitura', ''),
-(51028, 'pt_BR:alert.member.blockedPosUsed', 'Tentativa de utilizar o dispositivo POS com identificador {0} a partir do endereço IP {1}', ''),
-(51029, 'pt_BR:permission.adminMemberGuarantees.registerGuarantees', 'Cadastrar garantias', ''),
-(51030, 'pt_BR:settings.message.adminPendingBuyerOnlyGuarantee', 'Garantia pendente (apenas com comprador) de autorização do administrador', ''),
-(51031, 'pt_BR:group.settings.passwordExpiresAfter.field', 'Senha de acesso vencerá após (unid.)', ''),
-(51032, 'pt_BR:translationMessage.import.type.REPLACE', 'Substituir o arquivo inteiro', ''),
-(51033, 'pt_BR:settings.local.dataDisplay', 'Exibição de informações', ''),
-(51034, 'pt_BR:settings.local.adDescriptionFormat', 'Formato da descrição dos anúncios', ''),
-(51035, 'pt_BR:message.warning.messageNotReceivedByEmail', 'O membro recebeu a mensagem internamente, mas não por e-mail', ''),
-(51036, 'pt_BR:externalAccountHistory.button.processPayments', 'Processar pagamentos', ''),
-(51037, 'pt_BR:permission.memberAds.view', 'Ver', ''),
-(51038, 'pt_BR:menu.operator.account.requestPayment', 'Solicitar pagamento', ''),
-(51039, 'pt_BR:reports.stats.general.members', 'membros', ''),
-(51040, 'pt_BR:sms.type.ACCOUNT_DETAILS', 'Detalhes da conta', ''),
-(51041, 'pt_BR:settings.local.memberResultDisplay.USERNAME', 'Nome de usuário do membro', ''),
-(51042, 'pt_BR:reports.stats.general.perMember', 'Por membro', ''),
-(51043, 'pt_BR:reports.stats.finances.singlePeriod.overview.title', 'Visão geral conta de sistema', ''),
-(51044, 'pt_BR:home.status.openLoans', 'Você tem {0} empréstimos em aberto', ''),
-(51045, 'pt_BR:transferAuthorization.by', 'Usuário', ''),
-(51046, 'pt_BR:group.modified', 'O grupo foi modificado', ''),
-(51047, 'pt_BR:fileMapping.nature.CUSTOM', 'Personalizado', ''),
-(51048, 'pt_BR:rates.error.reinitValidation.noRateSpecified', 'Nenhum indice foi especificado.', ''),
-(51049, 'pt_BR:reports.stats.activity.histogram.grossProduct', 'Histograma de produto bruto', ''),
-(51050, 'pt_BR:groupFilter.name', 'Nome', ''),
-(51051, 'pt_BR:smsMailing.mailingType.FREE_TO_GROUP', 'Difusão gratuita para grupo', ''),
-(51052, 'pt_BR:memberImport.status.INVALID_USERNAME', 'O nome de usuário é inválido: {0}', ''),
-(51053, 'pt_BR:ad.permanent', 'Sem vencimento', ''),
-(51054, 'pt_BR:customImage.system.permissions', 'Ícone de permissões', ''),
-(51055, 'pt_BR:global.range.to', 'Até', ''),
-(51056, 'pt_BR:reports.members.smsLog', 'Mensagens de SMS enviadas', ''),
-(51057, 'pt_BR:permission.brokerReports.showAccountInformation', 'Exibir informações de conta', ''),
-(51058, 'pt_BR:settings.local.sms.sendSmsWebServiceUrl', 'URL do Web Service de envio de SMS', ''),
-(51059, 'pt_BR:ad.description', 'Descrição', ''),
-(51060, 'pt_BR:menu.admin.messages', 'Mensagens', ''),
-(51061, 'pt_BR:permission.brokerMembers.changeEmail', 'Alterar o e-mail', ''),
-(51062, 'pt_BR:permission.memberAdInterests.manage', 'Gerenciar', ''),
-(51063, 'pt_BR:account.reservedAmount', 'Valor reservado', ''),
-(51064, 'pt_BR:transferType.title.modify', 'Modificar tipo de transação', ''),
-(51065, 'pt_BR:invoice.transferType', 'Tipo de pagamento', ''),
-(51066, 'pt_BR:loanPayment.date', 'Data', ''),
-(51067, 'pt_BR:reference.summary.score', 'Pontos', ''),
-(51068, 'pt_BR:help.title.members', 'Membros', ''),
-(51069, 'pt_BR:transfer.number', 'Número', ''),
-(51070, 'pt_BR:card.new', 'Inserir novo cartão', ''),
-(51071, 'pt_BR:transferType.modified', 'O tipo de transação foi modificado', ''),
-(51072, 'pt_BR:payment.confirmation.unblock', 'Você está prestes a desbloquear este pagamento.\n\nPor favor, clique em OK para confirmar', ''),
-(51073, 'pt_BR:receipt.transfer.amount', 'Valor: {0}', ''),
-(51074, 'pt_BR:login.registration.title', 'Ainda não é cadastrado?', ''),
-(51075, 'pt_BR:settings.access.virtualKeyboardLogin', 'Teclado virtual para senha de acesso', ''),
-(51076, 'pt_BR:transferType.allowSmsNotification', 'Permitir notificações por SMS', ''),
-(51077, 'pt_BR:adminTasks.indexes.title', 'Índices de busca', ''),
-(51078, 'pt_BR:cardType.cardSecurityCode.AUTOMATIC', 'Automático', ''),
-(51079, 'pt_BR:mobile.viewPayments.previous', 'Ant.', ''),
-(51080, 'pt_BR:settings.unlimited', '0 ilimitado', ''),
-(51081, 'pt_BR:invoice.title.send.system', 'Enviar fatura eletrônica para sistema', ''),
-(51082, 'pt_BR:loanGroup.memberRemoved', 'O membro foi removido desse grupo de empréstimos', ''),
-(51083, 'pt_BR:customizedFile.title.customize.static', 'Personalizar arquivo estático', ''),
-(51084, 'pt_BR:webshop.payment.credentialsText', 'Para confirmar o pagamento, digite seu nome de usuário e {0} abaixo.', ''),
-(51085, 'pt_BR:guarantee.authorizedBy', 'Autorizado por', ''),
-(51086, 'pt_BR:settings.access.loginRegex', 'Expressão regular do nome de usuário', ''),
-(51087, 'pt_BR:transferType.allowCancelScheduledPayments', 'Permitir ao pagante cancelar um pagamento agendado', ''),
-(51088, 'pt_BR:activities.brokering.commission.count', 'Transações comissionadas', ''),
-(51089, 'pt_BR:transactionPassword.error.invalid', 'Senha de transação inválida.\nTente novamente.', ''),
-(51090, 'pt_BR:reports.stats.taxes.singlePeriod.totalSum.title', 'Estatísticas de taxas: Volume', ''),
-(51091, 'pt_BR:reports.stats.keydevelopments.throughTime', 'Todos os itens selecionados ao longo do tempo', ''),
-(51092, 'pt_BR:createMember.action.saveAndOpenProfile', 'Salvar e abrir perfil', ''),
-(51093, 'pt_BR:reports.current.invoices.SYSTEM_OUTGOING.count', 'Número de faturas eletrônicas de saída do sistema', ''),
-(51094, 'pt_BR:externalTransfer.lineNumber', 'Linha N°', ''),
-(51095, 'pt_BR:permission.adminAdmins', 'Administradores', ''),
-(51096, 'pt_BR:settings.local.charset', 'Conjunto de caracteres', ''),
-(51097, 'pt_BR:reports.stats.keydevelopments.numberOfAds.expired', 'Anúncios vencidos', ''),
-(51098, 'pt_BR:accountFeeLog.period', 'Período', ''),
-(51099, 'pt_BR:menu.operator.guarantees.searchPaymentObligations', 'Obrigações de pagamento', ''),
-(51100, 'pt_BR:login.createMember', 'Inscrever-se', ''),
-(51101, 'pt_BR:settings.log.transactionFile', 'Endereço/nome do arquivo de log de transações', ''),
-(51102, 'pt_BR:message.body', 'Conteúdo', ''),
-(51103, 'pt_BR:mobile.home.logout', 'Sair', ''),
-(51104, 'pt_BR:transactionFee.error.removing', 'A taxa de transação não pôde ser removida porque ela já foi cobrada', ''),
-(51105, 'pt_BR:transferType.minAmount', '', ''),
-(51106, 'pt_BR:externalTransferProcess.processed', 'Os pagamentos selecionados foram processados', ''),
-(51107, 'pt_BR:reports.stats.warning', 'Alerta: cálculos estatísticos podem ser muito pesados, e podem demorar algum tempo.', ''),
-(51108, 'pt_BR:menu.member.account.loanGroups', 'Grupos de empréstimos', ''),
-(51109, 'pt_BR:transactionFee.toFixedMember.username', 'Nome de usuário de destino', ''),
-(51110, 'pt_BR:accountType.description', 'Descrição', ''),
-(51111, 'pt_BR:guaranteeType.enabled.tooltip', 'Tipo de garantia ativo', ''),
-(51112, 'pt_BR:alert.member.givenVeryBadRefs', 'O membro deu {0} referências "Péssimo"', ''),
-(51113, 'pt_BR:theme.styles', 'Estilos neste tema', ''),
-(51114, 'pt_BR:brokerCommissionContract.endDate.to', 'até', ''),
-(51115, 'pt_BR:adCategory.parent', 'Categoria mãe', ''),
-(51116, 'pt_BR:reports.stats.keydevelopments.throughTime.alert', 'Você só pode selecionar o item "ao longo do tempo" em combinação com outros items.', ''),
-(51117, 'pt_BR:customField.title.modify.admin', 'Modificar campo customizado de administrador', ''),
-(51118, 'pt_BR:member.search.noResults', 'Nenhum membro foi encontrado', ''),
-(51119, 'pt_BR:reports.current.invoices', 'Faturas eletrônicas', ''),
-(51120, 'pt_BR:serviceClient.title.insert', 'Inserir cliente de serviços web', ''),
-(51121, 'pt_BR:ticket.status.FAILED', 'Failed', ''),
-(51122, 'pt_BR:mailPreferences.title', 'Notificações por e-mail', ''),
-(51123, 'pt_BR:payment.error.pendingProcess', 'O pagamento não pôde ser realizado porque existem outros pagamentos da sua conta que ainda estão sendo processados.\nPor favor, tente novamente mais tarde', ''),
-(51124, 'pt_BR:channel.removed', 'O canal foi removido', ''),
-(51125, 'pt_BR:group.settings.expireMembersAfter', 'Expirar membros após', ''),
-(51126, 'pt_BR:currency.error.removing', 'A moeda não pode ser removida porque existe tipos de contas associadas à ela.', ''),
-(51127, 'pt_BR:group.account.updateAccountLimits', 'Atualizar limite de crédito para os membros existentes', ''),
-(51128, 'pt_BR:customField.ad.searchVisibility.ADVANCED', 'Busca avançada', ''),
-(51129, 'pt_BR:changeGroup.operator.changed', 'O grupo do operador foi alterado', ''),
-(51130, 'pt_BR:viewChannels.title.of', 'Ver os canais de {0}', ''),
-(51131, 'pt_BR:global.removeSelected', 'Remover selecionado(s)', ''),
-(51132, 'pt_BR:loan.firstExpirationDate', 'Primeira data de vencimento', ''),
-(51133, 'pt_BR:fileMapping.title', 'Mapeamento de arquivo', ''),
-(51134, 'pt_BR:reports.simulations.aRate.config.combinedGraph.title', 'Curva de configuração do índice-A', ''),
-(51135, 'pt_BR:customImage.upload', 'Carregar nova', ''),
-(51136, 'pt_BR:loanPayment.payment', 'Pagamento', ''),
-(51137, 'pt_BR:theme.author', 'Autor', ''),
-(51138, 'pt_BR:reports.transactions_report.debits', 'Débitos', ''),
-(51139, 'pt_BR:settings.access.passwordLength', 'Tamanho da senha', ''),
-(51140, 'pt_BR:pos.unblockPos.confirmation', 'Ativar o POS?', ''),
-(51141, 'pt_BR:paymentObligation.pack.details', 'Selecione um conjunto de obrigações de pagamento que não excedam o período máximo', ''),
-(51142, 'pt_BR:account.isDefault', 'É padrão', ''),
-(51143, 'pt_BR:permission.adminAdminAccess.enableLogin', 'Permitir automaticamente o acesso de administradores desativados (por tentativas de senha)', ''),
-(51144, 'pt_BR:menu.admin.help', 'Ajuda', ''),
-(51145, 'pt_BR:theme.style.MAIN', 'Sistema', ''),
-(51146, 'pt_BR:accountHistory.period.begin', 'Data inicial', ''),
-(51147, 'pt_BR:serviceClient.ignoreRegistrationValidations', 'Ignorar validação de e-mail e campos personalizados', ''),
-(51148, 'pt_BR:sms.error.type.ALLOW_CHARGING_DISABLED', 'Sem SMS disponíveis e cobrança adicional desabilitada', ''),
-(51149, 'pt_BR:settings.message.adminSystemInvoice', 'Fatura eletrônica de sistema', ''),
-(51150, 'pt_BR:transferType.transactionHierarchyVisibility.MEMBER', 'Para todos os usuários', ''),
-(51151, 'pt_BR:settings.access.allowMultipleLogins', 'Permitir múltiplos acessos do mesmo usuário', ''),
-(51152, 'pt_BR:reports.stats.activity.histogram.grossProduct.yAxis', 'Número de membros', ''),
-(51153, 'pt_BR:menu.admin.usersGroups.registrationAgreements', 'Termos de adesão', ''),
-(51154, 'pt_BR:posweb.client.card', 'Cartão do cliente', ''),
-(51155, 'pt_BR:alert.member.loginBlockedByPermissionDenieds', 'O acesso do membro ao sistema está temporariamente bloqueado por exceder o máximo de permissões negadas. O endereço IP é {1}', ''),
-(51156, 'pt_BR:adminTasks.indexes.confirmRebuild', 'A reconstrução dos índices de busca é executada em segundo plano e pode fazer com que buscas por palavras-chave não tragam os resultados esperados até que a reconstrução esteja completa.\n\nVocê tem certeza que deseja continuar?', ''),
-(51157, 'pt_BR:guaranteeLog.date', 'Data', ''),
-(51158, 'pt_BR:message.type.GUARANTEE', 'Garantias', ''),
-(51159, 'pt_BR:reports.stats.keydevelopments.averageAmountPerTransaction.yAxis', 'Valor médio / trans.', ''),
-(51160, 'pt_BR:loan.repayment.error.upperCreditLimit', 'O empréstimo não pôde ser pago porque ele poderia deixar a conta de sistema que o está recebendo com saldo maior do que o permitido em seu limite de crédito superior', ''),
-(51161, 'pt_BR:customImage.system.save', 'Ícone de exportação como CSV', ''),
-(51162, 'pt_BR:pos.posId', 'Identificador POS', ''),
-(51163, 'pt_BR:settings.types', 'Tipos', ''),
-(51164, 'pt_BR:translationMessage.import.error.noFile', 'Por favor, selecione o arquivo de propriedades', ''),
-(51165, 'pt_BR:brokerCommission.error.unsuspending', 'Erro liberando a comissão do corretor!', ''),
-(51166, 'pt_BR:permission.operatorMessages', 'Mensagens', ''),
-(51167, 'pt_BR:changePassword.error.mustContainOnlyLettersOrNumbers', 'Somente são permitidas letras e números na senha de login', ''),
-(51168, 'pt_BR:transactionFee.fInfinite', 'Valor em assimptota infinita', ''),
-(51169, 'pt_BR:permission.memberOperators', 'Operadores', ''),
-(51170, 'pt_BR:adCategory.title.import', 'Importar categorias de anúncio', ''),
-(51171, 'pt_BR:member.email', 'E-mail', ''),
-(51172, 'pt_BR:card.securityCode', 'Código de segurança', ''),
-(51173, 'pt_BR:manual.action.top', 'Ir para o topo', ''),
-(51174, 'pt_BR:externalTransferType.title.list', 'Tipos de pagamento', ''),
-(51175, 'pt_BR:permission.adminMemberLoans.repayWithDate', 'Pagar empréstimo em data no passado', ''),
-(51176, 'pt_BR:permission.systemPayments.cancelScheduled', 'Cancelar pagamento agendado', ''),
-(51177, 'pt_BR:home.status.paymentsAwaitingFeedback', 'Você tem {0} pagamentos pendentes de qualificação', ''),
-(51178, 'pt_BR:changeBroker.new', 'Novo corretor', ''),
-(51179, 'pt_BR:payment.title.systemToMember', 'Pagamento do sistema para um membro', ''),
-(51180, 'pt_BR:adImport.title.details.error', 'Anúncios com erro de importação', ''),
-(51181, 'pt_BR:permission.adminMemberReports', 'Relatório de atividades', ''),
-(51182, 'pt_BR:permission.operatorPayments.ticket', 'Gerar tickets de pagamento externo', ''),
-(51183, 'pt_BR:customField.ad.searchVisibility.BASIC', 'Busca básica', ''),
-(51184, 'pt_BR:menu.operator.account.selfPayment', 'Transferência entre contas próprias', ''),
-(51185, 'pt_BR:receiptPrinterSettings.endOfDocCommand', 'Comando de fim de documento', ''),
-(51186, 'pt_BR:ad.price.unspecified', 'Não especificado', ''),
-(51187, 'pt_BR:serviceClient.address', 'Endereço na Internet', ''),
-(51188, 'pt_BR:permission.adminMemberReferences', 'Referências', ''),
-(51189, 'pt_BR:reference.title.given.my', 'Referências dadas', ''),
-(51190, 'pt_BR:receipt.transfer.date', 'Data: {0}', ''),
-(51191, 'pt_BR:groupFilter.loginPageName', 'Nome na página de login', ''),
-(51192, 'pt_BR:certification.usedAmount', 'Valor utilizado', ''),
-(51193, 'pt_BR:profile.action.manageLoginPassword', 'Gerenciar senha de acesso', ''),
-(51194, 'pt_BR:reports.stats.accountFeeFilters', 'Taxas de conta', ''),
-(51195, 'pt_BR:reports.stats.taxes.paid.both', 'Ambos', ''),
-(51196, 'pt_BR:profile.action.accountsAction', 'Contas', ''),
-(51197, 'pt_BR:memberImport.group.select', 'Selecione um grupo para os membros', ''),
-(51198, 'pt_BR:reports.stats.chooseStatisticsCategories', 'Por favor, selecione uma categoria de estatísticas a ser exibida', ''),
-(51199, 'pt_BR:reports.stats.choose.taxes', 'Taxas', ''),
-(51200, 'pt_BR:certification.amount', 'Valor', ''),
-(51201, 'pt_BR:menu.operator.account.simulateConversion', 'Simular conversão', ''),
-(51202, 'pt_BR:memberPos.status.PENDING', 'Pendente', ''),
-(51203, 'pt_BR:loan.status.EXPIRED', 'Expirado', ''),
-(51204, 'pt_BR:externalTransfer.status.CHECKED', 'Verificado', ''),
-(51205, 'pt_BR:global.today', 'Hoje', ''),
-(51206, 'pt_BR:sms.type.HELP.description', 'Ajuda', ''),
-(51207, 'pt_BR:home.admin.status.connectedAdmins', 'Número de administradores conectados', ''),
-(51208, 'pt_BR:permission.adminMemberReports.showAccountInformation', 'Exibir informações de conta', ''),
-(51209, 'pt_BR:changePassword.error.userBlocked', 'Seu acesso foi temporariamente bloqueado', ''),
-(51210, 'pt_BR:group.settings.defaultChannels', 'Acesso padrão dos membros', ''),
-(51211, 'pt_BR:settings.imported', 'As configurações foram importadas', ''),
-(51212, 'pt_BR:memberRecord.user', 'Usuário', ''),
-(51213, 'pt_BR:permission.adminMemberDocuments.manageMember', 'Gerenciar documentos de membros', ''),
-(51214, 'pt_BR:certification.validity', 'Validade', ''),
-(51215, 'pt_BR:posweb.searchTransactions.title', 'Lista de transações', ''),
-(51216, 'pt_BR:mobile.payment.confirmation', 'Pagamento de {0} para {1}.{2}', ''),
-(51217, 'pt_BR:memberImport.successfulMembers', 'Membros ok', ''),
-(51218, 'pt_BR:transactionFee.chargeType.MIXED_A_D_RATES', 'Misto de índice-A e D', ''),
-(51219, 'pt_BR:global.textFormat.RICH', 'Texto formatado', ''),
-(51220, 'pt_BR:sms.error.type.NOT_ENOUGH_FUNDS', 'Saldo insuficiente', ''),
-(51221, 'pt_BR:memberImport.group', 'Grupo de permissão', ''),
-(51222, 'pt_BR:brokering.modified', 'Notas modificadas', ''),
-(51223, 'pt_BR:channel.title.list', 'Canais', ''),
-(51224, 'pt_BR:settings.neverDeleteMessage', '0 nunca remover', ''),
-(51225, 'pt_BR:accountType.name', 'Nome', ''),
-(51226, 'pt_BR:member.bulkActions.changeGroup', 'Alterar grupo', ''),
-(51227, 'pt_BR:externalTransferType.modified', 'O tipo de pagamento foi modificado', ''),
-(51228, 'pt_BR:externalTransferProcess.title', 'Processar pagamentos de {0}', ''),
-(51229, 'pt_BR:createMember.newCaptcha', 'Novo código', ''),
-(51230, 'pt_BR:settings.local.changeConfirmationMessage', 'Ao alterar a linguagem, o arquivo de tradução será substituído.\nQuaisquer mensagens customizadas serão perdidas.\nVocê deseja continuar?', ''),
-(51231, 'pt_BR:reports.stats.keydevelopments.throughTime.selectYears', 'Selecione anos', ''),
-(51232, 'pt_BR:changeBroker.title.history', 'Histórico', ''),
-(51233, 'pt_BR:profile.neverLoggedOn', 'Nunca acessou', ''),
-(51234, 'pt_BR:settings.message.loanExpiration', 'Vencimento do empréstimo', ''),
-(51235, 'pt_BR:infoText.nomatch.subject', 'Informação não encontrada para: {0}.', ''),
-(51236, 'pt_BR:customField.groups', 'Habilitar campo para os grupos', ''),
-(51237, 'pt_BR:menu.operator.preferences.receiptPrinterSettings', 'Impressoras de recibo', ''),
-(51238, 'pt_BR:profile.action.addContact', 'Adicionar aos contatos', ''),
-(51239, 'pt_BR:customField.ad.visibility.MEMBER', 'Todos os usuários', ''),
-(51240, 'pt_BR:brokerCommissionContract.search.noResults', 'Não foi encontrado nenhum contrato', ''),
-(51241, 'pt_BR:permission.adminMemberDocuments.manageDynamic', 'Gerenciar documentos dinâmicos', ''),
-(51242, 'pt_BR:reports.members.ads', 'Anúncios', ''),
-(51243, 'pt_BR:authorizationLevel.removed', 'Nível de autorização removido', ''),
-(51244, 'pt_BR:permission.systemRegistrationAgreements', 'Termos de adesão', ''),
-(51245, 'pt_BR:certification.action.create', 'Nova certificação', ''),
-(51246, 'pt_BR:reports.simulations.choose.aRateConfig', 'Configuração do índice-A', ''),
-(51247, 'pt_BR:permission.systemGroupFilters', 'Filtros de grupos', ''),
-(51248, 'pt_BR:translationMessage.key', 'Chave', ''),
-(51249, 'pt_BR:permission.memberPayments.blockScheduled', 'Bloquear pagamento agendado', ''),
-(51250, 'pt_BR:customImage.system.preview', 'Ícone de pré-visualização', ''),
-(51251, 'pt_BR:menu.admin.guarantees.searchGuarantees', 'Garantias', ''),
-(51252, 'pt_BR:settings.local.language.ENGLISH', 'Inglês', ''),
-(51253, 'pt_BR:customizedFile.type', 'Tipo', ''),
-(51254, 'pt_BR:accountFee.title.list', 'Taxas de conta', ''),
-(51255, 'pt_BR:image.noPicture.caption', 'Sem imagem', ''),
-(51256, 'pt_BR:document.action.new.member', 'Novo documento de membro', ''),
-(51257, 'pt_BR:permission.memberAccount.authorizedInformation', 'Ver pagamentos autorizados', ''),
-(51258, 'pt_BR:externalTransferImport.error.importing.invalidMemberUsername', 'Nome de login inválido: {0}', ''),
-(51259, 'pt_BR:global.month.NOVEMBER', 'Novembro', ''),
-(51260, 'pt_BR:activities.title.of', 'Relatórios de {0}', ''),
-(51261, 'pt_BR:settings.access.error.virtualKeyboard.groupsRequireSpecial', '{0} não pode ser ativado pois existe ao menos um grupo que requer caracteres especiais na senha', ''),
-(51262, 'pt_BR:loan.title.grant', 'Conceder empréstimo a {0}', ''),
-(51263, 'pt_BR:reports.simulations.aRate.config.combinedGraph.xAxis', 'Índice-A relativo ao período de garantia', ''),
-(51264, 'pt_BR:reports.stats.keydevelopments.throughTime.title', 'Progressos ao longo do tempo', ''),
-(51265, 'pt_BR:settings.message.adminNewPendingPayment', 'Novo pagamento para o administrador autorizar', ''),
-(51266, 'pt_BR:message.rootType.all', 'Todos', ''),
-(51267, 'pt_BR:reference.title.paymentsAwaitingFeedback', 'Pagamentos pendentes de qualificação', ''),
-(51268, 'pt_BR:alert.system.newVersionOfApplicationPage', 'Existe uma nova versão da página do aplicativo {0}, que foi customizada.\nPor favor, verifique para resolver possíveis conflitos', ''),
-(51269, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.numberOfDisappearedMembers', 'Número de membros desaparecidos', ''),
-(51270, 'pt_BR:customField.validation.minLength', 'Tamanho mínimo', ''),
-(51271, 'pt_BR:paymentFilter.showInReports', 'Exibir em relatórios', ''),
-(51272, 'pt_BR:reports.simulations.dRate.config.graph', 'Porcentagem de taxa vx Índice-D', ''),
-(51273, 'pt_BR:profile.action.smsLogs', 'Registros de SMS', ''),
-(51274, 'pt_BR:adCategory.active', 'Ativa', ''),
-(51275, 'pt_BR:profile.member.title.of', 'Perfil de {0}', ''),
-(51276, 'pt_BR:reports.stats.finances.title', 'Estatísticas financeiras', ''),
-(51277, 'pt_BR:transferType.defaultFeedbackComments', 'Comentário da qualificação quando expirado', ''),
-(51278, 'pt_BR:posweb.action.makePayment', 'Fazer pagamento (F3)', ''),
-(51279, 'pt_BR:activities.title.my', 'Meus relatórios', ''),
-(51280, 'pt_BR:admin.group', 'Grupo de administrador', ''),
-(51281, 'pt_BR:guarantee.issuerName', 'Nome do emissor', ''),
-(51282, 'pt_BR:smsLog.status.ERROR', 'Erro', ''),
-(51283, 'pt_BR:scheduledPayment.parcels', 'Parcelas', ''),
-(51284, 'pt_BR:operator.group', 'Grupo', ''),
-(51285, 'pt_BR:changeGroup.error.move.hasBalance', 'O membro não pode ser movido porque sua conta não possui saldo zero em {0}', ''),
-(51286, 'pt_BR:mobile.login.password', 'Senha', ''),
-(51287, 'pt_BR:menu.member.personal.manageExternalAccess', 'Acesso externo', ''),
-(51288, 'pt_BR:profile.member.title.my', 'Meu perfil', ''),
-(51289, 'pt_BR:sms.type.ACCOUNT_DETAILS_ERROR', 'Erro dos detalhes da conta', ''),
-(51290, 'pt_BR:currency.pattern', 'Padrão', ''),
-(51291, 'pt_BR:group.settings.smsContextClassName', 'Nome de classe customizado do contexto SMS', ''),
-(51292, 'pt_BR:guaranteeType.authorizedBy.ISSUER', 'Emissor', ''),
-(51293, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.numberOfMembers.short', 'Todos', ''),
-(51294, 'pt_BR:activities.loans.amount', 'Valor total restante do empréstimo', ''),
-(51295, 'pt_BR:menu.admin.usersGroups.admins', 'Gerenciar administradores', ''),
-(51296, 'pt_BR:message.html', 'Formato HTML', ''),
-(51297, 'pt_BR:settings.mail.mailValidation', 'Validação do e-mail no cadastro público', ''),
-(51298, 'pt_BR:profile.action.manageCards', 'Gerenciar cartões', ''),
-(51299, 'pt_BR:message.from', 'De', ''),
-(51300, 'pt_BR:errorLog.removeOne.confirm', 'Remover este log de erro?', ''),
-(51301, 'pt_BR:permission.operatorLoans.view', 'Visualizar', ''),
-(51302, 'pt_BR:menu.admin.reports.members', 'Relatório de membros', ''),
-(51303, 'pt_BR:externalTransferProcess.error.noPaymentToConciliate', 'Não há pagamentos possíveis para conciliação', ''),
-(51304, 'pt_BR:group.action.new', 'Inserir novo grupo', ''),
-(51305, 'pt_BR:menu.operator.account', 'Conta', ''),
-(51306, 'pt_BR:payment.backToMemberProfile', 'Ir para o perfil do membro', ''),
-(51307, 'pt_BR:mobile.credentials.TRANSACTION_PASSWORD', 'Senha transação', ''),
-(51308, 'pt_BR:contact.inserted', 'O contato foi inserido', ''),
-(51309, 'pt_BR:customField.control.SELECT', 'Seleção', ''),
-(51310, 'pt_BR:changePin.error.transactionPasswordPending', 'Para definir a senha externa (PIN), é necessária a senha de transação, que pode ser gerada na <a class="default" href="{0}">página inicial</a>', ''),
-(51311, 'pt_BR:settings.local.transactionNumber.suffix', 'Sufixo', ''),
-(51312, 'pt_BR:adCategory.removeConfirmation', 'Remover categoria?', ''),
-(51313, 'pt_BR:group.title.settings.access', 'Configurações de acesso', ''),
-(51314, 'pt_BR:customField.memberRecord.brokerAccess', 'Acesso do corretor', ''),
-(51315, 'pt_BR:ad.owner', 'Proprietário', ''),
-(51316, 'pt_BR:posweb.title.makePayment', 'Fazer pagamento', ''),
-(51317, 'pt_BR:guaranteeType.model', 'Modelo', ''),
-(51318, 'pt_BR:disconnect.error.notConnected', 'O usuário não está mais conectado', ''),
-(51319, 'pt_BR:message.action.DELETE', 'Remover permanentemente', ''),
-(51320, 'pt_BR:menu.operator.account.invoices', 'Faturas Eletrônicas', ''),
-(51321, 'pt_BR:ad.publicationPeriod.begin', 'Data de publicação', ''),
-(51322, 'pt_BR:ad.search.since', 'Nos último(s)', ''),
-(51323, 'pt_BR:menu.admin.cards.list', 'Procurar cartões', ''),
-(51324, 'pt_BR:loan.repayment.discard.payment.confirmationMessage', 'Você tem certeza de que deseja descartar esse pagamento?', ''),
-(51325, 'pt_BR:accountOverview.error.noAccounts', 'Você não possui contas', ''),
-(51326, 'pt_BR:guarantee.title.searchGuarantees', 'Busca de garantias', ''),
-(51327, 'pt_BR:reports.stats.Period', 'Período', ''),
-(51328, 'pt_BR:memberPos.status.ACTIVE', 'Ativo', ''),
-(51329, 'pt_BR:quickAccess.updateProfile', 'Atualizar perfil', ''),
-(51330, 'pt_BR:message.type.TRANSACTION_FEEDBACK', 'Qualificações de transação', ''),
-(51331, 'pt_BR:groupFilter.rootUrl', 'URL raiz da aplicação', ''),
-(51332, 'pt_BR:activities.loans.count', 'Empréstimos em aberto', ''),
-(51333, 'pt_BR:member.operator', 'Operador', ''),
-(51334, 'pt_BR:operator.name', 'Nome', ''),
-(51335, 'pt_BR:accountHistory.tooltip.viewGrouped', 'Ver grupo', ''),
-(51336, 'pt_BR:menu.admin.contentManagement.cssFiles', 'Arquivos CSS', ''),
-(51337, 'pt_BR:image.removeConfirmation', 'Remover imagem?', ''),
-(51338, 'pt_BR:reports.current.balance_account', 'Saldo de {0}', ''),
-(51339, 'pt_BR:pin.error.blocked', 'Sua senha externa (PIN) foi temporariamente bloqueada por excesso de tentativas inválidas', ''),
-(51340, 'pt_BR:permission.brokerInvoices.acceptAsMemberFromSystem', 'Aceitar fatura eletrônica de sistema como membo', ''),
-(51341, 'pt_BR:notificationPreferences.acceptPaidMailing', 'Receber mensagens SMS de difusão pagas', ''),
-(51342, 'pt_BR:messageCategory.title.list', 'Categorias de mensagens', ''),
-(51343, 'pt_BR:brokerCommission.stopped', 'A cobrança da comissão de corretor foi interrompida', ''),
-(51344, 'pt_BR:mobile.viewPayments.date', 'Data', ''),
-(51345, 'pt_BR:cardType.cardSecurityCode.MANUAL', 'Manual', ''),
-(51346, 'pt_BR:changePin.modified', 'A senha externa (PIN) foi modificada', ''),
-(51347, 'pt_BR:loanPayment.status.RECOVERED', 'Recuperado', ''),
-(51348, 'pt_BR:reports.stats.activity.histogram.numberTransactions', 'Histograma de número de transações', ''),
-(51349, 'pt_BR:registrationAgreement.title.accept', 'Termo de adesão', ''),
-(51350, 'pt_BR:card.status.EXPIRED', 'Expirado', ''),
-(51351, 'pt_BR:memberRecord.title.insert', 'Inserir registro de {0} para {1}', ''),
-(51352, 'pt_BR:loan.repayment.transactionPassword.canPerformExpiredAction', 'Para definir o estado do empréstimo, você deve fornecer sua senha de transação', ''),
-(51353, 'pt_BR:login.systemOffline', 'O sistema está temporariamente indisponível.\nPor favor, tente novamente mais tarde.\nPedimos desculpas pelo transtorno.', ''),
-(51354, 'pt_BR:accountFee.chargeMode.FIXED', 'Valor fixo', ''),
-(51355, 'pt_BR:customField.title.order.payment', 'Ajustar ordem dos campos de {0}', ''),
-(51356, 'pt_BR:alert.member.transactionPasswordBlockedByTries', 'A senha de transação foi bloqueada por exceder a quantidade máxima de tentativas', ''),
-(51357, 'pt_BR:mobile.home.availableBalance', 'Disponível: {0}', ''),
-(51358, 'pt_BR:profile.action.preferencesActions', 'Preferências', ''),
-(51359, 'pt_BR:settings.local.cyclosId', 'Identificação para canais externos', ''),
-(51360, 'pt_BR:receiptPrinterSettings.title.list', 'Configurações de impressoras de recibos', ''),
-(51361, 'pt_BR:changeBroker.title', 'Alterar corretor de {0}', ''),
-(51362, 'pt_BR:account.lowUnits', 'Alerta de poucas unidades', ''),
-(51363, 'pt_BR:message.toMember', 'Para membro', ''),
-(51364, 'pt_BR:home.admin.status.systemUptime.message', '{0} dia(s), {1} hora(s)', ''),
-(51365, 'pt_BR:message.messageBox.TRASH', 'Lixeira', ''),
-(51366, 'pt_BR:member.title.print', 'Resultado da busca de membros', ''),
-(51367, 'pt_BR:adImport.title.newCategories', 'Novas categorias', ''),
-(51368, 'pt_BR:permission.systemAlerts', 'Avisos', ''),
-(51369, 'pt_BR:global.timePeriod.HOURS', 'Hora(s)', ''),
-(51370, 'pt_BR:loanPayment.search.repaidAmount', 'Pagado', ''),
-(51371, 'pt_BR:group.smsMessages', 'Mensagens permitidas para SMS', ''),
-(51372, 'pt_BR:permission.brokerPos', 'POS', ''),
-(51373, 'pt_BR:reports.stats.period.periodCompared', 'Período com o qual comparar', ''),
-(51374, 'pt_BR:activities.invoices.outgoing.amount', 'Valor de saída', ''),
-(51375, 'pt_BR:reference.replyComments', 'Réplica', ''),
-(51376, 'pt_BR:reports.transactions_report.system_to_member_invoices', '{0} faturas eletrônicas de sistema para membro: {1}', ''),
-(51377, 'pt_BR:member.search.allGroupFilters', 'Todas as comunidades', ''),
-(51378, 'pt_BR:paymentObligation.inserted', 'A obrigação de pagamento foi criada com sucesso', ''),
-(51379, 'pt_BR:changeGroup.error.move.hasOpenInvoices', 'O membro não pode ser movido porque ele tem faturas eletrônicas em aberto', ''),
-(51380, 'pt_BR:invoice.date', 'Data', ''),
-(51381, 'pt_BR:settings.access.externalPaymentPassword.TRANSACTION_PASSWORD', 'Senha de transação', ''),
-(51382, 'pt_BR:channel.title.insert', 'Novo canal', ''),
-(51383, 'pt_BR:serviceClient.channel', 'Canal', ''),
-(51384, 'pt_BR:help.title.content_management', 'Gerenciamento de conteúdo', ''),
-(51385, 'pt_BR:mobile.error.title', 'Erro', ''),
-(51386, 'pt_BR:reports.stats.activity.throughTime.numberTransactions', 'Número de transações por membro', ''),
-(51387, 'pt_BR:reports.current.member_account', 'Contas de membro', ''),
-(51388, 'pt_BR:settings.message.adminApplicationError', 'Erros da aplicação', ''),
-(51389, 'pt_BR:document.action.new.static', 'Novo documento estático', ''),
-(51390, 'pt_BR:rates.error.reinitValidation.reinitDateAfterEnableDate', 'A data que você informou como inicial para a reinicialização é posterior à presente data de ativação dos indices..\nVocê deve escolher uma data anterior à data de ativação.', ''),
-(51391, 'pt_BR:activities.transactions.total', 'Total de todas as transações', ''),
-(51392, 'pt_BR:account.upperCreditLimit', 'Limite de crédito superior', ''),
-(51393, 'pt_BR:loanPayment.status.REPAID', 'Pago', ''),
-(51394, 'pt_BR:activities.transactions.numberBuy', 'Pagas - qtde.', ''),
-(51395, 'pt_BR:settings.message.admin.title', 'Notificações de administradores', ''),
-(51396, 'pt_BR:settings.log.scheduledTaskLevel.OFF', 'Desligado', ''),
-(51397, 'pt_BR:message.sendTo', 'Enviar para', ''),
-(51398, 'pt_BR:group.defaultAcceptPaidMailing', 'Aceitar SMS de difusão pagos por padrão', ''),
-(51399, 'pt_BR:accountType.removeConfirmation', 'Remover esta conta, bem como os tipos de transação?', ''),
-(51400, 'pt_BR:permission.adminMemberSmsMailings', 'Mensagens SMS de difusão', ''),
-(51401, 'pt_BR:reports.members_reports.members_invoices', 'Faturas eletrônicas de membros', ''),
-(51402, 'pt_BR:adCategory.orderModified', 'A ordem das catgorias foi modificada', ''),
-(51403, 'pt_BR:reports.stats.activity.singlePeriod.grossProduct.yAxis', 'Produto bruto', ''),
-(51404, 'pt_BR:group.settings.emailValidation.ADMIN', 'Administrador', ''),
-(51405, 'pt_BR:certification.guaranteeType', 'Tipo de garantia', ''),
-(51406, 'pt_BR:loanPayment.summary.total', 'Total', ''),
-(51407, 'pt_BR:connectedUsers.title', 'Usuários conectados', ''),
-(51408, 'pt_BR:member.creationDate', 'Data de criação', ''),
-(51409, 'pt_BR:settings.access.virtualKeyboardTransactionPassword', 'Teclado virtual para senha de transação', ''),
-(51410, 'pt_BR:reports.stats.activity.comparePeriods.loginTimes.title', 'Acessos por membro (comparando dois períodos)', ''),
-(51411, 'pt_BR:createMember.initialGroup.preface.public', 'Por favor, selecione o grupo que você deseja participar', ''),
-(51412, 'pt_BR:invoice.invalid.schedulingDate', 'As parcelas da fatura eletrônica devem ser agendadas para antes de {0}', ''),
-(51413, 'pt_BR:alert.removeSelected.confirm', 'Remover os avisos selecionados?', ''),
-(51414, 'pt_BR:settings.local.transactionNumber.prefix', 'Prefixo', ''),
-(51415, 'pt_BR:settings.message.adminPaymentFromMemberToSystem', 'Pagamentos de membros para o sistema', ''),
-(51416, 'pt_BR:invoice.sendConfirmationMessage', 'Enviar uma fatura eletrônica para {0} de {1}?\n\nPor favor, clique em OK para confirmar', ''),
-(51417, 'pt_BR:permission.brokerMemberRecords.modify', 'Modificar', ''),
-(51418, 'pt_BR:permission.adminMemberCards.unblock', 'Desbloquear', ''),
-(51419, 'pt_BR:groupFilter.showInProfile', 'Exibir no perfil', ''),
-(51420, 'pt_BR:alert.system.NULL_RATE', '', ''),
-(51421, 'pt_BR:menu.member.help.manual', 'Manual', ''),
-(51422, 'pt_BR:permission.adminMemberRecords.manage', 'Gerenciar', ''),
-(51423, 'pt_BR:payment.error.transferMinimum', 'O valor do pagamento não pode ser menor do que {0}', ''),
-(51424, 'pt_BR:paymentFilter.title.list', 'Filtros de pagamentos', ''),
-(51425, 'pt_BR:transferType.enabled', 'Habilitado', ''),
-(51426, 'pt_BR:paymentRequest.error.invalidChannel', 'A requisição de pagamento não pôde ser realizada porque o usuário {0} não possui o canal {1} ativado', ''),
-(51427, 'pt_BR:ticket.status.CANCELLED', 'Cancelado', ''),
-(51428, 'pt_BR:loan.repayment.discard.loan', 'Descartar empréstimo', ''),
-(51429, 'pt_BR:channel.defaultPrincipal', 'Identificação padrão do usuário', ''),
-(51430, 'pt_BR:global.month.MARCH', 'Março', ''),
-(51431, 'pt_BR:menu.logout.confirmationMessage', 'Deseja realmente sair?', ''),
-(51432, 'pt_BR:permission.adminMemberAccounts', 'Contas', ''),
-(51433, 'pt_BR:adImport.status.MISSING_TITLE', 'O título está faltando', ''),
-(51434, 'pt_BR:message.title.search', 'Lista de mensagens', ''),
-(51435, 'pt_BR:permission.systemAccounts.view', 'Ver gerenciamento de contas', ''),
-(51436, 'pt_BR:group.details', 'Detalhes do grupo', ''),
-(51437, 'pt_BR:customImage.system.print', 'Ícone de impressão', ''),
-(51438, 'pt_BR:accountType.change', 'Alterar conta', ''),
-(51439, 'pt_BR:menu.operator.home', 'Principal', ''),
-(51440, 'pt_BR:permission.systemCustomizedFiles.view', 'Ver', ''),
-(51441, 'pt_BR:guarantee.emissionDate', 'Data de emissão', ''),
-(51442, 'pt_BR:memberRecord.search.noResults', 'Nenhum registro de {0} foi encontrado', ''),
-(51443, 'pt_BR:error.sendingMail', 'Houve um erro durante o envio de um e-mail para {0}', ''),
-(51444, 'pt_BR:profile.action.mail', 'Enviar e-mail', ''),
-(51445, 'pt_BR:settings.local.deleteMessagesOnTrashAfter', 'Remover mensagens da lixeira após', ''),
-(51446, 'pt_BR:transfer.hour', 'Hora', ''),
-(51447, 'pt_BR:posLog.memberPosStatus', 'Estado do POS do membro', ''),
-(51448, 'pt_BR:group.title.modify.operator', 'Configurações de grupo de operadores', ''),
-(51449, 'pt_BR:memberImport.status.INVALID_CREDIT_LIMIT', 'O limite de crédito é inválido: {0}', ''),
-(51450, 'pt_BR:brokerCommissionContract.removeConfirmation', 'Remover este contrato de comissão de corretor?', ''),
-(51451, 'pt_BR:customField.title.order.ad', 'Ajustar ordem de campo customizado de anúncio', ''),
-(51452, 'pt_BR:loan.group', 'Grupo de empréstimo', ''),
-(51453, 'pt_BR:permission.adminMemberCards.generate', 'Gerar', ''),
-(51454, 'pt_BR:customField.member.indexing.NONE', 'Não incluir', ''),
-(51455, 'pt_BR:loan.grant.error.unsortedPayments', 'Os pagamentos de empréstimo não estão ordernados corretamente por data', ''),
-(51456, 'pt_BR:ticket.fromChannel', 'Canal de solicitação', ''),
-(51457, 'pt_BR:profile.action.creditLimit', 'Ajustar limite de crédito', ''),
-(51458, 'pt_BR:ad.maxAdsMessage', 'Por favor, apague um ou mais produtos e serviços para poder criar um novo', ''),
-(51459, 'pt_BR:permission.adminMemberAccess.resetPassword', 'Reiniciar senha de acesso', ''),
-(51460, 'pt_BR:certification.login', 'Usuário', ''),
-(51461, 'pt_BR:currency.pendingRateInitProgression', 'Reinicialização de indices esta sendo processada; Processados até o momento', ''),
-(51462, 'pt_BR:customField.type.INTEGER', 'Número inteiro', ''),
-(51463, 'pt_BR:global.datePattern.minute', 'mm', ''),
-(51464, 'pt_BR:accountHistory.finalBalance', 'Saldo final', ''),
-(51465, 'pt_BR:menu.admin.messages.messageCategory', 'Categorias da mensagem', ''),
-(51466, 'pt_BR:errors.notAllowed', '{0}', ''),
-(51467, 'pt_BR:externalAccount.name', 'Nome', ''),
-(51468, 'pt_BR:permission.adminMemberAccounts.simulateConversion', 'Simular conversão', ''),
-(51469, 'pt_BR:permission.systemSettings.file', 'Exportar / importar para arquivo', ''),
-(51470, 'pt_BR:reports.stats.finances.ThroughTime.income', 'Entrada', ''),
-(51471, 'pt_BR:group.settings.smsChargeTransferType', 'Tipo de transação para cobrança de SMS', ''),
-(51472, 'pt_BR:serviceOperation.DO_PAYMENT', 'Realizar pagamentos', ''),
-(51473, 'pt_BR:permission.memberPayments.cancelScheduled', 'Cancelar pagamento agendado', ''),
-(51474, 'pt_BR:settings.local.internationalization', 'Internacionalização', ''),
-(51475, 'pt_BR:reports.stats.activity.developments.grossProduct', 'Produto bruto', ''),
-(51476, 'pt_BR:changePassword.oldPassword', 'Senha atual', ''),
-(51477, 'pt_BR:transferType.title.list', 'Tipos de transação', ''),
-(51478, 'pt_BR:currency.dRate.initValue', 'Valor inicial do índice-D', ''),
-(51479, 'pt_BR:paymentObligation.date', 'Data', ''),
-(51480, 'pt_BR:customizedFile.title.applicationPage', 'Páginas customizadas do aplicativo', ''),
-(51481, 'pt_BR:image.caption', 'Legenda', ''),
-(51482, 'pt_BR:permission.brokerMessages.view', 'Ver', ''),
-(51483, 'pt_BR:scheduledPayments.searchType.INCOMING', 'Entrada', ''),
-(51484, 'pt_BR:account.status', 'Estado', ''),
-(51485, 'pt_BR:reports.stats.general.whatToShow', 'O que exibir?', ''),
-(51486, 'pt_BR:brokerCommission.notCharging', 'Esse tipo de comissão não está sendo cobrado', ''),
-(51487, 'pt_BR:transferType.requiresAuthorization', 'Requer autorização', ''),
-(51488, 'pt_BR:permission.systemPayments', 'Pagamentos de sistema', ''),
-(51489, 'pt_BR:changeBroker.changed', 'O corretor foi alterado', ''),
-(51490, 'pt_BR:global.weekDay.short.SUNDAY', 'Dom', ''),
-(51491, 'pt_BR:paymentObligation.accept', 'Aceitar obrigação de pagamento', ''),
-(51492, 'pt_BR:reports.stats.groupOfGroups', 'Filtro de grupo', ''),
-(51493, 'pt_BR:mobile.login.accessUsing', 'Usar {0}', ''),
-(51494, 'pt_BR:transactionPassword.reset', 'A senha de transação foi reinicializada.\nAgora o membro está apto a gerar a sua senha de transação', ''),
-(51495, 'pt_BR:permission.adminMemberCards.changeCardSecurityCode', 'Alterar código', ''),
-(51496, 'pt_BR:profile.action.viewDocuments', 'Documentos de membro', ''),
-(51497, 'pt_BR:permission.brokerAccounts', 'Conta', ''),
-(51498, 'pt_BR:permission.module.type.ADMIN_ADMIN', 'Permissões de administração de administradores de {0}', ''),
-(51499, 'pt_BR:home.admin.status.connectedOperators', 'Número de operadores conectados', ''),
-(51500, 'pt_BR:group.settings.emailValidation.WEB_SERVICE', 'Web service', ''),
-(51501, 'pt_BR:changeGroup.current', 'Grupo atual', ''),
-(51502, 'pt_BR:memberRecordType.error.removing', 'O tipo de registro de member não pode ser removido pois há pelo um registro de membro usando ele', ''),
-(51503, 'pt_BR:transactionFee.finalAmount', 'Valor menor ou igual', ''),
-(51504, 'pt_BR:member.name', 'Nome', ''),
-(51505, 'pt_BR:reports.members.broker', 'Corretor', ''),
-(51506, 'pt_BR:menu.admin.ads.categories.file', 'Imp. / Exp. categorias', ''),
-(51507, 'pt_BR:adCategory.title.list', 'Categorias de anúncio', ''),
-(51508, 'pt_BR:operator.created', 'O operador foi criado com sucesso', ''),
-(51509, 'pt_BR:group.settings.transactionPassword.length', 'Tamanho da senha de transação', ''),
-(51510, 'pt_BR:payment.error.sameAccount', 'A conta de destino deve ser diferente da conta de origem', ''),
-(51511, 'pt_BR:settings.local.transferListenerClass', 'Classe Java para notificação de pagamentos processados', ''),
-(51512, 'pt_BR:permission.brokerMemberPayments.cancelScheduledAsMember', 'Cancelar pagamento agendado como membro', ''),
-(51513, 'pt_BR:memberImport.status.MISSING_CUSTOM_FIELD', '{0} está faltando', ''),
-(51514, 'pt_BR:payment.error.pastDateWithRates', 'Pagamentos no passado não são possíveis caso os índices estejam ativados.\nIsto é um erro de configuração; por favor contate o administrador do sistema.', ''),
-(51515, 'pt_BR:changeGroup.error.remove.hasOpenInvoices', 'O membro não pode ser removido porque ele tem faturas eletrônicas em aberto', ''),
-(51516, 'pt_BR:smsLog.date', 'Data', ''),
-(51517, 'pt_BR:changePin.pinLength', 'Escolha uma senha externa (PIN) com {0} caracteres', ''),
-(51518, 'pt_BR:permission.systemGroupFilters.manageCustomizedFiles', 'Gerenciar arquivos customizados', ''),
-(51519, 'pt_BR:adInterest.title.insert', 'Novo interesse em anúncios', ''),
-(51520, 'pt_BR:groupFilter.customizedFiles.customized', 'Agora o arquivo está customizado para o filtro de grupos', ''),
-(51521, 'pt_BR:transferType.fixedDestinationMember.name', 'Nome completo do membro fixo de destino', ''),
-(51522, 'pt_BR:externalTransferImport.error.importing.invalidTypeCode', 'Código do tipo de pagamento é inválido: {0}', ''),
-(51523, 'pt_BR:transactionFee.deductAmount.false', 'Não deduzir do valor total', ''),
-(51524, 'pt_BR:posLog.title', 'Log do POS', ''),
-(51525, 'pt_BR:accountFeeLog.running', 'Executando', ''),
-(51526, 'pt_BR:loan.title.search', 'Procurar empréstimos', ''),
-(51527, 'pt_BR:brokerCommission.removed', 'A comissão de corretor foi removida', ''),
-(51528, 'pt_BR:channel.errorRemoving', 'Não foi possível remover o canal', ''),
-(51529, 'pt_BR:externalTransferType.error.removing', 'O tipo de pagamento não pôde ser removido da conta externa', ''),
-(51530, 'pt_BR:mobile.login.title', 'Cyclos', ''),
-(51531, 'pt_BR:pos.unblocked', 'POS foi desbloqueado', ''),
-(51532, 'pt_BR:reports.stats.finances.ComparePeriods.income', 'Entradas', ''),
-(51533, 'pt_BR:loan.repayment.totalAmount', 'Total', ''),
-(51534, 'pt_BR:reports.stats.chooseStatistics', 'Por favor, selecione as estatísticas a serem exibidas', ''),
-(51535, 'pt_BR:conversionSimulation.rates', 'Índices', ''),
-(51536, 'pt_BR:receiptPrinterSettings.beginOfDocCommand', 'Comando de início de documento', ''),
-(51537, 'pt_BR:permission.adminMemberCards.block', 'Bloquear', ''),
-(51538, 'pt_BR:ad.status', 'Estado', ''),
-(51539, 'pt_BR:defaultBrokerCommission.validity.transactions', '{0} transações', ''),
-(51540, 'pt_BR:settings.log.webServiceLevel.OFF', 'Desligado', ''),
-(51541, 'pt_BR:alert.system.ACCOUNT_FEE_FAILED', 'Taxa de conta falhou', ''),
-(51542, 'pt_BR:transactionFee.when.ALWAYS', 'Sempre', ''),
-(51543, 'pt_BR:alert.system.INDEX_REBUILD_START', 'Início de reconstrução de índice de busca', ''),
-(51544, 'pt_BR:scheduledPayments.totalAmount', 'Total restante', ''),
-(51545, 'pt_BR:smsLog.title.searchMy', 'Buscar registros de mensagens SMS', ''),
-(51546, 'pt_BR:groupFilter.customizedFiles.modified', 'O arquivo foi modificado para este filtro de grupos', ''),
-(51547, 'pt_BR:global.title.results', 'Resultado', ''),
-(51548, 'pt_BR:reports.stats.activity.comparePeriods.grossProduct.row2.short', 'Todos', ''),
-(51549, 'pt_BR:permission.operatorGuarantees.sellWithPaymentObligations', 'Vender com obrigações de pagamento', ''),
-(51550, 'pt_BR:authorizationLevel.title.list', 'Níveis de autorização', ''),
-(51551, 'pt_BR:group.settings.passwordPolicy.AVOID_OBVIOUS_LETTERS_NUMBERS', 'Requerer letras e números', ''),
-(51552, 'pt_BR:menu.admin.accounts.authorizedPayments', 'Pagamentos autorizados', '');
-INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
-(51553, 'pt_BR:createAdmin.action.saveAndNew', 'Salvar e inserir novo administrador', ''),
-(51554, 'pt_BR:settings.mail.title', 'Configurações de e-mail', ''),
-(51555, 'pt_BR:changeGroup.error.remove.activeAdmin', 'Um administrador ativo não pode ser removido.\nTente movê-lo para um group do tipo REMOVIDO', ''),
-(51556, 'pt_BR:infotext.aliases', 'Alias', ''),
-(51557, 'pt_BR:payment.goToAccountHistory', 'Ir para o extrato de conta', ''),
-(51558, 'pt_BR:settings.message.member.title', 'Notificações de membros', ''),
-(51559, 'pt_BR:group.settings.smsShowFreeThreshold', 'Mostrar mensagens SMS gratuitas somente se menor de', ''),
-(51560, 'pt_BR:reports.stats.transactionFeeFilters', 'Taxas de transação', ''),
-(51561, 'pt_BR:invoice.error.sendingWithMultipleTransferTypesWithCustomFields', 'Esta fatura não pôde ser enviada pois existem distintos tipos de pagamento possíveis com campos personalizados', ''),
-(51562, 'pt_BR:brokering.loans.amount', 'Valor total restante do empréstimo', ''),
-(51563, 'pt_BR:settings.local.timeZone', 'Fuso horário', ''),
-(51564, 'pt_BR:changePassword.currentPassword', 'Senha de acesso atual', ''),
-(51565, 'pt_BR:loan.repayment.error.enoughCredits', 'Você não tem créditos suficientes para pagar esse empréstimo', ''),
-(51566, 'pt_BR:pendingMember.title.profile', 'Detalhes do membro pendente', ''),
-(51567, 'pt_BR:error.image', 'A imagem enviada não pôde ser processada', ''),
-(51568, 'pt_BR:ad.inserted', 'Anúncio inserido', ''),
-(51569, 'pt_BR:channel.credentials.TRANSACTION_PASSWORD', 'Senha de transação', ''),
-(51570, 'pt_BR:permission.adminMemberGuarantees.viewPaymentObligations', 'Ver obrigações de pagamento', ''),
-(51571, 'pt_BR:settings.local.maxUploadSize', 'Tamanho máximo de arquivo', ''),
-(51572, 'pt_BR:loan.repayment.amount', 'Valor', ''),
-(51573, 'pt_BR:settings.local.memberSortOrder', 'Ordem de classificação para o resultado da busca de membros', ''),
-(51574, 'pt_BR:loan.repayment.discard.loan.confirmationMessage', 'Você tem certeza de que deseja descartar esse empréstimo?', ''),
-(51575, 'pt_BR:reports.simulations.dRateConfigSimulation.currency', 'Moeda', ''),
-(51576, 'pt_BR:notificationPreferences.allowChargingSmsPackage', 'Autorizar cobrança por mensagens SMS adicionais', ''),
-(51577, 'pt_BR:loan.title.confirm', 'Confirmação do empréstimo', ''),
-(51578, 'pt_BR:document.documentPage', 'Página de documento', ''),
-(51579, 'pt_BR:settings.file', 'Arquivo', ''),
-(51580, 'pt_BR:ad.view.lastAds', 'Últimos anúncios', ''),
-(51581, 'pt_BR:customField.moveValue', 'Substituir ocorrências por', ''),
-(51582, 'pt_BR:permission.adminMemberPayments.paymentWithDate', 'Pagamentos de membros em data no passado', ''),
-(51583, 'pt_BR:smsMailing.title.search', 'Mensagens SMS de difusão', ''),
-(51584, 'pt_BR:certification.buyerName', 'Nome do comprador', ''),
-(51585, 'pt_BR:guarantee.removed', 'A garantia foi removida', ''),
-(51586, 'pt_BR:profile.action.personalMessages', 'Enviar mensagem pessoal', ''),
-(51587, 'pt_BR:memberImport.file', 'Arquivo CSV', ''),
-(51588, 'pt_BR:cardType.title.modify', 'Modificar tipo de cartão', ''),
-(51589, 'pt_BR:loan.description', 'Descrição', ''),
-(51590, 'pt_BR:group.settings.repayLoanByGroup', 'Pagamento do empréstimo permitido por qualquer membro do grupo', ''),
-(51591, 'pt_BR:reports.stats.taxes.numberOfTransactions', 'Transações', ''),
-(51592, 'pt_BR:ad.search.price', 'Preço', ''),
-(51593, 'pt_BR:settings.local.maxChargebackTime', 'Período máximo para estorno', ''),
-(51594, 'pt_BR:accountFee.paymentDirection.TO_SYSTEM', 'De membro para sistema', ''),
-(51595, 'pt_BR:group.settings', 'Editar as configurações', ''),
-(51596, 'pt_BR:global.timePeriod.YEARS', 'Ano(s)', ''),
-(51597, 'pt_BR:reports.stats.finances.balance', 'Saldo', ''),
-(51598, 'pt_BR:profile.action.byMember.title', 'Ações de membro para {0}', ''),
-(51599, 'pt_BR:permission.brokerMemberRecords.create', 'Criar', ''),
-(51600, 'pt_BR:settings.log.traceFile', 'Endereço/nome do arquivo de log de ações', ''),
-(51601, 'pt_BR:reports.stats.activity.singlePeriod.numberTransactions', 'Número de transações por membro', ''),
-(51602, 'pt_BR:accountFeeLog.openInvoices', 'Faturas abertas', ''),
-(51603, 'pt_BR:payment.statusGroup.OPEN', 'Aberto', ''),
-(51604, 'pt_BR:settings.log.scheduledTaskLevel.INFO', 'Execução resumida', ''),
-(51605, 'pt_BR:ad.search.keywords', 'Palavras-chave', ''),
-(51606, 'pt_BR:cardLog.status', 'Estado', ''),
-(51607, 'pt_BR:loan.setExpiredStatus.confirmation', 'Você está certo que deseja alterar o estado deste empréstimo?', ''),
-(51608, 'pt_BR:menu.member.personal.sms', 'Mensagens SMS', ''),
-(51609, 'pt_BR:menu.operator.personal', 'Pessoal', ''),
-(51610, 'pt_BR:translationMessage.action.export', 'Exportar como arquivo de propriedades', ''),
-(51611, 'pt_BR:transferAuthorization.error.alreadyAuthorized', 'Você já autorizou este pagamento em um nível anterior', ''),
-(51612, 'pt_BR:groupFilter.containerUrl', 'URL da página container', ''),
-(51613, 'pt_BR:permission.systemSettings.manageAccess', 'Gerenciar configurações de acesso', ''),
-(51614, 'pt_BR:accountFee.action.run', 'Executar agora', ''),
-(51615, 'pt_BR:login.bottomText', 'Aqui a administração pode colocar algum texto adicional.\n(Na seção de administração: Tradução - Aplicação - login.bottomText)', ''),
-(51616, 'pt_BR:fieldMapping.field', 'Campo', ''),
-(51617, 'pt_BR:alert.member.INVOICE_IDLE_TIME_EXCEEDED', 'A fatura enviada para o membro expirou', ''),
-(51618, 'pt_BR:serviceOperation.ACCOUNT_DETAILS', 'Acessar informações de conta', ''),
-(51619, 'pt_BR:permission.operatorPayments.paymentToSystem', 'Pagamento para sistema', ''),
-(51620, 'pt_BR:group.nature.MEMBER', 'Membro', ''),
-(51621, 'pt_BR:channel.inserted', 'O canal foi inserido', ''),
-(51622, 'pt_BR:reports.stats.activity.developments.percentageNoTraders', '% de membros que não transacionam', ''),
-(51623, 'pt_BR:group.settings.passwordExpiresAfter.number', 'Senha de acesso vencerá após (qtde.)', ''),
-(51624, 'pt_BR:settings.local.timePattern', 'Formato do horário', ''),
-(51625, 'pt_BR:changePassword.error.sameAsTransactionPasswordOrPin', 'A senha não pode ser igual à senha de transação ou PIN', ''),
-(51626, 'pt_BR:permission.brokerCards.changeCardSecurityCode', 'Alterar código', ''),
-(51627, 'pt_BR:mobile.login.pin', 'Senha externa (PIN)', ''),
-(51628, 'pt_BR:permission.memberGuarantees.sellWithPaymentObligations', 'Vender com obrigações de pagamento', ''),
-(51629, 'pt_BR:generateCard.generateForMemberWithActiveCard', 'Gerar para membros com cartão ativo?', ''),
-(51630, 'pt_BR:reports.members_reports.transactions.paymentFilterRequired', 'É necessário escolher pelo menos um filtro de pagamento', ''),
-(51631, 'pt_BR:brokerCommission.suspended', 'A comissão de corretor foi suspensa', ''),
-(51632, 'pt_BR:changePassword.title.of', 'Alterar senha de acesso de {0}', ''),
-(51633, 'pt_BR:guaranteeType.loanTransferType', 'Empréstimo', ''),
-(51634, 'pt_BR:smsMailing.byBroker.all', 'Membros do corretor', ''),
-(51635, 'pt_BR:permission.operatorLoans.repay', 'Pagar', ''),
-(51636, 'pt_BR:global.month.FEBRUARY', 'Fevereiro', ''),
-(51637, 'pt_BR:ad.search.action.toggleFilter', 'Filtros', ''),
-(51638, 'pt_BR:transferType.feedbackExpirationTime', 'Tempo limite para qualificação', ''),
-(51639, 'pt_BR:reports.stats.keydevelopments.numberOfMembers.numberOfDisappearedMembers.short', 'Desaparecido', ''),
-(51640, 'pt_BR:permission.adminMemberLoans.discard', 'Descartar empréstimo', ''),
-(51641, 'pt_BR:menu.admin.contentManagement', 'Gerenc. de conteúdo', ''),
-(51642, 'pt_BR:loanGroup.errorRemoving', 'O grupo de empréstimos não pôde ser removido.\nCertifique-se de que ele não tenha empréstimos antes de tentar removê-lo.', ''),
-(51643, 'pt_BR:conversionSimulation.title.of', 'Simulação de conversão para {0}', ''),
-(51644, 'pt_BR:brokerCommissionContract.status.CLOSED', 'Fechado', ''),
-(51645, 'pt_BR:settings.local.transactionNumber.enable', 'Habilitado', ''),
-(51646, 'pt_BR:customImage.removed', 'A imagem foi removida', ''),
-(51647, 'pt_BR:permission.memberGuarantees.issueGuarantees', 'Emitir garantias', ''),
-(51648, 'pt_BR:permission.memberCards.view', 'Ver', ''),
-(51649, 'pt_BR:customField.title.list.member', 'Campos customizados de membro', ''),
-(51650, 'pt_BR:changePassword.title.my', 'Alterar minha senha de acesso', ''),
-(51651, 'pt_BR:document.visibility.ADMIN', 'Administradores', ''),
-(51652, 'pt_BR:permission.memberAccess.unblockPin', 'Desbloquear senha externa (PIN)', ''),
-(51653, 'pt_BR:card.cardType', 'Tipo de cartão', ''),
-(51654, 'pt_BR:accountFee.error.removing', 'A taxa de conta não pode ser removida porque ela já foi cobrada', ''),
-(51655, 'pt_BR:card.blocked', 'Cartão bloqueado', ''),
-(51656, 'pt_BR:mobile.credentials.LOGIN_PASSWORD', 'Senha', ''),
-(51657, 'pt_BR:loanGroup.loanGroup', 'Grupo de empréstimos', ''),
-(51658, 'pt_BR:permission.adminMemberLoans', 'Empréstimos', ''),
-(51659, 'pt_BR:adminTasks.indexRebuildEnqueued', 'A reconstrução do índice foi iniciada.\nUm alerta de sistema será criado quando esta for concluída', ''),
-(51660, 'pt_BR:transactionFee.title.simple.insert', 'Inserir taxa de transação', ''),
-(51661, 'pt_BR:adminTasks.indexes.type.Operator', 'Operadores', ''),
-(51662, 'pt_BR:payment.invalid.paymentDates', 'As datas das parcelas devem estar ordenadas e devem ser em datas futuras', ''),
-(51663, 'pt_BR:paymentObligation.amount', 'Valor', ''),
-(51664, 'pt_BR:sms.type.PAYMENT.description', 'Pagamento direto', ''),
-(51665, 'pt_BR:conversionSimulation.title.my', 'Simulação de conversão', ''),
-(51666, 'pt_BR:error.general', 'Houve um erro interno no sistema Cyclos', ''),
-(51667, 'pt_BR:permission.brokerMembers.changeUsername', 'Alterar o nome de usuário', ''),
-(51668, 'pt_BR:changePassword.newPassword', 'Nova senha', ''),
-(51669, 'pt_BR:customImage.system.icon', 'Ícone de atalho', ''),
-(51670, 'pt_BR:brokerCommissionContract.error.removing', 'O contrato de comissão de corretor não pode ser removido porque ele já tem comissões pagas', ''),
-(51671, 'pt_BR:permission.adminAdmins.remove', 'Remover', ''),
-(51672, 'pt_BR:reports.members.ads.expired', 'Vencidos', ''),
-(51673, 'pt_BR:reports.stats.activity.topten.login', 'Acessos', ''),
-(51674, 'pt_BR:settings.log.maxFilesPerLog', 'No. máx. de arquivos por log', ''),
-(51675, 'pt_BR:mobile.credentials.PIN', 'PIN', ''),
-(51676, 'pt_BR:serviceOperation.ACCESS', 'Informações de acesso', ''),
-(51677, 'pt_BR:memberImport.title.import', 'Importar membros', ''),
-(51678, 'pt_BR:loan.status.CLOSED', 'Fechado', ''),
-(51679, 'pt_BR:menu.admin.alerts.system', 'Avisos de sistema', ''),
-(51680, 'pt_BR:group.title.new', 'Inserir novo grupo', ''),
-(51681, 'pt_BR:brokerCommissionContract.denied', 'O contrato de comissão de corretor foi negado', ''),
-(51682, 'pt_BR:transactionFee.subject.SOURCE_BROKER', 'Corretor do membro que está pagando (origem)', ''),
-(51683, 'pt_BR:group.name', 'Nome', ''),
-(51684, 'pt_BR:settings.log.title', 'Configurações de log', ''),
-(51685, 'pt_BR:customField.member.indexing', 'Incluir na busca por palavras-chave', ''),
-(51686, 'pt_BR:conversionSimulation.graph', 'Traçar intervalo no gráfico contra o tempo', ''),
-(51687, 'pt_BR:permission.systemCurrencies', 'Moedas', ''),
-(51688, 'pt_BR:adminTasks.indexes.rebuild', 'Reconstruir', ''),
-(51689, 'pt_BR:loan.grantFeeRepaymentType', 'Tipo de pagamento para taxa de concessão', ''),
-(51690, 'pt_BR:customField.possibleValue.default', 'Valor padrão', ''),
-(51691, 'pt_BR:error.validation', 'Envio inválido de formulário', ''),
-(51692, 'pt_BR:rates.reinit.warning', 'Observe que reinicializar um indice é um processo que pode demorar horas. A aplicação sera definida como indisponivel caso você inicie uma tarefa de inicialização de indice.', ''),
-(51693, 'pt_BR:global.month.JUNE', 'Junho', ''),
-(51694, 'pt_BR:global.pagination.tooltip.previous', 'Página anterior', ''),
-(51695, 'pt_BR:ad.title.insert', 'Novo anúncio', ''),
-(51696, 'pt_BR:payment.error.circularFees', 'O pagamento não pôde ser realizado pois foram detectadas taxas circulares.\n\nPor favor, contate a administração.', ''),
-(51697, 'pt_BR:accountFee.inserted', 'A taxa de conta foi inserida', ''),
-(51698, 'pt_BR:reports.transactions_report.outgoing', 'De saída', ''),
-(51699, 'pt_BR:transferType.removed', 'O tipo de transação foi removido', ''),
-(51700, 'pt_BR:changeBroker.suspendCommission', 'Suspender comissão', ''),
-(51701, 'pt_BR:reports.stats.activity.throughTime.grossProduct.yAxis', 'Produto bruto', ''),
-(51702, 'pt_BR:alert.system.NEGATIVE_VIRTUAL_RATED_BALANCE', 'Um balanço negativo virtual de indices foi encontrado em uma conta de sistema.', ''),
-(51703, 'pt_BR:permission.brokerDocuments.view', 'Ver', ''),
-(51704, 'pt_BR:category.order.alpha', 'Clique para usar ordem alfabética', ''),
-(51705, 'pt_BR:message.category.choose', 'Selecione uma categoria', ''),
-(51706, 'pt_BR:accountFee.title.modify', 'Modificar taxa de conta', ''),
-(51707, 'pt_BR:customImage.system.calendar', 'Ícone de calendário', ''),
-(51708, 'pt_BR:infoText.title.edit', 'Editar mensagem informativa', ''),
-(51709, 'pt_BR:permission.brokerMemberPayments', 'Pagamentos de membros', ''),
-(51710, 'pt_BR:global.month.JULY', 'Julho', ''),
-(51711, 'pt_BR:settings.message.pendingPaymentReceived', 'Pagamento que requer autorização recebido', ''),
-(51712, 'pt_BR:profile.action.changeGroup', 'Alterar grupo de permissões', ''),
-(51713, 'pt_BR:invoice.search.period.begin', 'De', ''),
-(51714, 'pt_BR:reports.stats.filters', 'Filtros', ''),
-(51715, 'pt_BR:transfer.scheduling.MULTIPLE_FUTURE', 'Agendado para pagamento parcelado', ''),
-(51716, 'pt_BR:menu.admin.settings.log', 'Config. de Log', ''),
-(51717, 'pt_BR:menu.member.account.authorizedPayments', 'Pagamentos autorizados', ''),
-(51718, 'pt_BR:errors.greaterThan', '{0} deve ser maior que {1}', ''),
-(51719, 'pt_BR:alert.member.cardSecurityCodeBlockedByTries', 'Código de segurança do cartão bloqueado por exceder {0} tentativas para o cartão {1}', ''),
-(51720, 'pt_BR:paymentObligation.title.new', 'Nova obrigação de pagamento', ''),
-(51721, 'pt_BR:menu.admin.reports.simulations', 'Simulações', ''),
-(51722, 'pt_BR:transferType.transactionHierarchyVisibility', 'Exibir transações pai / filhas', ''),
-(51723, 'pt_BR:posweb.title.receivePayment', 'Receber pagamento', ''),
-(51724, 'pt_BR:global.choose', 'Escolher', ''),
-(51725, 'pt_BR:conversionSimulation.result.total', 'Total', ''),
-(51726, 'pt_BR:accountFeeLog.totalCollectedAmount', 'Valor total coletado', ''),
-(51727, 'pt_BR:externalTransferType.action.CONCILIATE_PAYMENT', 'Conciliar pagamento', ''),
-(51728, 'pt_BR:guaranteeType.issueFeeTransferType', 'Taxa de emissão', ''),
-(51729, 'pt_BR:invoice.denyConfirmationMessage', 'Negar fatura eletrônica vinda de {0} de {1}?\n\nPor favor, clique em OK para confirmar', ''),
-(51730, 'pt_BR:invoice.error.noTransferType', 'Não há tipo de pagamento possível.\nPor favor, contate a administração', ''),
-(51731, 'pt_BR:registrationAgreement.contents', 'Conteúdo', ''),
-(51732, 'pt_BR:transactionPassword.NOT_USED', 'Não usada', ''),
-(51733, 'pt_BR:memberPos.assign.memberWithoutAccount', 'O membro não possui uma conta.', ''),
-(51734, 'pt_BR:loan.group.responsible', 'Responsável', ''),
-(51735, 'pt_BR:smsMailing.stillSending', 'Ainda enviando...', ''),
-(51736, 'pt_BR:ad.new', 'Inserir novo anúncio', ''),
-(51737, 'pt_BR:guarantee.registrationDate', 'Data de criação', ''),
-(51738, 'pt_BR:profile.action.loanGroups', 'Grupos de empréstimos', ''),
-(51739, 'pt_BR:reports.current.ads_information', 'Informações de anúncios', ''),
-(51740, 'pt_BR:memberImport.status.INVALID_UPPER_CREDIT_LIMIT', 'O limite de crédito superior é inválido: {0}', ''),
-(51741, 'pt_BR:adImport.status.SUCCESS', 'Sucesso', ''),
-(51742, 'pt_BR:alert.member.CARD_SECURITY_CODE_BLOCKED_BY_TRIES', 'Código de segurança do cartão bloqueado por tentativas inválidas', ''),
-(51743, 'pt_BR:document.newFile', 'Carregar arquivo', ''),
-(51744, 'pt_BR:alert.system.ACCOUNT_FEE_FINISHED_WITH_ERRORS', 'Taxa de conta concluída com erros', ''),
-(51745, 'pt_BR:loan.error.noTransferType', 'Não há tipo de pagamento possível para conceder esse empréstimo', ''),
-(51746, 'pt_BR:alert.member.scheduledPaymentFailed', 'Um pagamento agendado de {0} do tipo {1} falhou', ''),
-(51747, 'pt_BR:smsLog.type.SMS_OPERATION', 'Operação por SMS', ''),
-(51748, 'pt_BR:menu.operator.member.contacts', 'Contatos', ''),
-(51749, 'pt_BR:theme.title', 'Título', ''),
-(51750, 'pt_BR:reports.stats.finances.other', 'Outro', ''),
-(51751, 'pt_BR:memberImport.initialCreditTransferType.empty', 'Ignorar saldos positivos', ''),
-(51752, 'pt_BR:settings.alert.alertNewPendingMembers', 'Novos membros com ativação pendente', ''),
-(51753, 'pt_BR:loan.expirationFee', 'Taxa de vencimento', ''),
-(51754, 'pt_BR:mobile.payment.title.do', 'Realizar Pagamento', ''),
-(51755, 'pt_BR:permission.systemDocuments', 'Documentos customizados', ''),
-(51756, 'pt_BR:memberImport.status.BALANCE_LOWER_THAN_CREDIT_LIMIT', 'O saldo é inferior ao limite de crédito', ''),
-(51757, 'pt_BR:certification.status', 'Estado', ''),
-(51758, 'pt_BR:payment.error.enoughCreditsOtherAccount', 'O pagamento não pode ser realizado pois uma conta relacionada não possui saldo suficiente', ''),
-(51759, 'pt_BR:alert.system.RATE_INITIALIZATION_STARTED', 'Tarefa de reinicialização de indices iniciada', ''),
-(51760, 'pt_BR:payment.confirmation.self', 'Você irá transferir {0} de {1} para {2}.{3}\n\nPor favor, clique em OK para confirmar', ''),
-(51761, 'pt_BR:loan.grantDate', 'Conceder', ''),
-(51762, 'pt_BR:permission.brokerMemberAccess.unblockPin', 'Desbloquear senha externa (PIN)', ''),
-(51763, 'pt_BR:reference.level.VERY_BAD', 'Péssimo', ''),
-(51764, 'pt_BR:error.systemOffline', 'O sistema está temporariamente indisponível', ''),
-(51765, 'pt_BR:permission.systemSettings', 'Configurações', ''),
-(51766, 'pt_BR:global.timePeriod.WEEKS', 'Semana(s)', ''),
-(51767, 'pt_BR:posweb.client.any', 'Cliente', ''),
-(51768, 'pt_BR:permission.adminMemberPayments', 'Pagamentos de membros', ''),
-(51769, 'pt_BR:loan.repaid', 'O pagamento foi processado com sucesso', ''),
-(51770, 'pt_BR:theme.title.import', 'Importar novo tema', ''),
-(51771, 'pt_BR:customField.possibleValue.error.saving', 'Erro ao salvar o valor.\nCertifique-se de que ele já não exista.', ''),
-(51772, 'pt_BR:menu.member.home', 'Página Principal', ''),
-(51773, 'pt_BR:reports.members.presentation.result', 'Resultado do relatório de membros', ''),
-(51774, 'pt_BR:loan.type', 'Tipo de empréstimo', ''),
-(51775, 'pt_BR:memberPos.status.BLOCKED', 'Bloqueado', ''),
-(51776, 'pt_BR:permission.systemServiceClients', 'Clientes de serviços web', ''),
-(51777, 'pt_BR:ad.tradeType.SEARCH', 'Demanda', ''),
-(51778, 'pt_BR:profile.action.invoiceFromSystem', 'Fatura eletrônica de sistema para membro', ''),
-(51779, 'pt_BR:settings.local.transactionNumber', 'Número da transação', ''),
-(51780, 'pt_BR:paymentRequest.sent', 'A solicitação de pagamento foi enviada a {0}', ''),
-(51781, 'pt_BR:permission.systemAccounts.manage', 'Gerenciar contas', ''),
-(51782, 'pt_BR:customImage.system.mobileSplash_large', 'Mobile: Imagem inicial grande', ''),
-(51783, 'pt_BR:permission.adminMemberBulkActions.changeChannels', 'Alterar acesso aos canais', ''),
-(51784, 'pt_BR:group.removed', 'O grupo foi removido', ''),
-(51785, 'pt_BR:brokerCommissionContract.removed', 'O contrato de comissão de corretor foi removido', ''),
-(51786, 'pt_BR:adInterest.removeOne.confirm', 'Remover interesse em anúncio?', ''),
-(51787, 'pt_BR:posweb.client.username', 'Usuário do cliente', ''),
-(51788, 'pt_BR:fileMapping.decimalSeparator', 'Separador decimal', ''),
-(51789, 'pt_BR:reports.stats.activity.comparePeriods.percentageNoTrade.yAxis', '% member que não transacionam', ''),
-(51790, 'pt_BR:customField.payment.searchAccess', 'Exibir na busca', ''),
-(51791, 'pt_BR:transactionPassword.status.user.ACTIVE', 'Ativa', ''),
-(51792, 'pt_BR:payment.canceled', 'O pagamento foi cancelado', ''),
-(51793, 'pt_BR:reference.level.VERY_GOOD', 'Muito bom', ''),
-(51794, 'pt_BR:memberRecord.title.search.member', 'Busca de {0} para {1}', ''),
-(51795, 'pt_BR:help.title.messages', 'Mensagens', ''),
-(51796, 'pt_BR:paymentObligation.error.noActiveCertificationFound', 'Não existe certificação ativa para o comprador {0} emitida por {1}', ''),
-(51797, 'pt_BR:settings.local.sms.channel', 'Canal do operacao', ''),
-(51798, 'pt_BR:adCategory.title.modify', 'Modificar categoria de anúncio', ''),
-(51799, 'pt_BR:transactionFee.fromFixedMember.username', 'Nome de usuário de origem', ''),
-(51800, 'pt_BR:reports.stats.general.printable', 'Versão de impressão', ''),
-(51801, 'pt_BR:permission.systemReports', 'Relatórios', ''),
-(51802, 'pt_BR:brokerCommission.suspendTooltip', 'Suspender', ''),
-(51803, 'pt_BR:permission.systemAlerts.viewSystemAlerts', 'Ver avisos de sistema', ''),
-(51804, 'pt_BR:memberPos.title.noPos', 'O membro não tem POS', ''),
-(51805, 'pt_BR:translationMessage.import.type.ONLY_NEW', 'Importar apenas chaves novas (mantendo as chaves existentes)', ''),
-(51806, 'pt_BR:customizedFile.select.type', 'Selecione o tipo', ''),
-(51807, 'pt_BR:global.submit', 'Enviar', ''),
-(51808, 'pt_BR:settings.message.pendingBuyerOnlyGuaranteeIssuer', 'Garantia pendente (apenas com comprador) de autorização do emissor', ''),
-(51809, 'pt_BR:permission.memberSms', 'Registros de SMS', ''),
-(51810, 'pt_BR:currency.rates', 'Indices disponíveis ara esta moeda', ''),
-(51811, 'pt_BR:permission.adminMembers.view', 'Ver', ''),
-(51812, 'pt_BR:message.action.reply', 'Responder', ''),
-(51813, 'pt_BR:permission.adminMembers.changeName', 'Alterar o nome completo', ''),
-(51814, 'pt_BR:ad.status.SCHEDULED', 'Agendado', ''),
-(51815, 'pt_BR:permission.systemStatus.viewConnectedOperators', 'Ver operadores conectados', ''),
-(51816, 'pt_BR:notificationPreferences.message', 'Cyclos mensagem', ''),
-(51817, 'pt_BR:notificationPreferences.email', 'E-mail', ''),
-(51818, 'pt_BR:permission.memberPayments.paymentToSystem', 'Pagamentos de sistema', ''),
-(51819, 'pt_BR:invoice.accepted.withAuthorization', 'A fatura eletrônica foi aceita, mas o pagamento ainda necessita de autorização para ser processado', ''),
-(51820, 'pt_BR:transferAuthorization.date', 'Data', ''),
-(51821, 'pt_BR:sms.type.INFO_TEXT.description', 'Mensagem informativa', ''),
-(51822, 'pt_BR:smsLog.title.search', 'Buscar registros de mensagens SMS para {0}', ''),
-(51823, 'pt_BR:reports.current.show_btn', 'Exibir relatórios', ''),
-(51824, 'pt_BR:reports.stats.choose.miscellaneous', 'Estatísticas gerais', ''),
-(51825, 'pt_BR:reports.stats.activity.histogram.grossProduct.title', 'Produto bruto por membro, histograma', ''),
-(51826, 'pt_BR:settings.import.confirmation', 'Tem certeza de que deseja importar as configurações do arquivo selecionado?', ''),
-(51827, 'pt_BR:help.title.ads_interest', 'Interesses em anúncios', ''),
-(51828, 'pt_BR:transactionFee.action.simple.new', 'Inserir nova taxa de transação', ''),
-(51829, 'pt_BR:settings.mail.smtpPassword', 'Senha', ''),
-(51830, 'pt_BR:brokerCommission.type.defaultCommission', 'Comissão padrão', ''),
-(51831, 'pt_BR:channel.enableSMSLinkTo', 'notificações', ''),
-(51832, 'pt_BR:loan.monthlyInterest', 'Juros mensais', ''),
-(51833, 'pt_BR:ad.modified', 'Anúncio modificado', ''),
-(51834, 'pt_BR:reports.stats.general.year', 'Ano', ''),
-(51835, 'pt_BR:invoice.to', 'Para', ''),
-(51836, 'pt_BR:settings.message.transactionFeedbackReceived', 'Qualificação de transação recebida', ''),
-(51837, 'pt_BR:reports.stats.keydevelopments.averageAmountPerTransaction.title', 'Progressos no valor médiano por transação', ''),
-(51838, 'pt_BR:permission.adminMemberLoans.repay', 'Pagar empréstimo', ''),
-(51839, 'pt_BR:transferType.allowBlockScheduledPayments', 'Permitir ao pagante bloquear um pagamento agendado', ''),
-(51840, 'pt_BR:transfer.totalAmount', 'Valor total', ''),
-(51841, 'pt_BR:message.action.MARK_AS_READ', 'Marcar como lida', ''),
-(51842, 'pt_BR:reports.stats.activity.singlePeriod.numberTransactions.row2.short', 'Todos os membros', ''),
-(51843, 'pt_BR:createMember.title.byAdmin', 'Cadastrar novo membro', ''),
-(51844, 'pt_BR:permission.operatorInvoices.sendToSystem', 'Enviar para o sistema', ''),
-(51845, 'pt_BR:permission.adminMemberMessages.manage', 'Gerenciar', ''),
-(51846, 'pt_BR:contact.error.alreadyExists', 'O membro informado já está na sua lista de contatos', ''),
-(51847, 'pt_BR:settings.log.restLevel', 'Nível de log de serviços REST', ''),
-(51848, 'pt_BR:card.internalKey', 'Chave', ''),
-(51849, 'pt_BR:menu.admin.reports.members.list', 'Lista de membros', ''),
-(51850, 'pt_BR:adminTasks.indexes.type.MemberRecord', 'Registros de membros', ''),
-(51851, 'pt_BR:customImage.title.new.custom', 'Nova imagem customizada', ''),
-(51852, 'pt_BR:menu.admin.accounts.accountFees', 'Taxas de conta', ''),
-(51853, 'pt_BR:smsMailing.error.variableNotFound', 'Não foi possivel encontrar as seguintes variaveis: {0}', ''),
-(51854, 'pt_BR:permission.systemReports.memberList', 'Listas de membros', ''),
-(51855, 'pt_BR:transferType.availability.DISABLED', 'Desativado', ''),
-(51856, 'pt_BR:reference.transactionFeedback.feedbackPeriodExpired', 'O periodo de qualificação expirou', ''),
-(51857, 'pt_BR:customField.title.modify.member', 'Modificar campo customizado de membro', ''),
-(51858, 'pt_BR:ad.title.categories', 'Navegar por categoria', ''),
-(51859, 'pt_BR:loan.openTransfer', 'Exibir o pagamento relacionado', ''),
-(51860, 'pt_BR:selectChannels.channels', 'Canais', ''),
-(51861, 'pt_BR:memberPos.status', 'Estado do POS do membro', ''),
-(51862, 'pt_BR:home.member.news.title', 'Notícias (quadro de mensagens)', ''),
-(51863, 'pt_BR:adImport.title.details.success', 'Anúncios importados com sucesso', ''),
-(51864, 'pt_BR:permission.adminMemberCards.activate', 'Ativar', ''),
-(51865, 'pt_BR:global.timePeriod.MONTHS', 'Mês(es)', ''),
-(51866, 'pt_BR:reports.stats.activity.whatToShow.SINGLE_PERIOD', 'Um período', ''),
-(51867, 'pt_BR:theme.action.select', 'Selecionar', ''),
-(51868, 'pt_BR:help.title.loan_groups', 'Grupos de empréstimos', ''),
-(51869, 'pt_BR:brokerCommissionContract.endDate', 'Data de término', ''),
-(51870, 'pt_BR:fileMapping.nature.CSV', 'CSV', ''),
-(51871, 'pt_BR:global.close', 'Fechar', ''),
-(51872, 'pt_BR:brokerCommission.suspendConfirmation', 'Você deseja suspender essa comissão e os contratos do corretor que estão relacionados a ela?', ''),
-(51873, 'pt_BR:group.defaultSmsMessages', 'Mensagens enviadas por SMS por padrão', ''),
-(51874, 'pt_BR:permission.operatorPayments.cancelScheduled', 'Cancelar pagamento agendado', ''),
-(51875, 'pt_BR:permission.systemMemberRecordTypes.manage', 'Gerenciar', ''),
-(51876, 'pt_BR:customImage.system.view', 'Ícone de visualização', ''),
-(51877, 'pt_BR:reports.members_reports.transactions.transactionModeRequired', 'É necessário selecionar transações de débito ou de crédito', ''),
-(51878, 'pt_BR:transactionFee.toGroups', 'Para os grupos', ''),
-(51879, 'pt_BR:message.sendTo.MEMBER', 'Membro', ''),
-(51880, 'pt_BR:home.admin.status.systemUptime', 'Tempo de execução do sistema', ''),
-(51881, 'pt_BR:loanPayment.status.OPEN', 'Aberto', ''),
-(51882, 'pt_BR:permission.brokerMembers.changeName', 'Alterar o nome completo', ''),
-(51883, 'pt_BR:member.username', 'Usuário do membro', ''),
-(51884, 'pt_BR:serviceOperation.WEBSHOP', 'Pagamento para loja virtual', ''),
-(51885, 'pt_BR:payment.error.negativeFinalAmount', 'Todas as taxas aplicadas são maiores do que o valor original da transação. Para mais detalhes contate a administração.', ''),
-(51886, 'pt_BR:channel.modified', 'O canal foi modificado', ''),
-(51887, 'pt_BR:settings.error.selectedSettingTypeNotInFile', 'Aviso! Os seguintes tipos de configuração não foram importados pois não foram encontrados no arquivo:\n{0}', ''),
-(51888, 'pt_BR:card.creationDate', 'Data de criação', ''),
-(51889, 'pt_BR:accountFee.name', 'Nome', ''),
-(51890, 'pt_BR:receipt.posweb.transactions.scheduledPayment', '{0} {1} {2} {3} {4}', ''),
-(51891, 'pt_BR:cardType.action.new', 'Inserir novo tipo de cartão', ''),
-(51892, 'pt_BR:fileMapping.decimalPlaces.error.required', 'Número de casas decimais é necessário', ''),
-(51893, 'pt_BR:customField.type.STRING', 'String', ''),
-(51894, 'pt_BR:changePin.error.transactionPasswordBlocked', 'Para definir a senha externa (PIN), é necessária a senha de transação.\nNo entanto, sua senha de transação está bloqueada.\nPor favor, contate a administração', ''),
-(51895, 'pt_BR:memberRecordType.layout.FLAT', 'Plano', ''),
-(51896, 'pt_BR:global.weekDay.short.FRIDAY', 'Sex', ''),
-(51897, 'pt_BR:loan.repayment.amountToRepaid', 'Valor', ''),
-(51898, 'pt_BR:guarantee.expiresFrom', 'Início do vencimento', ''),
-(51899, 'pt_BR:paymentObligation.status.ACCEPTED', 'Aceita', ''),
-(51900, 'pt_BR:customField.error.removing', 'O campo customizado não pôde ser removido porque já está em uso', ''),
 (51901, 'account.openInvoiceAmount', 'Taxas Pendentes', 'pt_BR'),
 (51903, 'accountHistory.period', 'Histórico de Extratos', 'pt_BR'),
 (51904, 'period.ONE_MONTH', 'Últimos 30 dias', 'pt_BR'),
@@ -15859,7 +11017,6 @@ INSERT INTO `translation_messages` (`id`, `msg_key`, `value`, `locale`) VALUES
 -- Table structure for table `username_change_logs`
 --
 
-DROP TABLE IF EXISTS `username_change_logs`;
 CREATE TABLE IF NOT EXISTS `username_change_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -15878,7 +11035,6 @@ CREATE TABLE IF NOT EXISTS `username_change_logs` (
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL,
   `subclass` varchar(1) NOT NULL,
@@ -15902,7 +11058,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`id`, `subclass`, `salt`, `username`, `password`, `transaction_password`, `transaction_password_status`, `last_login`, `password_date`, `password_blocked_until`, `pin`, `pin_blocked_until`) VALUES
-(1, 'A', '5eT01Zl32L0uXY46nkA446Mdk6Iczz3I', 'admin', 'D482671592944A548F6A97F95F1C79952C4C3F28ED2C2C3CC01A4E64FE87781B', NULL, 'N', '2013-12-31 03:38:25', '2013-12-14 18:15:32', NULL, NULL, NULL),
+(1, 'A', '5eT01Zl32L0uXY46nkA446Mdk6Iczz3I', 'admin', 'D482671592944A548F6A97F95F1C79952C4C3F28ED2C2C3CC01A4E64FE87781B', NULL, 'N', '2014-01-02 10:26:14', '2013-12-14 18:15:32', NULL, NULL, NULL),
 (2, 'M', 'lkHBxlwS3igqt9C1aNdkCpMl4ZFsrq1K', '12345', '614EA75C89E2AB4011E3BDB093121FB258A26956A475292F3CA3EB297581DC82', NULL, 'N', '2013-12-30 16:40:56', '2013-12-15 00:36:12', NULL, NULL, NULL),
 (3, 'M', 'vMYkkgPdVmSueTGLRSxtlR4HwoLXm3Kr', '9107', '3B27B632CC5F65DFA83C45AC902ACBDF7A863E91E45F1645CAF9A2FED6A4C79A', NULL, 'N', '2013-12-15 03:29:36', '2013-12-15 03:08:55', NULL, NULL, NULL),
 (4, 'O', 'raML7cX93fw5BRXs5GDwYUFp6zFkYudy', 'theop', 'FFD23A566D99EF5E99379031ACC123F44E98BA1E9C57B1CCFCBAC2EE7ABC0F8C', NULL, 'N', NULL, '2013-12-15 03:40:31', NULL, NULL, NULL),
@@ -15914,7 +11070,10 @@ INSERT INTO `users` (`id`, `subclass`, `salt`, `username`, `password`, `transact
 (10, 'M', 'sWhwp1GJlYhxMAzHEVaYjqzAZc8zPU8U', '50975318', '3E74D823CE6143015410A75141E50A17FA915282B96171736D792F056A1AB05C', NULL, 'N', NULL, '2013-12-31 02:30:00', NULL, NULL, NULL),
 (11, 'M', 'fBTIw1safFYJHTSu2a1bSqrFe4k73Nqu', '33312426', 'A5414C9D073145C51BED86B3490883885F59B99BB406638DA6E73215B239BD04', NULL, 'N', NULL, '2013-12-31 19:29:09', NULL, NULL, NULL),
 (12, 'M', 'rf0pm1zIe6jePOn0SzR6TRknYw4KmGPx', '20299672', 'A79F0F17049B6937D1316DD14C3D65332BB900E492FCDAE0422689F255EB3F7B', NULL, 'N', NULL, '2014-01-01 06:34:17', NULL, NULL, NULL),
-(13, 'M', 'N2P1mf2f7Si2iXp7y6XGMIB7V9UTcuiZ', '52141110', '3A6EE2CC1DE869E4ACFF2488596F5527C3673A86FBB7456C614191BE6792A2F1', NULL, 'N', NULL, '2014-01-01 18:38:36', NULL, NULL, NULL);
+(13, 'M', 'N2P1mf2f7Si2iXp7y6XGMIB7V9UTcuiZ', '52141110', '3A6EE2CC1DE869E4ACFF2488596F5527C3673A86FBB7456C614191BE6792A2F1', NULL, 'N', NULL, '2014-01-01 18:38:36', NULL, NULL, NULL),
+(14, 'M', 'mPqfuCwUCygHJHDaeUDYl0WVRfxNTy4r', '79823635', '700FACB762626E2CD82A8DC5D768A63F402E95BBFD26A4AFB80ACF1DD3AD6D12', NULL, 'N', NULL, '2014-01-02 09:22:57', NULL, NULL, NULL),
+(15, 'M', '4irfB9OH1tvlhsLlEMDCxxRoB5BaeMF4', '45178680', '31F973E3846E375184F6D15326BB3792903C8B5FBAB63701D13E777EC73B468B', NULL, 'N', NULL, '2014-01-02 10:23:49', NULL, NULL, NULL),
+(16, 'M', 'aPxXQo3JtzISh4ysy696YFQvA7ZQJXA6', '33328861', '922B6B7CD7415295626A5F1CCDF80434317021B49A1F0E3F8F0EA5D2CE69BEF2', NULL, 'N', NULL, '2014-01-02 10:33:51', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -15922,7 +11081,6 @@ INSERT INTO `users` (`id`, `subclass`, `salt`, `username`, `password`, `transact
 -- Table structure for table `wrong_credential_attempts`
 --
 
-DROP TABLE IF EXISTS `wrong_credential_attempts`;
 CREATE TABLE IF NOT EXISTS `wrong_credential_attempts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
@@ -15942,33 +11100,24 @@ CREATE TABLE IF NOT EXISTS `wrong_credential_attempts` (
 -- Table structure for table `wrong_username_attempts`
 --
 
-DROP TABLE IF EXISTS `wrong_username_attempts`;
 CREATE TABLE IF NOT EXISTS `wrong_username_attempts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
   `remote_address` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_wua_remote_address` (`remote_address`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+
+--
+-- Dumping data for table `wrong_username_attempts`
+--
+
+INSERT INTO `wrong_username_attempts` (`id`, `date`, `remote_address`) VALUES
+(7, '2014-01-02 10:25:15', '172.16.2.47');
 
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `accounts`
---
-ALTER TABLE `accounts`
-  ADD CONSTRAINT `FK809DBBE68EDC5867` FOREIGN KEY (`type_id`) REFERENCES `account_types` (`id`),
-  ADD CONSTRAINT `FK809DBBE6B93596D` FOREIGN KEY (`type_id`) REFERENCES `account_types` (`id`),
-  ADD CONSTRAINT `FK809DBBE6EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
-
---
--- Constraints for table `account_fees`
---
-ALTER TABLE `account_fees`
-  ADD CONSTRAINT `FK4107687FA4766B0A` FOREIGN KEY (`transfer_type_id`) REFERENCES `transfer_types` (`id`),
-  ADD CONSTRAINT `FK4107687FC2D40D5B` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`);
 
 --
 -- Constraints for table `account_fee_amounts`
@@ -15982,6 +11131,13 @@ ALTER TABLE `account_fee_amounts`
 --
 ALTER TABLE `account_fee_logs`
   ADD CONSTRAINT `FK252A009ADA75B281` FOREIGN KEY (`account_fee_id`) REFERENCES `account_fees` (`id`);
+
+--
+-- Constraints for table `account_fees`
+--
+ALTER TABLE `account_fees`
+  ADD CONSTRAINT `FK4107687FA4766B0A` FOREIGN KEY (`transfer_type_id`) REFERENCES `transfer_types` (`id`),
+  ADD CONSTRAINT `FK4107687FC2D40D5B` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`);
 
 --
 -- Constraints for table `account_limit_logs`
@@ -16003,6 +11159,44 @@ ALTER TABLE `account_rates`
 ALTER TABLE `account_types`
   ADD CONSTRAINT `FKE0B42FE7906BCA9B` FOREIGN KEY (`system_account_id`) REFERENCES `accounts` (`id`),
   ADD CONSTRAINT `FKE0B42FE7C0E7F6FA` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`);
+
+--
+-- Constraints for table `accounts`
+--
+ALTER TABLE `accounts`
+  ADD CONSTRAINT `FK809DBBE68EDC5867` FOREIGN KEY (`type_id`) REFERENCES `account_types` (`id`),
+  ADD CONSTRAINT `FK809DBBE6B93596D` FOREIGN KEY (`type_id`) REFERENCES `account_types` (`id`),
+  ADD CONSTRAINT `FK809DBBE6EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `ad_categories`
+--
+ALTER TABLE `ad_categories`
+  ADD CONSTRAINT `FKEF2FABB85D31AC77` FOREIGN KEY (`parent_id`) REFERENCES `ad_categories` (`id`);
+
+--
+-- Constraints for table `ad_imports`
+--
+ALTER TABLE `ad_imports`
+  ADD CONSTRAINT `FK79EBE152123F9A53` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FK79EBE152C0E7F6FA` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`);
+
+--
+-- Constraints for table `ad_interests`
+--
+ALTER TABLE `ad_interests`
+  ADD CONSTRAINT `FKD8DBB56D3D73A7A3` FOREIGN KEY (`category_id`) REFERENCES `ad_categories` (`id`),
+  ADD CONSTRAINT `FKD8DBB56D9D46A867` FOREIGN KEY (`group_filter_id`) REFERENCES `group_filters` (`id`),
+  ADD CONSTRAINT `FKD8DBB56DC0E7F6FA` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
+  ADD CONSTRAINT `FKD8DBB56DEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FKD8DBB56DFE01A09E` FOREIGN KEY (`owner_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `admin_group_authorization_level`
+--
+ALTER TABLE `admin_group_authorization_level`
+  ADD CONSTRAINT `FKBB2E758E3794D57D` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FKBB2E758EFB6913C5` FOREIGN KEY (`authorization_id`) REFERENCES `authorization_levels` (`id`);
 
 --
 -- Constraints for table `admin_groups_admin_record_types`
@@ -16066,13 +11260,6 @@ ALTER TABLE `admin_groups_modify_admin_record_types`
 ALTER TABLE `admin_groups_modify_member_record_types`
   ADD CONSTRAINT `FKA1A2C5E63794D57D` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
   ADD CONSTRAINT `FKA1A2C5E6E46288C5` FOREIGN KEY (`member_record_type_id`) REFERENCES `member_record_types` (`id`);
-
---
--- Constraints for table `admin_group_authorization_level`
---
-ALTER TABLE `admin_group_authorization_level`
-  ADD CONSTRAINT `FKBB2E758E3794D57D` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FKBB2E758EFB6913C5` FOREIGN KEY (`authorization_id`) REFERENCES `authorization_levels` (`id`);
 
 --
 -- Constraints for table `admin_manages_member_groups`
@@ -16157,29 +11344,6 @@ ALTER TABLE `ads`
   ADD CONSTRAINT `FK178B0FE01A09E` FOREIGN KEY (`owner_id`) REFERENCES `members` (`id`);
 
 --
--- Constraints for table `ad_categories`
---
-ALTER TABLE `ad_categories`
-  ADD CONSTRAINT `FKEF2FABB85D31AC77` FOREIGN KEY (`parent_id`) REFERENCES `ad_categories` (`id`);
-
---
--- Constraints for table `ad_imports`
---
-ALTER TABLE `ad_imports`
-  ADD CONSTRAINT `FK79EBE152123F9A53` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FK79EBE152C0E7F6FA` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`);
-
---
--- Constraints for table `ad_interests`
---
-ALTER TABLE `ad_interests`
-  ADD CONSTRAINT `FKD8DBB56D3D73A7A3` FOREIGN KEY (`category_id`) REFERENCES `ad_categories` (`id`),
-  ADD CONSTRAINT `FKD8DBB56D9D46A867` FOREIGN KEY (`group_filter_id`) REFERENCES `group_filters` (`id`),
-  ADD CONSTRAINT `FKD8DBB56DC0E7F6FA` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
-  ADD CONSTRAINT `FKD8DBB56DEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FKD8DBB56DFE01A09E` FOREIGN KEY (`owner_id`) REFERENCES `members` (`id`);
-
---
 -- Constraints for table `alerts`
 --
 ALTER TABLE `alerts`
@@ -16199,20 +11363,6 @@ ALTER TABLE `amount_reservations`
 --
 ALTER TABLE `authorization_levels`
   ADD CONSTRAINT `FK9AAA27F59D63275E` FOREIGN KEY (`type_id`) REFERENCES `transfer_types` (`id`);
-
---
--- Constraints for table `brokerings`
---
-ALTER TABLE `brokerings`
-  ADD CONSTRAINT `FK6445482A4B8741B8` FOREIGN KEY (`broker_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FK6445482ABF06B6F9` FOREIGN KEY (`brokered_id`) REFERENCES `members` (`id`);
-
---
--- Constraints for table `brokering_commission_status`
---
-ALTER TABLE `brokering_commission_status`
-  ADD CONSTRAINT `FK1E5A2870F096D933` FOREIGN KEY (`brokering_id`) REFERENCES `brokerings` (`id`),
-  ADD CONSTRAINT `FK1E5A2870F7069BBE` FOREIGN KEY (`broker_commission_id`) REFERENCES `transaction_fees` (`id`);
 
 --
 -- Constraints for table `broker_commission_contracts`
@@ -16279,18 +11429,25 @@ ALTER TABLE `broker_groups_transaction_fees`
   ADD CONSTRAINT `FK8E3E9313CA99FDAA` FOREIGN KEY (`transaction_fee_id`) REFERENCES `transaction_fees` (`id`);
 
 --
+-- Constraints for table `brokering_commission_status`
+--
+ALTER TABLE `brokering_commission_status`
+  ADD CONSTRAINT `FK1E5A2870F096D933` FOREIGN KEY (`brokering_id`) REFERENCES `brokerings` (`id`),
+  ADD CONSTRAINT `FK1E5A2870F7069BBE` FOREIGN KEY (`broker_commission_id`) REFERENCES `transaction_fees` (`id`);
+
+--
+-- Constraints for table `brokerings`
+--
+ALTER TABLE `brokerings`
+  ADD CONSTRAINT `FK6445482A4B8741B8` FOREIGN KEY (`broker_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FK6445482ABF06B6F9` FOREIGN KEY (`brokered_id`) REFERENCES `members` (`id`);
+
+--
 -- Constraints for table `can_view_message_categories`
 --
 ALTER TABLE `can_view_message_categories`
   ADD CONSTRAINT `FKDFC12DBF3F6F4BDC` FOREIGN KEY (`category_id`) REFERENCES `message_categories` (`id`),
   ADD CONSTRAINT `FKDFC12DBF659B479` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `cards`
---
-ALTER TABLE `cards`
-  ADD CONSTRAINT `FK5A0E7638595CD86` FOREIGN KEY (`card_type_id`) REFERENCES `card_types` (`id`),
-  ADD CONSTRAINT `FK5A0E763FE01A09E` FOREIGN KEY (`owner_id`) REFERENCES `members` (`id`);
 
 --
 -- Constraints for table `card_logs`
@@ -16300,12 +11457,11 @@ ALTER TABLE `card_logs`
   ADD CONSTRAINT `FKF1616D7E2B1214C2` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`);
 
 --
--- Constraints for table `certifications`
+-- Constraints for table `cards`
 --
-ALTER TABLE `certifications`
-  ADD CONSTRAINT `FK591542F9608B319E` FOREIGN KEY (`buyer_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FK591542F99383E848` FOREIGN KEY (`guarantee_type_id`) REFERENCES `guarantee_types` (`id`),
-  ADD CONSTRAINT `FK591542F9A5F0DAD8` FOREIGN KEY (`issuer_id`) REFERENCES `members` (`id`);
+ALTER TABLE `cards`
+  ADD CONSTRAINT `FK5A0E7638595CD86` FOREIGN KEY (`card_type_id`) REFERENCES `card_types` (`id`),
+  ADD CONSTRAINT `FK5A0E763FE01A09E` FOREIGN KEY (`owner_id`) REFERENCES `members` (`id`);
 
 --
 -- Constraints for table `certification_logs`
@@ -16313,6 +11469,14 @@ ALTER TABLE `certifications`
 ALTER TABLE `certification_logs`
   ADD CONSTRAINT `FK75720E14205CEC57` FOREIGN KEY (`certification_id`) REFERENCES `certifications` (`id`),
   ADD CONSTRAINT `FK75720E142B1214C2` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `certifications`
+--
+ALTER TABLE `certifications`
+  ADD CONSTRAINT `FK591542F9608B319E` FOREIGN KEY (`buyer_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FK591542F99383E848` FOREIGN KEY (`guarantee_type_id`) REFERENCES `guarantee_types` (`id`),
+  ADD CONSTRAINT `FK591542F9A5F0DAD8` FOREIGN KEY (`issuer_id`) REFERENCES `members` (`id`);
 
 --
 -- Constraints for table `channels_principals`
@@ -16343,15 +11507,6 @@ ALTER TABLE `currencies`
   ADD CONSTRAINT `FKBF10006FFF05CD3E` FOREIGN KEY (`i_rate_params_id`) REFERENCES `rate_parameters` (`id`);
 
 --
--- Constraints for table `custom_fields`
---
-ALTER TABLE `custom_fields`
-  ADD CONSTRAINT `FK2EE15F478988CA47` FOREIGN KEY (`parent_id`) REFERENCES `custom_fields` (`id`),
-  ADD CONSTRAINT `FK2EE15F47A4766B0A` FOREIGN KEY (`transfer_type_id`) REFERENCES `transfer_types` (`id`),
-  ADD CONSTRAINT `FK2EE15F47E46288C5` FOREIGN KEY (`member_record_type_id`) REFERENCES `member_record_types` (`id`),
-  ADD CONSTRAINT `FK2EE15F47EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
-
---
 -- Constraints for table `custom_field_possible_values`
 --
 ALTER TABLE `custom_field_possible_values`
@@ -16379,6 +11534,15 @@ ALTER TABLE `custom_field_values`
   ADD CONSTRAINT `FK8AE18A15E9B959A1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`),
   ADD CONSTRAINT `FK8AE18A15EA75B58B` FOREIGN KEY (`imported_member_record_id`) REFERENCES `imported_member_records` (`id`),
   ADD CONSTRAINT `FK8AE18A15EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `custom_fields`
+--
+ALTER TABLE `custom_fields`
+  ADD CONSTRAINT `FK2EE15F478988CA47` FOREIGN KEY (`parent_id`) REFERENCES `custom_fields` (`id`),
+  ADD CONSTRAINT `FK2EE15F47A4766B0A` FOREIGN KEY (`transfer_type_id`) REFERENCES `transfer_types` (`id`),
+  ADD CONSTRAINT `FK2EE15F47E46288C5` FOREIGN KEY (`member_record_type_id`) REFERENCES `member_record_types` (`id`),
+  ADD CONSTRAINT `FK2EE15F47EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
 
 --
 -- Constraints for table `default_broker_commissions`
@@ -16417,15 +11581,6 @@ ALTER TABLE `external_accounts`
   ADD CONSTRAINT `FKE7A59DDAF865E9E2` FOREIGN KEY (`file_mapping_id`) REFERENCES `file_mappings` (`id`);
 
 --
--- Constraints for table `external_transfers`
---
-ALTER TABLE `external_transfers`
-  ADD CONSTRAINT `FKB8B2A2743C9C4AF3` FOREIGN KEY (`import_id`) REFERENCES `external_transfer_imports` (`id`),
-  ADD CONSTRAINT `FKB8B2A274D64E2913` FOREIGN KEY (`type_id`) REFERENCES `external_transfer_types` (`id`),
-  ADD CONSTRAINT `FKB8B2A274EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FKB8B2A274EAEDFACC` FOREIGN KEY (`account_id`) REFERENCES `external_accounts` (`id`);
-
---
 -- Constraints for table `external_transfer_imports`
 --
 ALTER TABLE `external_transfer_imports`
@@ -16440,12 +11595,27 @@ ALTER TABLE `external_transfer_types`
   ADD CONSTRAINT `FK20F3219EAEDFACC` FOREIGN KEY (`account_id`) REFERENCES `external_accounts` (`id`);
 
 --
+-- Constraints for table `external_transfers`
+--
+ALTER TABLE `external_transfers`
+  ADD CONSTRAINT `FKB8B2A2743C9C4AF3` FOREIGN KEY (`import_id`) REFERENCES `external_transfer_imports` (`id`),
+  ADD CONSTRAINT `FKB8B2A274D64E2913` FOREIGN KEY (`type_id`) REFERENCES `external_transfer_types` (`id`),
+  ADD CONSTRAINT `FKB8B2A274EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FKB8B2A274EAEDFACC` FOREIGN KEY (`account_id`) REFERENCES `external_accounts` (`id`);
+
+--
 -- Constraints for table `field_mappings`
 --
 ALTER TABLE `field_mappings`
   ADD CONSTRAINT `FK295A0B0A141FB961` FOREIGN KEY (`file_mapping_id`) REFERENCES `file_mappings` (`id`),
   ADD CONSTRAINT `FK295A0B0AACBA9282` FOREIGN KEY (`member_field_id`) REFERENCES `custom_fields` (`id`),
   ADD CONSTRAINT `FK295A0B0AF865E9E2` FOREIGN KEY (`file_mapping_id`) REFERENCES `file_mappings` (`id`);
+
+--
+-- Constraints for table `file_mappings`
+--
+ALTER TABLE `file_mappings`
+  ADD CONSTRAINT `FK7282A8C8EAEDFACC` FOREIGN KEY (`account_id`) REFERENCES `external_accounts` (`id`);
 
 --
 -- Constraints for table `files`
@@ -16456,10 +11626,82 @@ ALTER TABLE `files`
   ADD CONSTRAINT `FK5CEBA77D6DB8FB3` FOREIGN KEY (`document_id`) REFERENCES `documents` (`id`);
 
 --
--- Constraints for table `file_mappings`
+-- Constraints for table `group_broker_account_information_permissions`
 --
-ALTER TABLE `file_mappings`
-  ADD CONSTRAINT `FK7282A8C8EAEDFACC` FOREIGN KEY (`account_id`) REFERENCES `external_accounts` (`id`);
+ALTER TABLE `group_broker_account_information_permissions`
+  ADD CONSTRAINT `FKE9668F392E6F411B` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FKE9668F39461D0C55` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`);
+
+--
+-- Constraints for table `group_buy_with_payment_obligations_from`
+--
+ALTER TABLE `group_buy_with_payment_obligations_from`
+  ADD CONSTRAINT `FKD0447BAD5D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FKD0447BADF0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Constraints for table `group_filters_groups`
+--
+ALTER TABLE `group_filters_groups`
+  ADD CONSTRAINT `FKDB149C5825A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FKDB149C589D46A867` FOREIGN KEY (`group_filter_id`) REFERENCES `group_filters` (`id`),
+  ADD CONSTRAINT `FKDB149C58B45926EE` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Constraints for table `group_filters_viewable_by`
+--
+ALTER TABLE `group_filters_viewable_by`
+  ADD CONSTRAINT `FKB32047139D46A867` FOREIGN KEY (`group_filter_id`) REFERENCES `group_filters` (`id`),
+  ADD CONSTRAINT `FKB3204713B45926EE` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Constraints for table `group_guarantee_types`
+--
+ALTER TABLE `group_guarantee_types`
+  ADD CONSTRAINT `FK7D9DE24225A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FK7D9DE2429383E848` FOREIGN KEY (`guarantee_type_id`) REFERENCES `guarantee_types` (`id`);
+
+--
+-- Constraints for table `group_history_logs`
+--
+ALTER TABLE `group_history_logs`
+  ADD CONSTRAINT `FKC08E903A25A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FKC08E903A47C8C3FD` FOREIGN KEY (`element_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `group_issue_certification_to`
+--
+ALTER TABLE `group_issue_certification_to`
+  ADD CONSTRAINT `FK32219C865D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FK32219C86F0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Constraints for table `group_operator_account_information_permissions`
+--
+ALTER TABLE `group_operator_account_information_permissions`
+  ADD CONSTRAINT `FKE831E404461D0C55` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`),
+  ADD CONSTRAINT `FKE831E404CB78BB0` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Constraints for table `group_view_account_information_permissions`
+--
+ALTER TABLE `group_view_account_information_permissions`
+  ADD CONSTRAINT `FK25619205461D0C55` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`),
+  ADD CONSTRAINT `FK256192055D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Constraints for table `group_view_ads_permissions`
+--
+ALTER TABLE `group_view_ads_permissions`
+  ADD CONSTRAINT `FKBBD1639B5D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FKBBD1639BF0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Constraints for table `group_view_profile_permissions`
+--
+ALTER TABLE `group_view_profile_permissions`
+  ADD CONSTRAINT `FK58BF44145D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FK58BF4414F0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
 
 --
 -- Constraints for table `groups`
@@ -16565,95 +11807,6 @@ ALTER TABLE `groups_transfer_types_as_member`
   ADD CONSTRAINT `FKFC716B8A4766B0A` FOREIGN KEY (`transfer_type_id`) REFERENCES `transfer_types` (`id`);
 
 --
--- Constraints for table `group_broker_account_information_permissions`
---
-ALTER TABLE `group_broker_account_information_permissions`
-  ADD CONSTRAINT `FKE9668F392E6F411B` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FKE9668F39461D0C55` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`);
-
---
--- Constraints for table `group_buy_with_payment_obligations_from`
---
-ALTER TABLE `group_buy_with_payment_obligations_from`
-  ADD CONSTRAINT `FKD0447BAD5D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FKD0447BADF0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `group_filters_groups`
---
-ALTER TABLE `group_filters_groups`
-  ADD CONSTRAINT `FKDB149C5825A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FKDB149C589D46A867` FOREIGN KEY (`group_filter_id`) REFERENCES `group_filters` (`id`),
-  ADD CONSTRAINT `FKDB149C58B45926EE` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `group_filters_viewable_by`
---
-ALTER TABLE `group_filters_viewable_by`
-  ADD CONSTRAINT `FKB32047139D46A867` FOREIGN KEY (`group_filter_id`) REFERENCES `group_filters` (`id`),
-  ADD CONSTRAINT `FKB3204713B45926EE` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `group_guarantee_types`
---
-ALTER TABLE `group_guarantee_types`
-  ADD CONSTRAINT `FK7D9DE24225A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FK7D9DE2429383E848` FOREIGN KEY (`guarantee_type_id`) REFERENCES `guarantee_types` (`id`);
-
---
--- Constraints for table `group_history_logs`
---
-ALTER TABLE `group_history_logs`
-  ADD CONSTRAINT `FKC08E903A25A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FKC08E903A47C8C3FD` FOREIGN KEY (`element_id`) REFERENCES `members` (`id`);
-
---
--- Constraints for table `group_issue_certification_to`
---
-ALTER TABLE `group_issue_certification_to`
-  ADD CONSTRAINT `FK32219C865D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FK32219C86F0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `group_operator_account_information_permissions`
---
-ALTER TABLE `group_operator_account_information_permissions`
-  ADD CONSTRAINT `FKE831E404461D0C55` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`),
-  ADD CONSTRAINT `FKE831E404CB78BB0` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `group_view_account_information_permissions`
---
-ALTER TABLE `group_view_account_information_permissions`
-  ADD CONSTRAINT `FK25619205461D0C55` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`),
-  ADD CONSTRAINT `FK256192055D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `group_view_ads_permissions`
---
-ALTER TABLE `group_view_ads_permissions`
-  ADD CONSTRAINT `FKBBD1639B5D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FKBBD1639BF0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `group_view_profile_permissions`
---
-ALTER TABLE `group_view_profile_permissions`
-  ADD CONSTRAINT `FK58BF44145D14BEFA` FOREIGN KEY (`owner_group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FK58BF4414F0E43C82` FOREIGN KEY (`related_group_id`) REFERENCES `groups` (`id`);
-
---
--- Constraints for table `guarantees`
---
-ALTER TABLE `guarantees`
-  ADD CONSTRAINT `FKA37612EB205CEC57` FOREIGN KEY (`certification_id`) REFERENCES `certifications` (`id`),
-  ADD CONSTRAINT `FKA37612EB40A58052` FOREIGN KEY (`seller_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FKA37612EB608B319E` FOREIGN KEY (`buyer_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FKA37612EB9383E848` FOREIGN KEY (`guarantee_type_id`) REFERENCES `guarantee_types` (`id`),
-  ADD CONSTRAINT `FKA37612EBA5F0DAD8` FOREIGN KEY (`issuer_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FKA37612EBF9B21025` FOREIGN KEY (`loan_id`) REFERENCES `loans` (`id`);
-
---
 -- Constraints for table `guarantee_logs`
 --
 ALTER TABLE `guarantee_logs`
@@ -16671,11 +11824,30 @@ ALTER TABLE `guarantee_types`
   ADD CONSTRAINT `FK43027402D757D44` FOREIGN KEY (`forward_transfer_type_id`) REFERENCES `transfer_types` (`id`);
 
 --
+-- Constraints for table `guarantees`
+--
+ALTER TABLE `guarantees`
+  ADD CONSTRAINT `FKA37612EB205CEC57` FOREIGN KEY (`certification_id`) REFERENCES `certifications` (`id`),
+  ADD CONSTRAINT `FKA37612EB40A58052` FOREIGN KEY (`seller_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FKA37612EB608B319E` FOREIGN KEY (`buyer_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FKA37612EB9383E848` FOREIGN KEY (`guarantee_type_id`) REFERENCES `guarantee_types` (`id`),
+  ADD CONSTRAINT `FKA37612EBA5F0DAD8` FOREIGN KEY (`issuer_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FKA37612EBF9B21025` FOREIGN KEY (`loan_id`) REFERENCES `loans` (`id`);
+
+--
 -- Constraints for table `images`
 --
 ALTER TABLE `images`
   ADD CONSTRAINT `FKB95A8278CAF74240` FOREIGN KEY (`ad_id`) REFERENCES `ads` (`id`),
   ADD CONSTRAINT `FKB95A8278EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `imported_ad_categories`
+--
+ALTER TABLE `imported_ad_categories`
+  ADD CONSTRAINT `FKFC5711BDA69BAAC3` FOREIGN KEY (`existing_parent_id`) REFERENCES `ad_categories` (`id`),
+  ADD CONSTRAINT `FKFC5711BDA7E88FA0` FOREIGN KEY (`imported_parent_id`) REFERENCES `imported_ad_categories` (`id`),
+  ADD CONSTRAINT `FKFC5711BDB79265E7` FOREIGN KEY (`ad_import_id`) REFERENCES `ad_imports` (`id`);
 
 --
 -- Constraints for table `imported_ads`
@@ -16687,12 +11859,11 @@ ALTER TABLE `imported_ads`
   ADD CONSTRAINT `FKA3AAB0F5FE01A09E` FOREIGN KEY (`owner_id`) REFERENCES `members` (`id`);
 
 --
--- Constraints for table `imported_ad_categories`
+-- Constraints for table `imported_member_records`
 --
-ALTER TABLE `imported_ad_categories`
-  ADD CONSTRAINT `FKFC5711BDA69BAAC3` FOREIGN KEY (`existing_parent_id`) REFERENCES `ad_categories` (`id`),
-  ADD CONSTRAINT `FKFC5711BDA7E88FA0` FOREIGN KEY (`imported_parent_id`) REFERENCES `imported_ad_categories` (`id`),
-  ADD CONSTRAINT `FKFC5711BDB79265E7` FOREIGN KEY (`ad_import_id`) REFERENCES `ad_imports` (`id`);
+ALTER TABLE `imported_member_records`
+  ADD CONSTRAINT `FK579F703881B2B280` FOREIGN KEY (`imported_member_id`) REFERENCES `imported_members` (`id`),
+  ADD CONSTRAINT `FK579F7038E46288C5` FOREIGN KEY (`member_record_type_id`) REFERENCES `member_record_types` (`id`);
 
 --
 -- Constraints for table `imported_members`
@@ -16701,17 +11872,17 @@ ALTER TABLE `imported_members`
   ADD CONSTRAINT `FKF8A856DE731AC71` FOREIGN KEY (`import_id`) REFERENCES `member_imports` (`id`);
 
 --
--- Constraints for table `imported_member_records`
---
-ALTER TABLE `imported_member_records`
-  ADD CONSTRAINT `FK579F703881B2B280` FOREIGN KEY (`imported_member_id`) REFERENCES `imported_members` (`id`),
-  ADD CONSTRAINT `FK579F7038E46288C5` FOREIGN KEY (`member_record_type_id`) REFERENCES `member_record_types` (`id`);
-
---
 -- Constraints for table `info_text_aliases`
 --
 ALTER TABLE `info_text_aliases`
   ADD CONSTRAINT `FK83C54DDDB4F0D375` FOREIGN KEY (`info_text_id`) REFERENCES `info_texts` (`id`);
+
+--
+-- Constraints for table `invoice_payments`
+--
+ALTER TABLE `invoice_payments`
+  ADD CONSTRAINT `FK1D3D3FFF2F78F3B3` FOREIGN KEY (`transfer_id`) REFERENCES `transfers` (`id`),
+  ADD CONSTRAINT `FK1D3D3FFFE9B959A1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`);
 
 --
 -- Constraints for table `invoices`
@@ -16728,11 +11899,11 @@ ALTER TABLE `invoices`
   ADD CONSTRAINT `FK25F222E6C70B3BCA` FOREIGN KEY (`dest_type_id`) REFERENCES `account_types` (`id`);
 
 --
--- Constraints for table `invoice_payments`
+-- Constraints for table `loan_payments`
 --
-ALTER TABLE `invoice_payments`
-  ADD CONSTRAINT `FK1D3D3FFF2F78F3B3` FOREIGN KEY (`transfer_id`) REFERENCES `transfers` (`id`),
-  ADD CONSTRAINT `FK1D3D3FFFE9B959A1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`);
+ALTER TABLE `loan_payments`
+  ADD CONSTRAINT `FKAF53099C617A8174` FOREIGN KEY (`external_transfer_id`) REFERENCES `external_transfers` (`id`),
+  ADD CONSTRAINT `FKAF53099CF9B21025` FOREIGN KEY (`loan_id`) REFERENCES `loans` (`id`);
 
 --
 -- Constraints for table `loans`
@@ -16742,53 +11913,10 @@ ALTER TABLE `loans`
   ADD CONSTRAINT `FK625D98354774F2E` FOREIGN KEY (`loan_group_id`) REFERENCES `loan_groups` (`id`);
 
 --
--- Constraints for table `loan_payments`
---
-ALTER TABLE `loan_payments`
-  ADD CONSTRAINT `FKAF53099C617A8174` FOREIGN KEY (`external_transfer_id`) REFERENCES `external_transfers` (`id`),
-  ADD CONSTRAINT `FKAF53099CF9B21025` FOREIGN KEY (`loan_id`) REFERENCES `loans` (`id`);
-
---
 -- Constraints for table `login_history`
 --
 ALTER TABLE `login_history`
   ADD CONSTRAINT `FK88A801BEA19267FC` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `members`
---
-ALTER TABLE `members`
-  ADD CONSTRAINT `FK388EC91925A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FK388EC91941F9CE53` FOREIGN KEY (`member_broker_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FK388EC919EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
-
---
--- Constraints for table `members_channels`
---
-ALTER TABLE `members_channels`
-  ADD CONSTRAINT `FK66F8B8369B71D578` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
-  ADD CONSTRAINT `FK66F8B836EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
-
---
--- Constraints for table `members_loans`
---
-ALTER TABLE `members_loans`
-  ADD CONSTRAINT `FKAD520EDDEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FKAD520EDDF9B21025` FOREIGN KEY (`loan_id`) REFERENCES `loans` (`id`);
-
---
--- Constraints for table `members_loan_groups`
---
-ALTER TABLE `members_loan_groups`
-  ADD CONSTRAINT `FKBE11EDDD54774F2E` FOREIGN KEY (`loan_group_id`) REFERENCES `loan_groups` (`id`),
-  ADD CONSTRAINT `FKBE11EDDDEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
-
---
--- Constraints for table `members_pending_charge`
---
-ALTER TABLE `members_pending_charge`
-  ADD CONSTRAINT `FK265D1E426957A5AA` FOREIGN KEY (`account_fee_log_id`) REFERENCES `account_fee_logs` (`id`),
-  ADD CONSTRAINT `FK265D1E42EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
 
 --
 -- Constraints for table `member_account_fee_logs`
@@ -16798,6 +11926,14 @@ ALTER TABLE `member_account_fee_logs`
   ADD CONSTRAINT `FK74581F9F6957A5AA` FOREIGN KEY (`account_fee_log_id`) REFERENCES `account_fee_logs` (`id`),
   ADD CONSTRAINT `FK74581F9FE9B959A1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`),
   ADD CONSTRAINT `FK74581F9FEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `member_group_account_settings`
+--
+ALTER TABLE `member_group_account_settings`
+  ADD CONSTRAINT `FK3D84E6FA797D2395` FOREIGN KEY (`initial_credit_transfer_type_id`) REFERENCES `transfer_types` (`id`),
+  ADD CONSTRAINT `FK3D84E6FAB45926EE` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FK3D84E6FAB93596D` FOREIGN KEY (`type_id`) REFERENCES `account_types` (`id`);
 
 --
 -- Constraints for table `member_groups_custom_fields`
@@ -16832,14 +11968,6 @@ ALTER TABLE `member_groups_sms_message_types`
   ADD CONSTRAINT `FKCF01DA35B45926EE` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
 
 --
--- Constraints for table `member_group_account_settings`
---
-ALTER TABLE `member_group_account_settings`
-  ADD CONSTRAINT `FK3D84E6FA797D2395` FOREIGN KEY (`initial_credit_transfer_type_id`) REFERENCES `transfer_types` (`id`),
-  ADD CONSTRAINT `FK3D84E6FAB45926EE` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `FK3D84E6FAB93596D` FOREIGN KEY (`type_id`) REFERENCES `account_types` (`id`);
-
---
 -- Constraints for table `member_imports`
 --
 ALTER TABLE `member_imports`
@@ -16870,6 +11998,42 @@ ALTER TABLE `member_records`
 --
 ALTER TABLE `member_sms_status`
   ADD CONSTRAINT `FKCC65105DEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `members`
+--
+ALTER TABLE `members`
+  ADD CONSTRAINT `FK388EC91925A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `FK388EC91941F9CE53` FOREIGN KEY (`member_broker_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FK388EC919EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `members_channels`
+--
+ALTER TABLE `members_channels`
+  ADD CONSTRAINT `FK66F8B8369B71D578` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
+  ADD CONSTRAINT `FK66F8B836EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `members_loan_groups`
+--
+ALTER TABLE `members_loan_groups`
+  ADD CONSTRAINT `FKBE11EDDD54774F2E` FOREIGN KEY (`loan_group_id`) REFERENCES `loan_groups` (`id`),
+  ADD CONSTRAINT `FKBE11EDDDEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
+
+--
+-- Constraints for table `members_loans`
+--
+ALTER TABLE `members_loans`
+  ADD CONSTRAINT `FKAD520EDDEAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FKAD520EDDF9B21025` FOREIGN KEY (`loan_id`) REFERENCES `loans` (`id`);
+
+--
+-- Constraints for table `members_pending_charge`
+--
+ALTER TABLE `members_pending_charge`
+  ADD CONSTRAINT `FK265D1E426957A5AA` FOREIGN KEY (`account_fee_log_id`) REFERENCES `account_fee_logs` (`id`),
+  ADD CONSTRAINT `FK265D1E42EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
 
 --
 -- Constraints for table `messages`
@@ -16912,6 +12076,13 @@ ALTER TABLE `payment_filters`
   ADD CONSTRAINT `FK260516C2461D0C55` FOREIGN KEY (`account_type_id`) REFERENCES `account_types` (`id`);
 
 --
+-- Constraints for table `payment_obligation_logs`
+--
+ALTER TABLE `payment_obligation_logs`
+  ADD CONSTRAINT `FK6EE4F972B1214C2` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FK6EE4F973AEC8F84` FOREIGN KEY (`payment_obligation_id`) REFERENCES `payment_obligations` (`id`);
+
+--
 -- Constraints for table `payment_obligations`
 --
 ALTER TABLE `payment_obligations`
@@ -16919,13 +12090,6 @@ ALTER TABLE `payment_obligations`
   ADD CONSTRAINT `FK409CBDFC40A58052` FOREIGN KEY (`seller_id`) REFERENCES `members` (`id`),
   ADD CONSTRAINT `FK409CBDFC608B319E` FOREIGN KEY (`buyer_id`) REFERENCES `members` (`id`),
   ADD CONSTRAINT `FK409CBDFCC0E7F6FA` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`);
-
---
--- Constraints for table `payment_obligation_logs`
---
-ALTER TABLE `payment_obligation_logs`
-  ADD CONSTRAINT `FK6EE4F972B1214C2` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FK6EE4F973AEC8F84` FOREIGN KEY (`payment_obligation_id`) REFERENCES `payment_obligations` (`id`);
 
 --
 -- Constraints for table `pending_email_changes`
@@ -16944,16 +12108,16 @@ ALTER TABLE `pending_members`
   ADD CONSTRAINT `FK60337271EAE0AB57` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`);
 
 --
--- Constraints for table `permissions`
---
-ALTER TABLE `permissions`
-  ADD CONSTRAINT `FK4392F48425A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
-
---
 -- Constraints for table `permission_denieds`
 --
 ALTER TABLE `permission_denieds`
   ADD CONSTRAINT `FK61FE25C8A19267FC` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD CONSTRAINT `FK4392F48425A5B3E8` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
 
 --
 -- Constraints for table `pos`
@@ -17025,6 +12189,12 @@ ALTER TABLE `scheduled_payments`
   ADD CONSTRAINT `FK943CF27FDD5BFBFE` FOREIGN KEY (`to_account_id`) REFERENCES `accounts` (`id`);
 
 --
+-- Constraints for table `service_client_permissions`
+--
+ALTER TABLE `service_client_permissions`
+  ADD CONSTRAINT `FK6BF53FDABC65B77D` FOREIGN KEY (`service_client_id`) REFERENCES `service_clients` (`id`);
+
+--
 -- Constraints for table `service_clients`
 --
 ALTER TABLE `service_clients`
@@ -17058,12 +12228,6 @@ ALTER TABLE `service_clients_manage_groups`
 ALTER TABLE `service_clients_receive_payment_types`
   ADD CONSTRAINT `FK51FA69A3A4766B0A` FOREIGN KEY (`transfer_type_id`) REFERENCES `transfer_types` (`id`),
   ADD CONSTRAINT `FK51FA69A3BC65B77D` FOREIGN KEY (`service_client_id`) REFERENCES `service_clients` (`id`);
-
---
--- Constraints for table `service_client_permissions`
---
-ALTER TABLE `service_client_permissions`
-  ADD CONSTRAINT `FK6BF53FDABC65B77D` FOREIGN KEY (`service_client_id`) REFERENCES `service_clients` (`id`);
 
 --
 -- Constraints for table `sessions`
@@ -17123,27 +12287,6 @@ ALTER TABLE `transaction_fees`
   ADD CONSTRAINT `FK1E50E66ED56AF6F0` FOREIGN KEY (`original_type_id`) REFERENCES `transfer_types` (`id`);
 
 --
--- Constraints for table `transfers`
---
-ALTER TABLE `transfers`
-  ADD CONSTRAINT `FK3EBE45E81106EAD7` FOREIGN KEY (`broker_commission_contract_id`) REFERENCES `broker_commission_contracts` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8229B7694` FOREIGN KEY (`parent_id`) REFERENCES `transfers` (`id`),
-  ADD CONSTRAINT `FK3EBE45E82B1214C2` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FK3EBE45E84B79F4AC` FOREIGN KEY (`next_authorization_level_id`) REFERENCES `authorization_levels` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8617A8174` FOREIGN KEY (`external_transfer_id`) REFERENCES `external_transfers` (`id`),
-  ADD CONSTRAINT `FK3EBE45E86957A5AA` FOREIGN KEY (`account_fee_log_id`) REFERENCES `account_fee_logs` (`id`),
-  ADD CONSTRAINT `FK3EBE45E88799AF6F` FOREIGN KEY (`from_account_id`) REFERENCES `accounts` (`id`),
-  ADD CONSTRAINT `FK3EBE45E89D63275E` FOREIGN KEY (`type_id`) REFERENCES `transfer_types` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8A822302A` FOREIGN KEY (`receiver_id`) REFERENCES `members` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8A899F6A3` FOREIGN KEY (`chargeback_of_id`) REFERENCES `transfers` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8B3A79238` FOREIGN KEY (`scheduled_payment_id`) REFERENCES `scheduled_payments` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8CF860F8D` FOREIGN KEY (`fee_id`) REFERENCES `transaction_fees` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8DD5BFBFE` FOREIGN KEY (`to_account_id`) REFERENCES `accounts` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8E735A8CE` FOREIGN KEY (`loan_payment_id`) REFERENCES `loan_payments` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8E846CE9F` FOREIGN KEY (`chargedback_by_id`) REFERENCES `transfers` (`id`),
-  ADD CONSTRAINT `FK3EBE45E8E969E40E` FOREIGN KEY (`transaction_fee_id`) REFERENCES `transaction_fees` (`id`);
-
---
 -- Constraints for table `transfer_authorizations`
 --
 ALTER TABLE `transfer_authorizations`
@@ -17184,6 +12327,27 @@ ALTER TABLE `transfer_types_linked_custom_fields`
 ALTER TABLE `transfer_types_payment_filters`
   ADD CONSTRAINT `FK466919A8A4766B0A` FOREIGN KEY (`transfer_type_id`) REFERENCES `transfer_types` (`id`),
   ADD CONSTRAINT `FK466919A8A78BAF2E` FOREIGN KEY (`payment_filter_id`) REFERENCES `payment_filters` (`id`);
+
+--
+-- Constraints for table `transfers`
+--
+ALTER TABLE `transfers`
+  ADD CONSTRAINT `FK3EBE45E81106EAD7` FOREIGN KEY (`broker_commission_contract_id`) REFERENCES `broker_commission_contracts` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8229B7694` FOREIGN KEY (`parent_id`) REFERENCES `transfers` (`id`),
+  ADD CONSTRAINT `FK3EBE45E82B1214C2` FOREIGN KEY (`by_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FK3EBE45E84B79F4AC` FOREIGN KEY (`next_authorization_level_id`) REFERENCES `authorization_levels` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8617A8174` FOREIGN KEY (`external_transfer_id`) REFERENCES `external_transfers` (`id`),
+  ADD CONSTRAINT `FK3EBE45E86957A5AA` FOREIGN KEY (`account_fee_log_id`) REFERENCES `account_fee_logs` (`id`),
+  ADD CONSTRAINT `FK3EBE45E88799AF6F` FOREIGN KEY (`from_account_id`) REFERENCES `accounts` (`id`),
+  ADD CONSTRAINT `FK3EBE45E89D63275E` FOREIGN KEY (`type_id`) REFERENCES `transfer_types` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8A822302A` FOREIGN KEY (`receiver_id`) REFERENCES `members` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8A899F6A3` FOREIGN KEY (`chargeback_of_id`) REFERENCES `transfers` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8B3A79238` FOREIGN KEY (`scheduled_payment_id`) REFERENCES `scheduled_payments` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8CF860F8D` FOREIGN KEY (`fee_id`) REFERENCES `transaction_fees` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8DD5BFBFE` FOREIGN KEY (`to_account_id`) REFERENCES `accounts` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8E735A8CE` FOREIGN KEY (`loan_payment_id`) REFERENCES `loan_payments` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8E846CE9F` FOREIGN KEY (`chargedback_by_id`) REFERENCES `transfers` (`id`),
+  ADD CONSTRAINT `FK3EBE45E8E969E40E` FOREIGN KEY (`transaction_fee_id`) REFERENCES `transaction_fees` (`id`);
 
 --
 -- Constraints for table `username_change_logs`
