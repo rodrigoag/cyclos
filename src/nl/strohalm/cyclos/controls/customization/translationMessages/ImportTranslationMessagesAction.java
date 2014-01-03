@@ -55,7 +55,7 @@ public class ImportTranslationMessagesAction extends BaseAction {
             try {
                 final Properties properties = PropertiesHelper.loadFromStream(in);
                 final MessageImportType importType = MessageImportType.valueOf(form.getImportType());
-                translationMessageService.importFromProperties(properties, importType);
+                translationMessageService.importFromProperties(properties, importType, settingsService.getLocalSettings().getLocale());
             } catch (final Exception e) {
                 return context.sendError("translationMessage.import.error.reading");
             } finally {

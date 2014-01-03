@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -103,7 +104,7 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
     }
 
     @Override
-    public void importFromProperties(final Properties properties, MessageImportType importType) {
+    public void importFromProperties(final Properties properties, MessageImportType importType, Locale locale) {
         // Delete all messages if we will replace with the new file
         if (importType == MessageImportType.REPLACE) {
             translationMessageDao.deleteAll();
@@ -111,10 +112,10 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
         }
 
         if (importType == MessageImportType.ONLY_NEW) {
-            importOnlyNewProperties(properties);
+            importOnlyNewProperties(properties, locale);
         } else {
             final boolean emptyOnly = importType == MessageImportType.NEW_AND_EMPTY;
-            importNewAndModifiedProperties(properties, emptyOnly);
+            importNewAndModifiedProperties(properties, locale, emptyOnly);
         }
         clearCacheOnCommit();
     }
@@ -122,8 +123,9 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
     @Override
     public void initializeService() {
         final LocalSettings localSettings = settingsService.getLocalSettings();
-        Properties properties = readFile(localSettings.getLocale());
-        importFromProperties(properties, MessageImportType.NEW_AND_EMPTY);
+        final Locale locale = localSettings.getLocale();
+        Properties properties = readFile(locale);
+        importFromProperties(properties, MessageImportType.NEW_AND_EMPTY, locale);
     }
 
     @Override
@@ -230,7 +232,7 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
         return validator;
     }
 
-    private void importNewAndModifiedProperties(final Properties properties, final boolean emptyOnly) {
+    private void importNewAndModifiedProperties(final Properties properties, final Locale locale, final boolean emptyOnly) {
     	//FIXME: Incorporate Locale when importing
         // Process existing messages. This is done with Object[], otherwise hibernate will load each message with a separate select
         final Iterator<Object[]> existing = translationMessageDao.listData();
@@ -239,7 +241,9 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
                 final Object[] data = existing.next();
                 final String key = (String) data[1];
                 final String currentValue = (String) data[2];
-                final String newValue = properties.getProperty(key);
+
+                final String propertiesKey = key.contains(":") ? locale.toString() + ":" + key.split(":")[1] : locale.toString() + ":" + key;
+                final String newValue = properties.getProperty(propertiesKey);
                 if (newValue != null) {
                     final boolean shallUpdate = !newValue.equals(currentValue) && (!emptyOnly || StringUtils.isEmpty(currentValue));
                     if (shallUpdate) {
@@ -247,9 +251,10 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
                         message.setId((Long) data[0]);
                         message.setKey(key);
                         message.setValue(newValue);
+                        message.setLocale(locale.toString());
                         translationMessageDao.update(message, false);
                     }
-                    properties.remove(key);
+                    properties.remove(propertiesKey);
                 }
             }
         } finally {
@@ -258,14 +263,15 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
         fetchService.clearCache();
 
         // Only those who have to be inserted are left in properties
-        insertAll(properties);
+        insertAll(properties, locale);
     }
 
-    private void importOnlyNewProperties(final Properties properties) {
+    private void importOnlyNewProperties(final Properties properties, final Locale locale) {
         final Iterator<String> allKeys = translationMessageDao.listAllKeys();
         try {
             while (allKeys.hasNext()) {
                 final String key = allKeys.next();
+                properties.remove(locale.toString() + ":" + key);
                 properties.remove(key);
             }
         } finally {
@@ -273,21 +279,30 @@ public class TranslationMessageServiceImpl implements TranslationMessageServiceL
         }
 
         // Only new keys are left on the properties object
-        insertAll(properties);
+        insertAll(properties, locale);
     }
 
-    private void insertAll(final Properties properties) {
+    private void insertAll(final Properties properties, Locale locale) {
         final CacheCleaner cacheCleaner = new CacheCleaner(fetchService);
+        
+        final List<String> propertiesList = new ArrayList<String>();
+        
         for (final Map.Entry<Object, Object> entry : properties.entrySet()) {
             final String key = (String) entry.getKey();
             final String value = (String) entry.getValue();
+            
+            final String translationMessageLocale = key.contains(":") ? key.split(":")[0] : key;
+            final String translationMessageKey = key.contains(":") ? key.split(":")[1] : key;
+            
             final TranslationMessage translationMessage = new TranslationMessage();
-            translationMessage.setKey(key);
+            translationMessage.setKey(translationMessageKey);
             translationMessage.setValue(value);
+            translationMessage.setLocale(translationMessageLocale);
 
+        	propertiesList.add(key.toUpperCase(locale));
             try {
                 // Try to load first
-                final TranslationMessage existing = translationMessageDao.load(key);
+                final TranslationMessage existing = translationMessageDao.load(translationMessageKey);
                 // Existing - update
                 existing.setValue(value);
                 translationMessageDao.update(existing, false);

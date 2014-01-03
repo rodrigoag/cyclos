@@ -164,7 +164,7 @@ public class EditLocalSettingsAction extends BaseFormAction {
             // Replace message bundle file
             final Properties properties = translationMessageService.readFile(settings.getLocale());
             //FIXME: Pass new locale down so all messages are persisted to db as such.
-            translationMessageService.importFromProperties(properties, MessageImportType.REPLACE);
+            translationMessageService.importFromProperties(properties, MessageImportType.REPLACE, settings.getLocale());
 
             // Replace the translation settings (mail and messages)
             settingsService.reloadTranslation();

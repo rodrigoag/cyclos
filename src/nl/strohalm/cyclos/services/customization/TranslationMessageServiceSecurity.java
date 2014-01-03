@@ -26,7 +26,9 @@ import java.util.Properties;
 import nl.strohalm.cyclos.access.AdminSystemPermission;
 import nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessage;
 import nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessageQuery;
+import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.services.BaseServiceSecurity;
+import nl.strohalm.cyclos.services.settings.SettingsServiceLocal;
 import nl.strohalm.cyclos.utils.validation.ValidationException;
 
 /**
@@ -52,9 +54,9 @@ public class TranslationMessageServiceSecurity extends BaseServiceSecurity imple
     }
 
     @Override
-    public void importFromProperties(final Properties properties, final MessageImportType importType) {
-        checkFilePermission();
-        translationMessageService.importFromProperties(properties, importType);
+    public void importFromProperties(final Properties properties, final MessageImportType importType, final Locale locale) {
+		checkFilePermission();
+        translationMessageService.importFromProperties(properties, importType, locale);
     }
 
     @Override

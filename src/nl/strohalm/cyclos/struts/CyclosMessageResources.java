@@ -32,6 +32,7 @@ import nl.strohalm.cyclos.entities.customization.translationMessages.Translation
 import nl.strohalm.cyclos.services.customization.TranslationChangeListener;
 import nl.strohalm.cyclos.services.customization.TranslationMessageService;
 import nl.strohalm.cyclos.utils.MessageResourcesLoadedListener;
+import nl.strohalm.cyclos.utils.StringHelper;
 import nl.strohalm.cyclos.utils.access.LoggedUser;
 
 import org.apache.commons.lang.StringUtils;
@@ -64,7 +65,13 @@ public class CyclosMessageResources extends MessageResources implements ServletC
     public String getMessage(final Locale locale, final String key) {
     	final String localeKey = TranslationMessage.localeKey(locale, key);
     	
-        String message = getProperties().getProperty(localeKey);
+    	//FIXME: translations to pt_BR hack.
+        String messageDefault = getProperties().getProperty(localeKey);
+        String message = getProperties().getProperty(TranslationMessage.localeKey(new Locale("pt", "BR"), key));
+        
+        
+        message = StringUtils.defaultIfEmpty(message, messageDefault); 
+        
         if (message == null) {
             message = "???" + localeKey + "???";
         }
@@ -81,7 +88,7 @@ public class CyclosMessageResources extends MessageResources implements ServletC
             @Override
             public void onTranslationsChanged(final Properties properties) {
             	//FIXME: Identify which Locale changed it
-                //reload(properties);
+                reload(properties);
             }
         });
 

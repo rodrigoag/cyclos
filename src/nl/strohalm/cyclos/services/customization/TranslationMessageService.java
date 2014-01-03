@@ -48,7 +48,7 @@ public interface TranslationMessageService extends Service {
     /**
      * Store the properties
      */
-    void importFromProperties(Properties properties, MessageImportType importType);
+    void importFromProperties(Properties properties, MessageImportType importType, Locale locale);
 
     /**
      * Loads the message with the given identifier
