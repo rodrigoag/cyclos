@@ -91,7 +91,7 @@
 							</a>
 						</td>
 					</c:if>
-					<c:if test="${quickAccess.searchMembers  && isAdministrator}">
+					<c:if test="${quickAccess.searchMembers  && (isAdmin || isBroker)}">
 						<td width="${width}" align="center" valign="top">
 							<a href="${searchMembersUrl}" class="quickAccessLink">
 								<cyclos:customImage name="quickAccess_searchMembers" type="system" class="quickAccessIcon" />
@@ -107,7 +107,7 @@
 							</a>
 						</td>
 					</c:if>
-					<c:if test="${quickAccess.viewContacts && isAdministrator}">
+					<c:if test="${quickAccess.viewContacts && (isAdmin || isBroker)}">
 						<td width="${width}" align="center" valign="top">
 							<a href="${contactsUrl}" class="quickAccessLink">
 								<cyclos:customImage name="quickAccess_contacts" type="system" class="quickAccessIcon" />

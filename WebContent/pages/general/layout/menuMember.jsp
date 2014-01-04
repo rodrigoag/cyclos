@@ -5,14 +5,14 @@
 	<cyclos:menu url="/do/member/profile" key="menu.member.personal.profile" />
 	<cyclos:menu url="/do/member/searchMessages" key="menu.member.personal.messages" permission="${MemberPermission.MESSAGES_VIEW}" />
 	<cyclos:menu url="/do/member/memberAds" key="menu.member.personal.ads" permission="${MemberPermission.ADS_PUBLISH}" />
-<c:if test="${isAdministrator}">	
+<c:if test="${isAdmin || isBroker}">	
 	<cyclos:menu url="/do/member/contacts" key="menu.member.personal.contacts" />
 </c:if>
 	<c:if test="${loggedMemberHasGeneralReferences}">
 		<cyclos:menu url="/do/member/references?nature=GENERAL" key="menu.member.personal.references" />
 	</c:if>
 	<c:if test="${loggedMemberHasTransactionFeedbacks}">
-<c:if test="${isAdministrator}">
+<c:if test="${isAdmin || isBroker}">
 		<cyclos:menu url="/do/member/references?nature=TRANSACTION" key="menu.member.personal.transactionFeedbacks" />
 </c:if>
 	</c:if>
@@ -52,7 +52,7 @@
 			<cyclos:menu url="/do/member/searchTransferAuthorizations" key="menu.member.account.transfersAuthorizations" />
 		</c:if>
 		<cyclos:menu url="/do/member/searchScheduledPayments" key="menu.member.account.scheduledPayments" permission="${MemberPermission.ACCOUNT_SCHEDULED_INFORMATION}" />
-<c:if test="${isAdministrator}">
+<c:if test="${isAdmin || isBroker}">
 		<cyclos:menu url="/do/member/searchInvoices" key="menu.member.account.invoices" permission="${MemberPermission.INVOICES_VIEW}"/>
 </c:if>
 		<cyclos:menu url="/do/member/searchLoans" key="menu.member.account.loans" permission="${MemberPermission.LOANS_VIEW}"/>
@@ -60,7 +60,7 @@
 			<cyclos:menu url="/do/member/memberLoanGroups" key="menu.member.account.loanGroups" />
 		</c:if>
 		<cyclos:menu url="/do/member/payment?selectMember=true" key="menu.member.account.memberPayment" permission="${MemberPermission.PAYMENTS_PAYMENT_TO_MEMBER}"/>
-<c:if test="${isAdministrator}">
+<c:if test="${isAdmin || isBroker}">
 		<cyclos:menu url="/do/member/payment?toSystem=true" key="menu.member.account.systemPayment" permission="${MemberPermission.PAYMENTS_PAYMENT_TO_SYSTEM}"  />
 </c:if>		 
 		<cyclos:menu url="/do/member/selfPayment" key="menu.member.account.selfPayment" permission="${MemberPermission.PAYMENTS_PAYMENT_TO_SELF}" />
@@ -118,7 +118,7 @@
 		<cyclos:menu url="/do/member/searchPos" key="menu.admin.accessDevices.pos.search" permission="${BrokerPermission.POS_VIEW}" />
 	</cyclos:menu>
 </c:if>
-<c:if test="${isAdministrator}">
+<c:if test="${isAdmin || isBroker}">
 <cyclos:menu key="menu.member.help">
 	<cyclos:menu url="/do/member/contactUs" key="menu.contact" />
 	<cyclos:menu url="/do/member/manual" key="menu.member.help.manual" />
