@@ -1440,6 +1440,10 @@ function prepareForMemberAutocomplete(input, div, options, idControl, usernameCo
 	div.style.width = Element.getDimensions(input).width + "px";
 	
 	options = Object.extend(options || {}, {
+		
+		//making so that auto complete only happens once user fills out the whole number
+		minChars: accountNumberLength > 0 ? accountNumberLength : 1,
+				
 		updateElement: function(element) {
 			if (!element) {
 				return;

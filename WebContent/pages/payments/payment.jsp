@@ -46,10 +46,10 @@
 								<div id="membersByUsername" class="autoComplete"></div>
 							</td>
 						</tr>
-						<tr>
+						<tr style="xdisplay:none">
 							<td class="label" width="25%"><bean:message key='payment.recipientName'/></td>
 							<td>
-								<input id="memberName" class="large">
+								<input id="memberName" class="large ${ !(isAdmin || isBroker) ? "InputBoxDisabled" : "" }" ${ !(isAdmin || isBroker) ? "readonly" : "" }>
 								<div id="membersByName" class="autoComplete"></div>
 							</td>
 						</tr>
