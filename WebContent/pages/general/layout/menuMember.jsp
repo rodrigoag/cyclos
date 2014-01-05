@@ -60,9 +60,7 @@
 			<cyclos:menu url="/do/member/memberLoanGroups" key="menu.member.account.loanGroups" />
 		</c:if>
 		<cyclos:menu url="/do/member/payment?selectMember=true" key="menu.member.account.memberPayment" permission="${MemberPermission.PAYMENTS_PAYMENT_TO_MEMBER}"/>
-<c:if test="${isAdmin || isBroker}">
 		<cyclos:menu url="/do/member/payment?toSystem=true" key="menu.member.account.systemPayment" permission="${MemberPermission.PAYMENTS_PAYMENT_TO_SYSTEM}"  />
-</c:if>		 
 		<cyclos:menu url="/do/member/selfPayment" key="menu.member.account.selfPayment" permission="${MemberPermission.PAYMENTS_PAYMENT_TO_SELF}" />
 		<cyclos:menu url="/do/member/requestPayment" key="menu.member.account.requestPayment" permission="${MemberPermission.PAYMENTS_REQUEST}"  />
 		<cyclos:menu url="/do/member/sendInvoice?selectMember=true" key="menu.member.account.memberInvoice" permission="${MemberPermission.INVOICES_SEND_TO_MEMBER}"/>
