@@ -79,10 +79,12 @@
 	<cyclos:menu url="/do/member/listAdInterests" key="menu.member.preferences.adInterests" permission="${MemberPermission.PREFERENCES_MANAGE_AD_INTERESTS}"/>
 	<cyclos:menu url="/do/member/listReceiptPrinterSettings" key="menu.member.preferences.receiptPrinterSettings" permission="${MemberPermission.PREFERENCES_MANAGE_RECEIPT_PRINTER_SETTINGS}"/>
 </cyclos:menu>
+<c:if test="${isAdmin || isBroker}">
 <cyclos:menu key="menu.member.search">
 	<cyclos:menu url="/do/member/searchMembers" key="menu.member.search.members" permission="${MemberPermission.PROFILE_VIEW}" />
 	<cyclos:menu url="/do/member/searchAds" key="menu.member.search.ads" permission="${MemberPermission.ADS_VIEW}" />
 </cyclos:menu>
+</c:if>
 <cyclos:menu key="menu.member.guarantees">
 	<c:if test="${cyclos:granted(MemberPermission.GUARANTEES_ISSUE_CERTIFICATIONS) || cyclos:granted(MemberPermission.GUARANTEES_BUY_WITH_PAYMENT_OBLIGATIONS)}">
 		<cyclos:menu url="/do/member/searchCertifications" key="menu.member.guarantees.searchCertifications"/>
